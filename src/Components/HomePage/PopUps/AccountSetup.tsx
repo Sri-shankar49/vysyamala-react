@@ -1,27 +1,27 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// import React from 'react';
+// import PropTypes from 'prop-types';
 
 export const AccountSetup = ({ onClose }) => {
     console.log('AccountSetup component rendered'); // Debug log
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-8 rounded-lg w-80 relative">
+        <div className="fixed inset-0 w-full h-full flex justify-center items-center z-1">
+            <div className="bg-white p-8 rounded-lg w-1/5 relative">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+                    className="absolute top-[-20px] right-[-20px] text-[30px] text-ash bg-white rounded-full p-3 flex justify-center items-center w-[40px] h-[40px] hover:text-gray-800"
                 >
                     &times;
                 </button>
-                <h2 className="text-xl mb-4 font-semibold">Let's set up your account</h2>
+                <h2 className="text-xl text-ash mb-4 font-semibold">Let's set up your account</h2>
                 <form>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm mb-2" htmlFor="profileFor">
+                        <label className="block text-ash font-bold text-sm mb-2" htmlFor="profileFor">
                             Matrimony Profile for
                         </label>
                         <select
                             id="profileFor"
-                            className="block w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500"
+                            className="text-ash font-semibold block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none"
                         >
                             <option value="">Select</option>
                             <option value="self">Self</option>
@@ -31,34 +31,34 @@ export const AccountSetup = ({ onClose }) => {
                         </select>
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm mb-2" htmlFor="mobile">
+                        <label className="block text-ash text-sm mb-2" htmlFor="mobile">
                             Mobile number
                         </label>
                         <input
                             type="text"
                             id="mobile"
-                            className="block w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500"
+                            className="w-full px-3 py-2 text-ash border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none"
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm mb-2" htmlFor="email">
+                        <label className="block text-ash text-sm mb-2" htmlFor="email">
                             Email
                         </label>
                         <input
                             type="email"
                             id="email"
-                            className="block w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500"
+                            className="w-full px-3 py-2 text-ash border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none"
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm mb-2" htmlFor="password">
+                        <label className="block text-ash text-sm mb-2" htmlFor="password">
                             Create Password
                         </label>
                         <div className="relative">
                             <input
                                 type="password"
                                 id="password"
-                                className="block w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-indigo-500"
+                                className="w-full px-3 py-2 text-ash border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none"
                             />
                             <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500">
                                 <svg
@@ -80,18 +80,18 @@ export const AccountSetup = ({ onClose }) => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full py-2 bg-red-500 text-white rounded-lg mt-4"
+                        className="w-full py-[10px] px-[24px] bg-gradient text-white rounded-[6px] mt-4"
                     >
                         Register
                     </button>
-                    <p className="text-center text-sm text-gray-600 mt-4">
+                    <p className="text-center text-sm text-ash mt-4">
                         Existing user?{' '}
                         <button
                             type="button"
                             onClick={() => {
                                 // You can add logic to switch to the login form if needed
                             }}
-                            className="text-red-500 hover:underline"
+                            className="text-secondary hover:underline"
                         >
                             Login
                         </button>
@@ -103,6 +103,6 @@ export const AccountSetup = ({ onClose }) => {
 };
 
 // Define prop types for the component
-AccountSetup.propTypes = {
-    onClose: PropTypes.func.isRequired,
-};
+// AccountSetup.propTypes = {
+//     onClose: PropTypes.func.isRequired,
+// };

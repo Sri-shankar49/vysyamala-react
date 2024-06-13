@@ -46,11 +46,11 @@ export const Header = () => {
                     </div>
 
                     <nav>
-                        <ul className="flex justify-center items-center space-x-10 text-white">
+                        <ul className="flex justify-center items-center text-white">
                             <Link to="/D">
                                 <li className="text-[16px] cursor-pointer">Search</li>
                             </Link>
-                            <li className="text-[16px] cursor-pointer" onClick={handleRegisterClick}>Register</li>
+                            <li className="text-[16px] cursor-pointer px-10" onClick={handleRegisterClick}>Register</li>
                             <li className="bg-light-pink rounded-[6px] py-[8px] px-[24px] text-main text-[16px] font-semibold cursor-pointer" onClick={handleRegisterClick}>Login</li>
                             {isAccountSetupOpen && (
                                 <AccountSetup onClose={handleCloseAccountSetup} />
