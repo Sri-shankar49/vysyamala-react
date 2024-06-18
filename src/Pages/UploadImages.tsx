@@ -1,44 +1,49 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { IoEye, IoEyeOff } from "react-icons/io5";
 
 import ContentCard from "../Components/RegistrationForm/ContentBlackCard";
 import SideContent from "../Components/RegistrationForm/SideContent";
+import UploadFile from "../Components/UploadImages/UploadFile";
 import uploadfile from "../assets/icons/uploadfile.png";
 import closebtn from "../assets/icons/closebtn.png";
-import { IoEye, IoEyeOff } from "react-icons/io5";
 import arrow from "../assets/icons/arrow.png";
-import UploadFile from "../Components/UploadImages/UploadFile";
 
 interface UploadImagesProps {}
 
 const UploadImages: React.FC<UploadImagesProps> = () => {
-  const [selectedfile, setSelectedFile] = useState("file name");
+  const [selectedFile, setSelectedFile] = useState("file name");
   const [progress, setProgress] = useState(0);
-  const [filesize, setFilesize] = useState("file size");
+  const [fileSize, setFileSize] = useState("file size");
   const [showPassword, setShowPassword] = useState(false);
 
   // Event handler for button click
   const handleButtonClick = () => {
-    const fileInput = document.getElementById("uploadImg");
+    const fileInput = document.getElementById("uploadImg") as HTMLInputElement;
     if (fileInput) {
       fileInput.click();
     }
   };
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    setSelectedFile(file.name);
 
-    const size = (file.size / (1024 * 1024)).toFixed(2);
-    setFilesize(size);
-
-    console.log("Selected file:", file);
+  // Event handler for file upload
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+    if (file) {
+      setSelectedFile(file.name);
+      const size = (file.size / (1024 * 1024)).toFixed(2);
+      setFileSize(size);
+      console.log("Selected file:", file);
+    }
   };
 
+  // Event handler to clear file input
   const clearFileInput = () => {
     setSelectedFile("file name");
+    setFileSize("file size");
     setProgress(0);
   };
 
+  // Event handler to toggle password visibility
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
@@ -46,13 +51,11 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
   return (
     <div className="mt-20 pb-20">
       <ContentCard
-        heading={"Upload Images"}
-        desc={
-          "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis "
-        }
+        heading="Upload Images"
+        desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis "
       />
 
-      <div className="container mt-8 flex justify-between space-x-24 space-y-7 ">
+      <div className="container mt-8 flex justify-between space-x-24 space-y-7">
         <div className="w-full">
           <div>
             <h1 className="font-semibold text-primary text-xl mb-4">
@@ -60,9 +63,9 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </h1>
 
             <UploadFile
-              heading={"Select a file or drag and drop here"}
-              desc={"JPG, PNG file size no more than 10MB"}
-              name={"uploadImg"}
+              heading="Select a file or drag and drop here"
+              desc="JPG, PNG file size no more than 10MB"
+              name="uploadImg"
               onChange={handleFileUpload}
               onClick={handleButtonClick}
             />
@@ -88,10 +91,9 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             <div>
               <img src={uploadfile} alt="uploadfile" />
             </div>
-            <div className="flex-1 ">
+            <div className="flex-1">
               <div className="flex items-center space-x-3">
-                <h1>{selectedfile}</h1>
-
+                <h1>{selectedFile}</h1>
                 <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
                 <button className="text-blue-500">Preview</button>
               </div>
@@ -102,7 +104,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
               ></div>
             </div>
 
-            <div>{filesize} MB</div>
+            <div>{fileSize} MB</div>
             <button onClick={clearFileInput}>
               <img
                 src={closebtn}
@@ -153,9 +155,9 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </h1>
 
             <UploadFile
-              heading={"Select a file or drag and drop here"}
-              desc={"JPG, PNG file size no more than 10MB"}
-              name={"uploadHoroscopeImage"}
+              heading="Select a file or drag and drop here"
+              desc="JPG, PNG file size no more than 10MB"
+              name="uploadHoroscopeImage"
               onChange={handleFileUpload}
               onClick={handleButtonClick}
             />
@@ -181,7 +183,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </div>
             <p className="mt-3 text-ash">
               Note: If youtube URL is not available send your video and your
-              Profile ID on Whatsapp to +1234567890 Our admin will moderate and
+              Profile ID on Whatsapp to +1234567890. Our admin will moderate and
               upload
             </p>
           </div>
@@ -192,9 +194,9 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </h1>
 
             <UploadFile
-              heading={"Select a file or drag and drop here"}
-              desc={"JPG, PNG file size no more than 10MB"}
-              name={"uploadIDProof"}
+              heading="Select a file or drag and drop here"
+              desc="JPG, PNG file size no more than 10MB"
+              name="uploadIDProof"
               onChange={handleFileUpload}
               onClick={handleButtonClick}
             />
@@ -210,7 +212,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </div>
 
             <div className="flex space-x-4">
-              <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
+              <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2">
                 Skip
               </button>
               <Link to="/FamilyDetails">

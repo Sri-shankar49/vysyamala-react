@@ -3,7 +3,7 @@ import ContentCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
-
+import { useState } from "react";
 interface ContactDetailsProps {
   heading?: string;
   desc?: string;
@@ -13,6 +13,28 @@ interface ContactDetailsProps {
 }
 
 const ContactDetails: React.FC<ContactDetailsProps> = () => {
+  const [formData, setFormData] = useState({
+    address: "",
+    country: "",
+    state: "",
+    city: "",
+    pincode: "",
+    alternatemobileNumber: "",
+    whatsappNumber: "",
+    daughterMobileNumber: "",
+    daughterEmail: "",
+  });
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   return (
     <div className="py-20">
       <ContentCard
@@ -22,7 +44,12 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
 
       <div className="container mt-5 flex justify-between space-x-24">
         <div className="w-full space-y-5">
-          <InputField label={"Address *"} name={"address"} />
+          <InputField
+            label="Address *"
+            name="address"
+            value={formData.address}
+            onChange={handleInputChange}
+          />
 
           <div>
             <label htmlFor="country" className="block mb-1">
@@ -31,6 +58,8 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
             <select
               name="country"
               id="country"
+              value={formData.country}
+              onChange={handleInputChange}
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
             >
               <option value="" selected disabled>
@@ -51,6 +80,8 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
             <select
               name="state"
               id="state"
+              value={formData.state}
+              onChange={handleInputChange}
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
             >
               <option value="" selected disabled>
@@ -70,6 +101,8 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
             <select
               name="city"
               id="city"
+              value={formData.city}
+              onChange={handleInputChange}
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
             >
               <option value="" selected disabled>
@@ -83,21 +116,27 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
           </div>
 
           <InputField
-            label={"Pincode (Based on country selection)"}
-            name={"pincode"}
+            label="Pincode (Based on country selection)"
+            name="pincode"
             type="number"
+            value={formData.pincode}
+            onChange={handleInputChange}
           />
 
           <InputField
-            label={"Alternate Mobile Number"}
-            name={"alternatemobileNumber"}
+            label="Alternate Mobile Number"
+            name="alternatemobileNumber"
             type="tel"
+            value={formData.alternatemobileNumber}
+            onChange={handleInputChange}
           />
 
           <InputField
-            label={"Whatsapp Number"}
-            name={"whatsappNumber"}
+            label="Whatsapp Number"
+            name="whatsappNumber"
             type="tel"
+            value={formData.whatsappNumber}
+            onChange={handleInputChange}
           />
 
           <div className="!mt-12">
@@ -107,15 +146,19 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
 
             <div className="space-y-5">
               <InputField
-                label={"Daughter Mobile Number"}
-                name={"daughterMobileNumber"}
+                label="Daughter Mobile Number"
+                name="daughterMobileNumber"
                 type="number"
+                value={formData.daughterMobileNumber}
+                onChange={handleInputChange}
               />
 
               <InputField
-                label={"Daughter Email"}
-                name={"daughterEmail"}
+                label="Daughter Email"
+                name="daughterEmail"
                 type="email"
+                value={formData.daughterEmail}
+                onChange={handleInputChange}
               />
             </div>
 

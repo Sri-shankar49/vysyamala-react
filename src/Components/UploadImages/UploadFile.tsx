@@ -4,9 +4,7 @@ interface UploadFileProps {
   heading: string;
   desc: string;
   name: string;
-  label: string;
-  type?: string; // Make type optional with a default value
-  onChange: () => void;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onClick: () => void;
 }
 

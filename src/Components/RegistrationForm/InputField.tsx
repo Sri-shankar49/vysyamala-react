@@ -1,16 +1,14 @@
 import React from "react";
 
 interface InputFieldProps {
-  name: string;
   label: string;
-  type?: string; // Make type optional with a default value
+  name: string;
+  type?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputField: React.FC<InputFieldProps> = ({
-  name,
-  label,
-  type = "text",
-}) => {
+const InputField: React.FC<InputFieldProps> = ({ label, name, type = "text", value, onChange }) => {
   return (
     <div>
       <label htmlFor={name} className="block mb-1">
@@ -18,8 +16,10 @@ const InputField: React.FC<InputFieldProps> = ({
       </label>
       <input
         type={type}
-        name={name}
         id={name}
+        name={name}
+        value={value}
+        onChange={onChange}
         className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
       />
     </div>
