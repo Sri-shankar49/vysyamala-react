@@ -1,16 +1,20 @@
 // import { useState } from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
-import './App.css';
+// import './App.css';
+import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Header } from './Components/Header';
-import { Footer } from './Components/Footer';
+import { Header } from "./Components/Header";
+import { Footer } from "./Components/Footer";
 
 // Pages Components
-import { HomePage } from './Pages/HomePage'
-import { D } from './Pages/D'
-
-
+import { HomePage } from "./Pages/HomePage";
+import { ThankYou } from "./Pages/ThankYou";
+import ContactDetails from "./Pages/ContactDetails";
+import UploadImages from "./Pages/UploadImages";
+import FamilyDetails from "./Pages/FamilyDetails";
+import EduDetails from "./Pages/EduDetails";
+import HoroDetails from "./Pages/HoroDetails";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -42,13 +46,17 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/D" element={<D />} />
+          <Route path="/ThankYou" element={<ThankYou />} />
+          <Route path="/ContactDetails" element={<ContactDetails />} />
+          <Route path="/UploadImages" element={<UploadImages />} />
+          <Route path="/FamilyDetails" element={<FamilyDetails />} />
+          <Route path="/EduDetails" element={<EduDetails />} />
+          <Route path="/HoroDetails" element={<HoroDetails />} />
         </Routes>
         <Footer />
       </BrowserRouter>
-
     </>
-  )
+  );
 }
 
-export default App
+export default App;
