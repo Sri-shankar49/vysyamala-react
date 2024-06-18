@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import VysyamalaWhite from "../assets/icons/VysyamalaWhite.png";
 import { Link } from 'react-router-dom';
-import { AccountSetup } from "../Components/HomePage/PopUps/AccountSetup";
+import { PopupModal } from "../Components/HomePage/PopUps/PopupModal";
 
-export const Header = () => {
+export const Header: React.FC = () => {
 
     const [isScrolled, setIsScrolled] = useState(false);
 
@@ -32,6 +32,7 @@ export const Header = () => {
 
     const handleCloseAccountSetup = () => {
         setIsAccountSetupOpen(false);
+        console.log('Closing PopupModal popup'); // Debug log
     };
 
     return (
@@ -51,9 +52,10 @@ export const Header = () => {
                                 <li className="text-[16px] cursor-pointer">Search</li>
                             </Link>
                             <li className="text-[16px] cursor-pointer px-10" onClick={handleRegisterClick}>Register</li>
-                            <li className="bg-light-pink rounded-[6px] py-[8px] px-[24px] text-main text-[16px] font-semibold cursor-pointer" onClick={handleRegisterClick}>Login</li>
+                            <li className="bg-light-pink rounded-[6px] py-[8px] px-[24px] text-main text-[16px] font-semibold cursor-pointer">
+                                Login</li>
                             {isAccountSetupOpen && (
-                                <AccountSetup onClose={handleCloseAccountSetup} />
+                                <PopupModal onClose={handleCloseAccountSetup} />
                             )}
                         </ul>
                     </nav>
