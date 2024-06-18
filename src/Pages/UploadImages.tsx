@@ -100,7 +100,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
 
               {/* Dynamic Progress Bar use API */}
               <div
-                className={`mt-3 w-full h-1 bg-blue-500 rounded transition-all`}
+                className={`mt-3 w-${progress} h-1 bg-blue-500 rounded transition-all`}
               ></div>
             </div>
 
