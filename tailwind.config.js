@@ -6,7 +6,10 @@ export default {
       backgroundImage: {
         gradient:
           "linear-gradient(to right, #bd1225, #cd1f2f, #de2b3a, #ee3645, #ff4050)",
+        gradientLight:
+          "linear-gradient(to right, #bd1225, #cd1f2f, #de2b3a, #ee3645, #ff4050)",
       },
+
       colors: {
         main: "#ED1E24",
         primary: "#535665",

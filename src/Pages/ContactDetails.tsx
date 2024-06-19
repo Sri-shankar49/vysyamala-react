@@ -36,7 +36,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
   };
 
   return (
-    <div className="py-20">
+    <div className="pb-20">
       <ContentCard
         heading={"Contact Information"}
         desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis "

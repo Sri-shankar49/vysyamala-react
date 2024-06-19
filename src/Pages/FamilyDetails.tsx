@@ -9,7 +9,7 @@ interface FamilyDetailsProps {}
 
 const FamilyDetails: React.FC<FamilyDetailsProps> = () => {
   return (
-    <div className="mt-20">
+    <div className="pb-20">
       <ContentCard
         heading={"Family Details"}
         desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis "

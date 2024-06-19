@@ -4,8 +4,8 @@
 // import './App.css';
 import "./index.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Header } from "./Components/Header";
-import { Footer } from "./Components/Footer";
+import MainLayout from "./Layout/MainLayout";
+import LoginLayout from "./Layout/LoginLayout";
 
 // Pages Components
 import { HomePage } from "./Pages/HomePage";
@@ -15,6 +15,7 @@ import UploadImages from "./Pages/UploadImages";
 import FamilyDetails from "./Pages/FamilyDetails";
 import EduDetails from "./Pages/EduDetails";
 import HoroDetails from "./Pages/HoroDetails";
+import PartnerSettings from "./Pages/PartnerSettings";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -43,17 +44,23 @@ function App() {
       </p> */}
 
       <BrowserRouter>
-        <Header />
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/ThankYou" element={<ThankYou />} />
-          <Route path="/ContactDetails" element={<ContactDetails />} />
-          <Route path="/UploadImages" element={<UploadImages />} />
-          <Route path="/FamilyDetails" element={<FamilyDetails />} />
-          <Route path="/EduDetails" element={<EduDetails />} />
-          <Route path="/HoroDetails" element={<HoroDetails />} />
+          {/* Main Layout Routes */}
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<HomePage />} />
+          </Route>
+
+          {/* Login Layout Routes */}
+          <Route element={<LoginLayout />}>
+            <Route path="/ThankYou" element={<ThankYou />} />
+            <Route path="/ContactDetails" element={<ContactDetails />} />
+            <Route path="/UploadImages" element={<UploadImages />} />
+            <Route path="/FamilyDetails" element={<FamilyDetails />} />
+            <Route path="/EduDetails" element={<EduDetails />} />
+            <Route path="/HoroDetails" element={<HoroDetails />} />
+            <Route path="/PartnerSettings" element={<PartnerSettings />} />
+          </Route>
         </Routes>
-        <Footer />
       </BrowserRouter>
     </>
   );
