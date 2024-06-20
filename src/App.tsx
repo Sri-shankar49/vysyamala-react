@@ -16,6 +16,7 @@ import FamilyDetails from "./Pages/FamilyDetails";
 import EduDetails from "./Pages/EduDetails";
 import HoroDetails from "./Pages/HoroDetails";
 import PartnerSettings from "./Pages/PartnerSettings";
+import { MembershipPlan } from "./Pages/MembershipPlan";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -59,6 +60,7 @@ function App() {
             <Route path="/EduDetails" element={<EduDetails />} />
             <Route path="/HoroDetails" element={<HoroDetails />} />
             <Route path="/PartnerSettings" element={<PartnerSettings />} />
+            <Route path="/MembershipPlan" element={<MembershipPlan />} />
           </Route>
         </Routes>
       </BrowserRouter>

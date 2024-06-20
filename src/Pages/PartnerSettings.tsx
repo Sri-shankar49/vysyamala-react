@@ -5,7 +5,9 @@ import arrow from "../assets/icons/arrow.png";
 // import { useState } from "react";
 import { Link } from "react-router-dom";
 
-interface PartnerSettingsProps {}
+interface PartnerSettingsProps {
+  placeholder?: string;
+ }
 
 const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
   return (
@@ -241,8 +243,6 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
             </select>
           </div>
 
-          <InputField label={"Work Location"} name={"workLocation"} />
-
           <div>
             <label htmlFor="nativeState" className="block mb-1">
               Native State
@@ -261,6 +261,43 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
               <option value="Andhra Pradesh">Andhra Pradesh</option>
             </select>
           </div>
+
+          <InputField label={"Work Location"} name={"workLocation"} />
+
+          <div>
+            <h5 className="text-[18px] text-primary font-semibold mb-2">
+              Profile Photo
+            </h5>
+            <input type="checkbox" id="profilePhoto" name="profilePhoto" value="profilePhoto" />
+            <label htmlFor="profilePhoto" className="pl-1">
+              People only with photo
+            </label>
+          </div>
+
+          <div className="mt-7 flex justify-between">
+            <div className="">
+              {/* <Link to={"/"}>
+                <button className="py-[10px] px-14 bg-white text-main font-semibold border-2 rounded-[6px] mt-2">
+                  Back
+                </button>
+              </Link> */}
+            </div>
+
+            <div className="flex space-x-4">
+              <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
+                Cancel
+              </button>
+              <Link to="/MembershipPlan">
+                <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
+                  Find Match
+                  <span>
+                    <img src={arrow} alt="next arrow" className="ml-2" />
+                  </span>
+                </button>
+              </Link>
+            </div>
+          </div>
+
         </div>
         <SideContent />
       </div>

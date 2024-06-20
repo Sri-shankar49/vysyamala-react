@@ -13,7 +13,7 @@ interface UploadImagesProps {}
 
 const UploadImages: React.FC<UploadImagesProps> = () => {
   const [selectedFile, setSelectedFile] = useState("file name");
-  const [progress, setProgress] = useState(0);
+  // const [progress, setProgress] = useState(0);
   const [fileSize, setFileSize] = useState("file size");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -40,7 +40,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
   const clearFileInput = () => {
     setSelectedFile("file name");
     setFileSize("file size");
-    setProgress(0);
+    // setProgress(0);
   };
 
   // Event handler to toggle password visibility
@@ -100,7 +100,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
 
               {/* Dynamic Progress Bar use API */}
               <div
-                className={`mt-3 w-${progress} h-1 bg-blue-500 rounded transition-all`}
+                className={`mt-3 w-full h-1 bg-blue-500 rounded transition-all`}
               ></div>
             </div>
 

@@ -8,6 +8,7 @@ export default {
           "linear-gradient(to right, #bd1225, #cd1f2f, #de2b3a, #ee3645, #ff4050)",
         gradientLight:
           "linear-gradient(to right, #bd1225, #cd1f2f, #de2b3a, #ee3645, #ff4050)",
+        gradientBgImg: "url('assets/images/gradientBgImg.png'), linear-gradient(92.08deg, #BD1225 0.6%, #FF4050 103.08%)",
       },
 
       colors: {
@@ -15,6 +16,8 @@ export default {
         primary: "#535665",
         secondary: "#FF6666",
         white: "#FFFFFF",
+        vysyamalaBlack: "#282C3F",
+        checkGreen: "#53C840",
         gray: "#E9EAEC",
         ash: "#4F515D",
         ashSecondary: "#85878C",
