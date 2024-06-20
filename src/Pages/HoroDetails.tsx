@@ -9,7 +9,7 @@ interface HoroDetailsProps {}
 
 const HoroDetails: React.FC<HoroDetailsProps> = () => {
   return (
-    <div className="mt-20">
+    <div className="pb-20">
       <ContentCard
         heading={"Horoscope Details"}
         desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis"
@@ -184,7 +184,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
                 Skip
               </button>
-              <Link to="/EduDetails">
+              <Link to="/PartnerSettings">
                 <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
                   Next
                   <span>

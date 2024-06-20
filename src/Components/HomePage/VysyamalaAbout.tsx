@@ -1,4 +1,4 @@
-import VysyamalaLogo from "../../assets/icons/Vysyamala-logo.png";
+import VysyamalaLogo from "../../assets/icons/VysyamalaLogo.png";
 
 export const VysyamalaAbout = () => {
   return (
