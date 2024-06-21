@@ -17,6 +17,8 @@ import EduDetails from "./Pages/EduDetails";
 import HoroDetails from "./Pages/HoroDetails";
 import PartnerSettings from "./Pages/PartnerSettings";
 import { MembershipPlan } from "./Pages/MembershipPlan";
+import { PayNow } from "./Pages/PayNow";
+import { ThankYouReg } from "./Pages/ThankYouReg";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -61,6 +63,8 @@ function App() {
             <Route path="/HoroDetails" element={<HoroDetails />} />
             <Route path="/PartnerSettings" element={<PartnerSettings />} />
             <Route path="/MembershipPlan" element={<MembershipPlan />} />
+            <Route path="/PayNow" element={<PayNow />} />
+            <Route path="/ThankYouReg" element={<ThankYouReg />} />
           </Route>
         </Routes>
       </BrowserRouter>

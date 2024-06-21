@@ -1,11 +1,11 @@
 import React from "react";
 
-interface ContentCardProps {
+interface ContentBlackCardProps {
   heading: string;
   desc: string;
 }
 
-const ContentCard: React.FC<ContentCardProps> = ({ heading, desc }) => {
+const ContentBlackCard: React.FC<ContentBlackCardProps> = ({ heading, desc }) => {
   return (
     <div className="bg-gradient-to-tr from-[#22272E] to-[#202332] text-white px-24 py-16">
       <div className="container">
@@ -16,4 +16,4 @@ const ContentCard: React.FC<ContentCardProps> = ({ heading, desc }) => {
   );
 };
 
-export default ContentCard;
+export default ContentBlackCard;

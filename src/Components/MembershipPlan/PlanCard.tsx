@@ -1,4 +1,6 @@
 import { FaCheck } from "react-icons/fa6";
+import { FaCircleCheck } from "react-icons/fa6";
+import { Link } from "react-router-dom";
 
 interface PlanCardProps {
     price: number;
@@ -6,28 +8,40 @@ interface PlanCardProps {
     planName: string;
     features: string[];
     className?: string;
+    customStyles?: string;
+    customStylesOne?: string;
+    customStylesTwo?: string;
+    customStylesThree?: string;
+    isCenterCard?: boolean;
+    children?: React.ReactNode; // To include additional elements
 }
 
-export const PlanCard: React.FC<PlanCardProps> = ({ price, period, planName, features, className }) => {
+export const PlanCard: React.FC<PlanCardProps> = ({ price, period, planName, features, className, customStyles, customStylesOne, customStylesTwo, customStylesThree, isCenterCard, children }) => {
     return (
-        <div>
-            <div className={`flex flex-col justify-evenly h-full w-full bg-white rounded-lg p-16 ${className}`}>
-                <h1 className="text-[36px] text-main font-bold">₹ {price} <span className="text-[16px] text-vysyamalaBlack">/{period}</span></h1>
+        <div className="w-[26%]">
+            <div className={`flex flex-col justify-evenly h-full w-full bg-white rounded-3xl p-16 ${className}`}>
+                {children}
+                <h1 className={`text-[36px] ${customStylesTwo} font-bold`}>₹ {price}<span className={`text-[16px] ${customStylesOne}`}>/{period}</span></h1>
 
-                <h4 className="text-[28px] text-vysyamalaBlack font-bold mb-2">{planName}</h4>
+                <h4 className={`text-[28px] ${customStylesOne} font-bold mb-2`}>{planName}</h4>
 
                 <div>
                     <ul>
                         {features.map((feature, index) => (
-                            <li key={index} className="relative text-[14px] text-ash mb-2">
+                            <li key={index} className={`relative text-[14px] ${customStyles} mb-2`}>
                                 {feature}
-                                <FaCheck className="absolute top-1 left-[-30px] text-[18px] text-checkGreen" />
+                                {isCenterCard ? (
+                                    <FaCircleCheck className="absolute top-0.5 left-[-30px] text-[18px] text-checkRed bg-white rounded-full" />
+                                ) : (
+                                    <FaCheck className="absolute top-1 left-[-30px] text-[18px] text-checkGreen" />
+                                )}
                             </li>
                         ))}
                     </ul>
                 </div>
-
-                <button className="bg-light-pink rounded-full py-[8px]  text-main text-[16px] font-semibold cursor-pointer">Choose Plan</button>
+                <Link to="/PayNow">
+                    <button className={`${customStylesThree} w-full rounded-full py-[8px] text-main text-[16px] font-semibold mt-10 cursor-pointer`}>Choose Plan</button>
+                </Link>
             </div>
         </div>
     )

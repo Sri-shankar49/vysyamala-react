@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import ContentCard from "../Components/RegistrationForm/ContentBlackCard";
+import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
@@ -37,7 +37,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
 
   return (
     <div className="pb-20">
-      <ContentCard
+      <ContentBlackCard
         heading={"Contact Information"}
         desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis "
       />

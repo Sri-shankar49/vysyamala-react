@@ -18,6 +18,7 @@ export default {
         white: "#FFFFFF",
         vysyamalaBlack: "#282C3F",
         checkGreen: "#53C840",
+        checkRed: "#cd3040",
         gray: "#E9EAEC",
         ash: "#4F515D",
         ashSecondary: "#85878C",
@@ -26,6 +27,7 @@ export default {
         "footer-line": "rgba(255, 255, 255, 0.12)",
         "gloss-black": "rgba(0, 0, 0, 0.73)",
         "light-pink": "#FFE5E5",
+        "shadowPink": "#C243434B",
       },
       fontFamily: {
         inter: ["Inter", "sans-serif"],

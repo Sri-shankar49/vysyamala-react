@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 
-import ContentCard from "../Components/RegistrationForm/ContentBlackCard";
+import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import UploadFile from "../Components/UploadImages/UploadFile";
 import uploadfile from "../assets/icons/uploadfile.png";
@@ -50,7 +50,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
 
   return (
     <div className="pb-20">
-      <ContentCard
+      <ContentBlackCard
         heading="Upload Images"
         desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis "
       />

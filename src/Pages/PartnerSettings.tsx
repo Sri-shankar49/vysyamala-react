@@ -1,4 +1,4 @@
-import ContentCard from "../Components/RegistrationForm/ContentBlackCard";
+import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
@@ -12,7 +12,7 @@ interface PartnerSettingsProps {
 const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
   return (
     <div className="pb-20">
-      <ContentCard
+      <ContentBlackCard
         heading={"Partner Settings"}
         desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis"
       />

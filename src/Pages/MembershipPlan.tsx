@@ -2,7 +2,7 @@ import arrowRed from "../assets/icons/arrowred.png";
 import { PlanCard } from "../Components/MembershipPlan/PlanCard";
 
 // PlanCard Component 
-const goldPlan = [
+const plans = [
     {
         price: 4900,
         period: "year",
@@ -18,11 +18,7 @@ const goldPlan = [
             "Online chat"
         ]
     },
-    // Add more plan objects here if needed
-];
 
-// Platinum PlanCard Component 
-const platinumPlan = [
     {
         price: 6900,
         period: "year",
@@ -36,11 +32,7 @@ const platinumPlan = [
             "Profile Booster for 3 Months",
         ]
     },
-    // Add more plan objects here if needed
-];
 
-// Platinum Private PlanCard Component 
-const platinumPrivatePlan = [
     {
         price: 9900,
         period: "year",
@@ -51,9 +43,10 @@ const platinumPrivatePlan = [
             "Dedicated Relationship Manager - Monthly Recommendations",
             "Choose your Profile Visibilty",
             "Vys Assist for 5 Members",
+            "App Notifications and SMS/E-mail Alerts",
+            "Automated 10 Porutham Report",
         ]
     },
-    // Add more plan objects here if needed
 ];
 
 
@@ -63,7 +56,7 @@ export const MembershipPlan: React.FC = () => {
     return (
         <div className="container mx-auto">
             <div className="flex justify-between items-center">
-                <h5 className="text-[36px] text-ash font-semibold">Membership Plans</h5>
+                <h5 className="text-[36px] text-ash font-bold">Membership Plans</h5>
 
                 <button className="flex items-center py-[10px] px-14 bg-white text-main font-semibold mt-2">Skip for Free
                     <span>
@@ -76,36 +69,28 @@ export const MembershipPlan: React.FC = () => {
                 <p className="font-normal text-ashSecondary">Upgrade your plan as per your customized requirements, with a paid membership,you can seamlessly connect with your prospects and get more responses. Here are some key benefits</p>
             </div>
 
-            <div className="flex justify-center w-full mx-auto my-10 space-x-5">
-                {goldPlan.map((plan, index) => (
+            <div className="flex justify-center w-fit mx-auto my-24 rounded-3xl shadow-2xl relative">
+                {plans.map((plan, index) => (
                     <PlanCard
                         key={index}
                         price={plan.price}
                         period={plan.period}
                         planName={plan.planName}
                         features={plan.features}
-                    />
+                        className={`rounded-3xl ${index === 1 ? "bg-gradientBgImg bg-cover bg-center translate-y-[-50px] text-white shadow-2xl shadow-shadowPink" : ""}`}
+                        customStyles={index === 1 ? "text-white" : "text-ash"}
+                        customStylesOne={index === 1 ? "text-white" : "text-vysyamalaBlack"}
+                        customStylesTwo={index === 1 ? "text-white" : "text-main"}
+                        customStylesThree={index === 1 ? "bg-white" : "bg-light-pink"}
+                        isCenterCard={index === 1}
+                    >
+                        {index === 1 && (
+                            <div className="absolute top-[0px] left-1/2 transform -translate-x-1/2 bg-light-pink text-main uppercase tracking-wider font-semibold py-1 px-4 rounded-b-md">
+                                Most Popular
+                            </div>
+                        )}
+                    </PlanCard>
                 ))}
-                {platinumPlan.map((plan, index) => (
-                    <PlanCard
-                        key={index}
-                        price={plan.price}
-                        period={plan.period}
-                        planName={plan.planName}
-                        features={plan.features}
-                        className="bg-gradientBgImg bg-cover bg-center text-white rounded-3xl"
-                    />
-                ))}
-                {platinumPrivatePlan.map((plan, index) => (
-                    <PlanCard
-                        key={index}
-                        price={plan.price}
-                        period={plan.period}
-                        planName={plan.planName}
-                        features={plan.features}
-                    />
-                ))}
-
             </div>
         </div>
     )
