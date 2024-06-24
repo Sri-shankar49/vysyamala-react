@@ -60,7 +60,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
                     className="text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none"
                     {...register("profileFor")}
                 >
-                    <option value="Select your Matrimony Profile for">Select your Matrimony Profile for</option>
+                    <option value="" disabled selected>Select your Matrimony Profile for</option>
                     <option value="Myself">Myself</option>
                     <option value="Son / Daughter">Son / Daughter</option>
                     <option value="Relatives">Relatives</option>
@@ -74,7 +74,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
                     Mobile number
                 </label> */}
                 <input
-                    type="number"
+                    type="tel"
                     id="mobile"
                     className="w-full px-3 py-2 text-ash border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none"
                     placeholder="Mobile Number"
