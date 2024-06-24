@@ -3,14 +3,16 @@ import { AccountSetup } from './AccountSetup';
 import { OtpVerification } from './OtpVerification';
 import { BasicDetails } from './BasicDetails';
 
-interface PopupModal {
+interface PopupModalProps {
     onClose: () => void;
 }
 
-export const PopupModal: React.FC<PopupModal> = ({ onClose }) => {
+export const PopupModal: React.FC<PopupModalProps> = ({ onClose }) => {
     const [showPopup, setShowPopup] = useState<"accountSetup" | "otpVerification" | "basicDetails">("accountSetup");
+    const [mobileNumber, setMobileNumber] = useState<string>("");
 
-    const accountSetupNext = () => {
+    const accountSetupNext = (mobile: string) => {
+        setMobileNumber(mobile);
         setShowPopup("otpVerification");
     };
 
@@ -19,7 +21,6 @@ export const PopupModal: React.FC<PopupModal> = ({ onClose }) => {
     };
 
     const basicDetailsNext = () => {
-        // Handle final registration logic here
         console.log('User registered');
         onClose();
     };
@@ -31,12 +32,12 @@ export const PopupModal: React.FC<PopupModal> = ({ onClose }) => {
                     <AccountSetup onNext={accountSetupNext} onClose={onClose} />
                 )}
                 {showPopup === "otpVerification" && (
-                    <OtpVerification onNext={otpVerificationNext} onClose={onClose} />
+                    <OtpVerification onNext={otpVerificationNext} onClose={onClose} mobileNumber={mobileNumber} />
                 )}
                 {showPopup === "basicDetails" && (
                     <BasicDetails onNext={basicDetailsNext} onClose={onClose} />
                 )}
             </div>
         </div>
-    )
-}
+    );
+};
