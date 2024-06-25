@@ -48,7 +48,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
                 const data = response.data;
 
                 // Transform API response into options array for dropdown
-                const options = Object.values(data).map((item: any) => ({
+                const options = Object.values(data).map((item: typeof data[0]) => ({
                     owner_id: item.owner_id,
                     owner_description: item.owner_description
                 }));
