@@ -7,6 +7,14 @@ import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as zod from "zod"
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
+import React, { useState, useEffect } from "react";
+
+
+// API call
+const COUNTRY_API_URL = "http://103.214.132.20:8000/auth/Get_Country/";
+const STATE_API_URL = "http://103.214.132.20:8000/auth/Get_State/";
+
 
 // ZOD Schema
 const schema = zod.object({
@@ -41,13 +49,60 @@ interface ContactDetailsProps {
   type?: string; // Make type optional with a default value
 }
 
+interface CountryOption {
+  country_id: number;
+  country_name: string;
+}
+
+interface StateOption {
+  state_id: number;
+  state_name: string;
+}
+
 const ContactDetails: React.FC<ContactDetailsProps> = () => {
 
   // Navigate to next page
   const navigate = useNavigate();
 
   // React Hook form
-  const { register, handleSubmit, formState: { errors }, } = useForm<FormInputs>({ resolver: zodResolver(schema), });
+  const { register, handleSubmit, formState: { errors },watch } = useForm<FormInputs>({ resolver: zodResolver(schema), });
+
+  const [countryOptions, setCountryOptions] = useState<CountryOption[]>([]);
+  const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
+
+
+
+
+  useEffect(() => {
+    const fetchCountryStatus = async () => {
+      try {
+        const response = await axios.post(COUNTRY_API_URL);
+        const options = Object.values(response.data) as CountryOption[];
+        setCountryOptions(options);
+      } catch (error) {
+        console.error("Error fetching country options:", error);
+      }
+    };
+    fetchCountryStatus();
+  }, []);
+
+  const selectedCountry = watch("country");
+
+  useEffect(() => {
+    if (selectedCountry) {
+      const fetchStateStatus = async () => {
+        try {
+          const response = await axios.post(STATE_API_URL, { country_id: selectedCountry });
+          const options = Object.values(response.data) as StateOption[];
+          setStateOptions(options);
+        } catch (error) {
+          console.error("Error fetching state options:", error);
+        }
+      };
+      fetchStateStatus();
+    }
+  }, [selectedCountry]);
+
 
   const onSubmit: SubmitHandler<FormInputs> = data => {
     console.log(data);
@@ -106,18 +161,18 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               <option value="" selected disabled>
                 -- Select your Country --
               </option>
-              <option value="IN">India</option>
-              <option value="PKN">Pakistan</option>
-              <option value="SL">Sri Lanka</option>
-              <option value="MLA">Malaysia</option>
-              <option value="SK">South Korea</option>
+              {countryOptions.map((option) => (
+                <option key={option.country_id} value={option.country_id}>
+                  {option.country_name}
+                </option>
+              ))}
             </select>
             {errors.country && <span className="text-red-500">{errors.country.message}</span>}
           </div>
 
           <div>
             <label htmlFor="state" className="block mb-1">
-              State <span className="text-main">*</span> (Based on country selection )
+              State <span className="text-main">*</span> (Based on country selection)
             </label>
             <select
               id="state"
@@ -127,10 +182,11 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               <option value="" selected disabled>
                 -- Select State --
               </option>
-              <option value="TamilNadu">TamilNadu</option>
-              <option value="Delhi">Delhi</option>
-              <option value="Assam">Assam</option>
-              <option value="Kerala">Kerala</option>
+              {stateOptions.map((option) => (
+                <option key={option.state_id} value={option.state_id}>
+                  {option.state_name}
+                </option>
+              ))}
             </select>
             {errors.state && <span className="text-red-500">{errors.state.message}</span>}
           </div>

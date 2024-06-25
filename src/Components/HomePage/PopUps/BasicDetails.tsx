@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
-import { useForm, SubmitHandler } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as zod from "zod"
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
+// API URL
+const MARITAL_STATUS_API_URL = "http://103.214.132.20:8000/auth/Get_Marital_Status/";
+const COMPLEXION_STATUS_API_URL = "http://103.214.132.20:8000/auth/Get_Complexion/";
 
 // Calculate the minimum date of birth for age 18
 const getMinDOB = () => {
@@ -38,6 +42,16 @@ interface FormInputs {
   complexion: string;
 }
 
+interface MaritalStatusOption {
+  marital_sts_id: number;
+  marital_sts_name: string;
+}
+
+interface ComplexionOption {
+  complexion_id: number;
+  complexion_description: string;
+}
+
 export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) => {
 
   // Navigate to next page
@@ -46,8 +60,43 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
   // Age Message
   const [ageMessage, setAgeMessage] = useState("");
 
+  // Marital Status Options
+  const [maritalStatusOptions, setMaritalStatusOptions] = useState<MaritalStatusOption[]>([]);
+  const [complexionOptions, setComplexionOptions] = useState<ComplexionOption[]>([]);
+
   // React Hook form
   const { register, handleSubmit, formState: { errors }, watch, } = useForm<FormInputs>({ resolver: zodResolver(schema), });
+
+  // Fetch marital status options
+  useEffect(() => {
+    const fetchMaritalStatus = async () => {
+      try {
+        const response = await axios.post(MARITAL_STATUS_API_URL);
+        const options = Object.values(response.data) as MaritalStatusOption[];
+        setMaritalStatusOptions(options);
+      } catch (error) {
+        console.error("Error fetching marital status options:", error);
+      }
+    };
+    fetchMaritalStatus();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchComplexionStatus = async () => {
+      try {
+        const response = await axios.post(COMPLEXION_STATUS_API_URL);
+        const options = Object.values(response.data) as ComplexionOption[];
+        setComplexionOptions(options);
+      } catch (error) {
+        console.error("Error fetching complexion options:", error);
+      }
+    };
+    fetchComplexionStatus();
+  }, []);
+
+
+
 
   // Calculate age based on date of birth
   const calculateAge = (dob: string) => {
@@ -80,7 +129,6 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
     document.getElementById("date")!.setAttribute("max", getMinDOB());
   }, []);
 
-
   const onSubmit: SubmitHandler<FormInputs> = (data) => {
     console.log(data);
     onNext();
@@ -108,19 +156,20 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
         </div>
 
         <div>
-          <select
-            id="maritalStatus"
-            className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
-            {...register("maritalStatus")}
-          >
-            <option value="" disabled selected>Select your Marital Status</option>
-            <option value="Single">Single</option>
-            <option value="Widow / Widower">Widow / Widower</option>
-            <option value="Divorced">Divorced</option>
-          </select>
-          {errors.maritalStatus && <span className="text-red-500">{errors.maritalStatus.message}</span>}
-
-        </div>
+        <select
+          id="maritalStatus"
+          className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+          {...register("maritalStatus")}
+        >
+          <option value="" disabled selected>Select your Marital Status</option>
+          {maritalStatusOptions.map((option) => (
+            <option key={option.marital_sts_id} value={option.marital_sts_id}>
+              {option.marital_sts_name}
+            </option>
+          ))}
+        </select>
+        {errors.maritalStatus && <span className="text-red-500">{errors.maritalStatus.message}</span>}
+      </div>
 
         <div>
           <input
@@ -154,10 +203,11 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
             {...register("complexion")}
           >
             <option value="" disabled selected>Select your complexion</option>
-            <option value="Fair">Fair</option>
-            <option value="White">White</option>
-            <option value="Brown">Brown</option>
-            <option value="Black">Black</option>
+            {complexionOptions.map((option) => (
+            <option key={option.complexion_id} value={option.complexion_id}>
+              {option.complexion_description}
+            </option>
+          ))}
           </select>
           {errors.complexion && <span className="text-red-500">{errors.complexion.message}</span>}
         </div>
