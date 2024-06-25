@@ -1,19 +1,18 @@
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod";
 import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as zod from "zod"
-
 
 // Define validation schema with zod
 const schema = zod.object({
-  fathername: zod.string().min(3, 'Father name is required'),
+  fathername: zod.string().min(3, "Father name is required"),
   fatherOccupation: zod.string().min(3, "Father's Occupation is required"),
-  mothername: zod.string().min(3, 'Mother name is required'),
+  mothername: zod.string().min(3, "Mother name is required"),
   motherOccupation: zod.string().min(3, "Mother's Occupation is required"),
   brother: zod.number().min(0, "Brother count is required"),
   marriedBrother: zod.number().min(0, "Married Brother count is required"),
@@ -51,31 +50,22 @@ interface FamilyDetailsInputs {
 }
 
 const FamilyDetails: React.FC = () => {
-
-  // Navigate to next page
   const navigate = useNavigate();
 
-  // React Hook form
   const { register, handleSubmit, formState: { errors }, setValue } = useForm<FamilyDetailsInputs>({
     resolver: zodResolver(schema),
   });
 
-
-  // Select buttons state
   const [selectedBrother, setSelectedBrother] = useState<number | null>(null);
   const [selectedMarriedBrother, setSelectedMarriedBrother] = useState<number | null>(null);
   const [selectedSister, setSelectedSister] = useState<number | null>(null);
   const [selectedMarriedSister, setSelectedMarriedSister] = useState<number | null>(null);
-
   const [selectedFamilyType, setSelectedFamilyType] = useState<string | null>(null);
   const [selectedFamilyValue, setSelectedFamilyValue] = useState<string | null>(null);
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<string | null>(null);
 
-  // Background getting selected
   const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
 
-
-  // Update form values on state change
   const handleFamilyTypeChange = (value: string) => {
     setSelectedFamilyType(value);
     setValue("familyType", value, { shouldValidate: true });
@@ -94,6 +84,7 @@ const FamilyDetails: React.FC = () => {
   const handleBrotherChange = (value: number) => {
     setSelectedBrother(value);
     setValue("brother", value, { shouldValidate: true });
+    setSelectedMarriedBrother(null); // Reset married brother selection when brother selection changes
   };
 
   const handleMarriedBrotherChange = (value: number) => {
@@ -104,6 +95,7 @@ const FamilyDetails: React.FC = () => {
   const handleSisterChange = (value: number) => {
     setSelectedSister(value);
     setValue("sister", value, { shouldValidate: true });
+    setSelectedMarriedSister(null); // Reset married sister selection when sister selection changes
   };
 
   const handleMarriedSisterChange = (value: number) => {
@@ -111,25 +103,34 @@ const FamilyDetails: React.FC = () => {
     setValue("marriedSister", value, { shouldValidate: true });
   };
 
+  const onSubmit: SubmitHandler<FamilyDetailsInputs> = data => {
+    console.log("Form data:", data);
 
-  const onSubmit: SubmitHandler<FamilyDetailsInputs> = async (data) => {
-    // console.log(data);
-    console.log({ ...data, selectedBrother, selectedMarriedBrother, selectedSister, selectedMarriedSister, selectedFamilyType, selectedFamilyValue, selectedFamilyStatus });
+    console.log({
+      selectedBrother,
+      selectedMarriedBrother,
+      selectedSister,
+      selectedMarriedSister,
+      selectedFamilyType,
+      selectedFamilyValue,
+      selectedFamilyStatus
+    });
 
-    navigate('/EduDetails'); //  EduDetails next page route
+     navigate("/EduDetails");
   };
 
   return (
     <div className="pb-20">
       <ContentBlackCard
-        heading={"Family Details"}
-        desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis "
+        heading="Family Details"
+        desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis"
       />
 
       <div className="container mt-5 flex justify-between space-x-24">
         <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5 mb-5">
+          {/* Input fields for Father and Mother details */}
           <div>
-            <InputField label={"Father name"} required {...register("fathername")} />
+            <InputField label="Father name" required {...register("fathername")} />
             {errors.fathername && <span className="text-red-500">{errors.fathername.message}</span>}
           </div>
 
@@ -142,18 +143,17 @@ const FamilyDetails: React.FC = () => {
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
               {...register("fatherOccupation")}
             >
-              <option value="" selected disabled>
+              <option value="" disabled selected>
                 -- Select Occupation --
               </option>
               <option value="Private">Private</option>
               <option value="Government">Government</option>
             </select>
             {errors.fatherOccupation && <span className="text-red-500">{errors.fatherOccupation.message}</span>}
-
           </div>
 
           <div>
-            <InputField label={"Mother name"} required {...register("mothername")} />
+            <InputField label="Mother name" required {...register("mothername")} />
             {errors.mothername && <span className="text-red-500">{errors.mothername.message}</span>}
           </div>
 
@@ -166,7 +166,7 @@ const FamilyDetails: React.FC = () => {
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
               {...register("motherOccupation")}
             >
-              <option value="" selected disabled>
+              <option value="" disabled selected>
                 -- Select Occupation --
               </option>
               <option value="HomeMaker">Home Maker</option>
@@ -174,11 +174,10 @@ const FamilyDetails: React.FC = () => {
               <option value="Government">Government</option>
             </select>
             {errors.motherOccupation && <span className="text-red-500">{errors.motherOccupation.message}</span>}
-
           </div>
 
+          {/* Brother and Sister selection */}
           <div className="mt-3 flex items-center space-x-48">
-            {/* Brother Section */}
             <div>
               <h1 className="mb-3">Brother</h1>
               <div className="flex flex-col">
@@ -190,7 +189,7 @@ const FamilyDetails: React.FC = () => {
                       className={`px-5 py-3 text-sm font-medium border ${buttonClass(selectedBrother === num)}`}
                       onClick={() => handleBrotherChange(num)}
                     >
-                      {num}
+                      {num === 5 ? "5+" : num}
                     </button>
                   ))}
                 </div>
@@ -198,24 +197,26 @@ const FamilyDetails: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <h1 className="mb-3">Married</h1>
-              <div className="flex flex-col">
-                <div className="inline-flex rounded">
-                  {[0, 1, 2].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      className={`px-10 py-3 text-sm font-medium border ${buttonClass(selectedMarriedBrother === num)}`}
-                      onClick={() => handleMarriedBrotherChange(num)}
-                    >
-                      {num}
-                    </button>
-                  ))}
+            {selectedBrother !== null && selectedBrother > 0 && (
+              <div>
+                <h1 className="mb-3">Married</h1>
+                <div className="flex flex-col">
+                  <div className="inline-flex rounded">
+                    {[...Array(Math.min(selectedBrother + 1, 6)).keys()].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        className={`px-10 py-3 text-sm font-medium border ${buttonClass(selectedMarriedBrother === num)}`}
+                        onClick={() => handleMarriedBrotherChange(num)}
+                      >
+                        {num === 5 ? "5+" : num}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.marriedBrother && <span className="text-red-500">{errors.marriedBrother.message}</span>}
                 </div>
-                {errors.marriedBrother && <span className="text-red-500">{errors.marriedBrother.message}</span>}
               </div>
-            </div>
+            )}
           </div>
 
           <div className="mt-3 flex items-center space-x-48">
@@ -230,7 +231,7 @@ const FamilyDetails: React.FC = () => {
                       className={`px-5 py-3 text-sm font-medium border ${buttonClass(selectedSister === num)}`}
                       onClick={() => handleSisterChange(num)}
                     >
-                      {num}
+                      {num === 5 ? "5+" : num}
                     </button>
                   ))}
                 </div>
@@ -238,30 +239,31 @@ const FamilyDetails: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <h1 className="mb-3">Married</h1>
-              <div className="flex flex-col">
-                <div className="inline-flex rounded">
-                  {[0, 1, 2].map((num) => (
-                    <button
-                      key={num}
-                      type="button"
-                      className={`px-10 py-3 text-sm font-medium border ${buttonClass(selectedMarriedSister === num)}`}
-                      onClick={() => handleMarriedSisterChange(num)}
-                    >
-                      {num}
-                    </button>
-                  ))}
+            {selectedSister !== null && selectedSister > 0 && (
+              <div>
+                <h1 className="mb-3">Married</h1>
+                <div className="flex flex-col">
+                  <div className="inline-flex rounded">
+                    {[...Array(Math.min(selectedSister + 1, 6)).keys()].map((num) => (
+                      <button
+                        key={num}
+                        type="button"
+                        className={`px-10 py-3 text-sm font-medium border ${buttonClass(selectedMarriedSister === num)}`}
+                        onClick={() => handleMarriedSisterChange(num)}
+                      >
+                        {num === 5 ? "5+" : num}
+                      </button>
+                    ))}
+                  </div>
+                  {errors.marriedSister && <span className="text-red-500">{errors.marriedSister.message}</span>}
                 </div>
-                {errors.marriedSister && <span className="text-red-500">{errors.marriedSister.message}</span>}
               </div>
-            </div>
+            )}
           </div>
 
           {/* Family Type Section */}
           <div className="mt-3">
             <h1 className="mb-3">Family Type</h1>
-
             <div className="flex flex-col">
               <div className="w-full inline-flex rounded">
                 {["Joint", "Nuclear"].map((type) => (
@@ -282,7 +284,6 @@ const FamilyDetails: React.FC = () => {
           {/* Family Value Section */}
           <div className="mt-3">
             <h1 className="mb-3">Family Value</h1>
-
             <div className="w-full inline-flex rounded">
               {["Orthodox", "Traditional", "Moderate", "Liberal"].map((value) => (
                 <button
@@ -301,7 +302,6 @@ const FamilyDetails: React.FC = () => {
           {/* Family Status Section */}
           <div className="mt-3">
             <h1 className="mb-3">Family Status</h1>
-
             <div className="w-full inline-flex rounded">
               {["Middle Class", "Upper Middle Class", "Rich"].map((status) => (
                 <button
@@ -319,45 +319,50 @@ const FamilyDetails: React.FC = () => {
 
           {/* Additional Input Fields */}
           <div>
-            <InputField label={"Property Details"} {...register("propertyWorth")} />
+            <InputField label="Property Details" {...register("propertyDetails")} />
           </div>
 
           <div>
-            <InputField label={"Property Worth"} {...register("propertyWorth")} />
+            <InputField label="Property Worth" {...register("propertyWorth")} />
           </div>
 
           <div>
-            <InputField label={"Suya Gothram"} {...register("suyaGothram")} />
+            <InputField label="Suya Gothram" {...register("suyaGothram")} />
           </div>
 
           <div>
-            <InputField label={"Uncle Gothram"} {...register("uncleGothram")} />
+            <InputField label="Uncle Gothram" {...register("uncleGothram")} />
           </div>
 
           <div>
-            <InputField label={"Ancestor Origin"} {...register("ancestorOrigin")} />
+            <InputField label="Ancestor Origin" {...register("ancestorOrigin")} />
           </div>
 
           <div>
             <label htmlFor="aboutMyFamily" className="block mb-1">
               About my Family
             </label>
-
-            <textarea id="aboutMyFamily" rows={5} className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded" {...register("aboutMyFamily")}>Enter your message here...</textarea>
+            <textarea
+              id="aboutMyFamily"
+              rows={5}
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("aboutMyFamily")}
+            />
           </div>
 
+          {/* Navigation Buttons */}
           <div className="mt-7 flex justify-between">
             <div className="">
-              <button className="py-[10px] px-14 bg-white text-main font-semibold border-2 rounded-[6px] mt-2">
-                Back
-              </button>
+              <Link to="/ContactDetails">
+                <button className="py-[10px] px-14 bg-white text-main font-semibold border-2 rounded-[6px] mt-2">
+                  Back
+                </button>
+              </Link>
             </div>
-
             <div className="flex space-x-4">
-              <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
+              <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2">
                 Skip
               </button>
-
               <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
                 Next
                 <span>
@@ -366,9 +371,7 @@ const FamilyDetails: React.FC = () => {
               </button>
             </div>
           </div>
-
         </form>
-
         <SideContent />
       </div>
     </div>
