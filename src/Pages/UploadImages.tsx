@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 
@@ -9,43 +9,88 @@ import uploadfile from "../assets/icons/uploadfile.png";
 import closebtn from "../assets/icons/closebtn.png";
 import arrow from "../assets/icons/arrow.png";
 
-interface UploadImagesProps {}
+
+interface UploadImagesProps { }
 
 const UploadImages: React.FC<UploadImagesProps> = () => {
-  const [selectedFile, setSelectedFile] = useState("file name");
-  // const [progress, setProgress] = useState(0);
-  const [fileSize, setFileSize] = useState("file size");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Event handler for button click
-  const handleButtonClick = () => {
-    const fileInput = document.getElementById("uploadImg") as HTMLInputElement;
-    if (fileInput) {
-      fileInput.click();
+  const fileInputRefs = {
+    images: useRef<HTMLInputElement>(null),
+    horoscope: useRef<HTMLInputElement>(null),
+    idProof: useRef<HTMLInputElement>(null),
+  };
+
+  const dropAreaRef = useRef<HTMLDivElement>(null);
+
+  const handleButtonClick = (inputRef: React.RefObject<HTMLInputElement>) => {
+    if (inputRef.current) {
+      inputRef.current.click();
     }
   };
 
-  // Event handler for file upload
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    if (file) {
-      setSelectedFile(file.name);
-      const size = (file.size / (1024 * 1024)).toFixed(2);
-      setFileSize(size);
-      console.log("Selected file:", file);
+    const files = event.target.files;
+    if (files) {
+      handleFiles(files);
     }
   };
 
-  // Event handler to clear file input
-  const clearFileInput = () => {
-    setSelectedFile("file name");
-    setFileSize("file size");
-    // setProgress(0);
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    if (files) {
+      handleFiles(files);
+    }
+    if (dropAreaRef.current) {
+      dropAreaRef.current.classList.remove("border-blue-500");
+    }
   };
 
-  // Event handler to toggle password visibility
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (dropAreaRef.current) {
+      dropAreaRef.current.classList.add("border-blue-500");
+    }
+  };
+
+  const handleDragEnter = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (dropAreaRef.current) {
+      dropAreaRef.current.classList.add("border-blue-500");
+    }
+  };
+
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (dropAreaRef.current) {
+      dropAreaRef.current.classList.remove("border-blue-500");
+    }
+  };
+
+  const removeFile = (index: number) => {
+    const updatedFiles = [...selectedFiles];
+    updatedFiles.splice(index, 1);
+    setSelectedFiles(updatedFiles);
+  };
+
+  const clearFileInput = () => {
+    setSelectedFiles([]);
+  };
+
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
+  };
+
+  const handleFiles = (files: FileList) => {
+    const newFiles: File[] = Array.from(files);
+    if (selectedFiles.length + newFiles.length > 10) {
+      const remainingSpace = 10 - selectedFiles.length;
+      setSelectedFiles([...selectedFiles, ...newFiles.slice(0, remainingSpace)]);
+    } else {
+      setSelectedFiles([...selectedFiles, ...newFiles]);
+    }
   };
 
   return (
@@ -62,57 +107,63 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
               Upload daughter Images/ family images
             </h1>
 
-            <UploadFile
-              heading="Select a file or drag and drop here"
-              desc="JPG, PNG file size no more than 10MB"
-              name="uploadImg"
-              onChange={handleFileUpload}
-              onClick={handleButtonClick}
-            />
-          </div>
-
-          <div className="mt-7">
-            <div className="flex justify-between items-center">
-              <h1 className="text-primary text-xl font-semibold">
-                Files Uploaded (5/10)
-              </h1>
-
-              <div className="relative">
-                <h1>
-                  Total Available Space
-                  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50%
-                </h1>
-                <span className="absolute top-7 bg-blue-500 w-20 h-1 rounded"></span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 flex justify-between items-center space-x-16 px-8">
-            <div>
-              <img src={uploadfile} alt="uploadfile" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center space-x-3">
-                <h1>{selectedFile}</h1>
-                <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
-                <button className="text-blue-500">Preview</button>
-              </div>
-
-              {/* Dynamic Progress Bar use API */}
-              <div
-                className={`mt-3 w-full h-1 bg-blue-500 rounded transition-all`}
-              ></div>
-            </div>
-
-            <div>{fileSize} MB</div>
-            <button onClick={clearFileInput}>
-              <img
-                src={closebtn}
-                alt="close"
-                className="hover:cursor-pointer"
+            <div
+              onClick={() => handleButtonClick(fileInputRefs.images)}
+              onDragOver={handleDragOver}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              ref={dropAreaRef}
+            >
+              <UploadFile
+                heading="Select a file or drag and drop here"
+                desc="JPG, PNG file size no more than 10MB"
+                name="uploadImg"
+                onChange={handleFileUpload}
+                onClick={() => handleButtonClick(fileInputRefs.images)}
+                multiple // Set to true if you want to allow multiple file selection
+                //ref={fileInputRefs.images}
               />
-            </button>
+            </div>
           </div>
+
+          {selectedFiles.length > 0 && (
+            <div className="mt-7">
+              <div className="flex justify-between items-center">
+                <h1 className="text-primary text-xl font-semibold">
+                  Files Uploaded ({selectedFiles.length}/10)
+                </h1>
+
+                {/* <div className="relative">
+                  <h1>
+                    Total Available Space
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50%
+                  </h1>
+                  <span className="absolute top-7 bg-blue-500 w-20 h-1 rounded"></span>
+                </div> */}
+              </div>
+            </div>
+          )}
+
+          {selectedFiles.length > 0 && (
+            <div className="mt-10 space-y-6">
+              {selectedFiles.map((file, index) => (
+                <div key={index} className="flex items-center justify-between border-b border-gray-200 py-2">
+                  <div className="flex items-center space-x-3">
+                    <img src={uploadfile} alt="uploadfile" className="h-8 w-8" />
+                    <div>
+                      <h1 className="text-lg font-semibold">{file.name}</h1>
+                      <p className="text-sm text-gray-500">{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                    </div>
+                  </div>
+                  <button onClick={() => removeFile(index)}>
+                    <img src={closebtn} alt="close" className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <hr className="mt-8 text-gray" />
 
           <div className="mt-7 text-lg">
@@ -154,13 +205,24 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
               Upload daughter horoscope image
             </h1>
 
-            <UploadFile
-              heading="Select a file or drag and drop here"
-              desc="JPG, PNG file size no more than 10MB"
-              name="uploadHoroscopeImage"
-              onChange={handleFileUpload}
-              onClick={handleButtonClick}
-            />
+            <div
+              onClick={() => handleButtonClick(fileInputRefs.horoscope)}
+              onDragOver={handleDragOver}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              ref={dropAreaRef}
+            >
+              <UploadFile
+                heading="Select a file or drag and drop here"
+                desc="JPG, PNG file size no more than 10MB"
+                name="uploadHoroscope"
+                onChange={handleFileUpload}
+                onClick={() => handleButtonClick(fileInputRefs.horoscope)}
+                multiple={true} // Set to true if you want to allow multiple file selection
+                //ref={fileInputRefs.horoscope}
+              />
+            </div>
           </div>
 
           <div className="mt-7">
@@ -193,13 +255,24 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
               Upload Daughter ID Proof
             </h1>
 
-            <UploadFile
-              heading="Select a file or drag and drop here"
-              desc="JPG, PNG file size no more than 10MB"
-              name="uploadIDProof"
-              onChange={handleFileUpload}
-              onClick={handleButtonClick}
-            />
+            <div
+              onClick={() => handleButtonClick(fileInputRefs.idProof)}
+              onDragOver={handleDragOver}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              ref={dropAreaRef}
+            >
+              <UploadFile
+                heading="Select a file or drag and drop here"
+                desc="JPG, PNG file size no more than 10MB"
+                name="uploadIDProof"
+                onChange={handleFileUpload}
+                onClick={() => handleButtonClick(fileInputRefs.idProof)}
+                multiple={true} // Set to true if you want to allow multiple file selection
+                //ref={fileInputRefs.idProof}
+              />
+            </div>
           </div>
 
           <div className="mt-7 flex justify-between">
@@ -212,7 +285,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </div>
 
             <div className="flex space-x-4">
-              <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2">
+              <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2" onClick={clearFileInput}>
                 Skip
               </button>
               <Link to="/FamilyDetails">
