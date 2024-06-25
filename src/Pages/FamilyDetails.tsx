@@ -2,7 +2,7 @@ import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -112,7 +112,7 @@ const FamilyDetails: React.FC = () => {
   };
 
 
-  const onSubmit: SubmitHandler<FamilyDetailsInputs> = data => {
+  const onSubmit: SubmitHandler<FamilyDetailsInputs> = async (data) => {
     // console.log(data);
     console.log({ ...data, selectedBrother, selectedMarriedBrother, selectedSister, selectedMarriedSister, selectedFamilyType, selectedFamilyValue, selectedFamilyStatus });
 
@@ -348,11 +348,9 @@ const FamilyDetails: React.FC = () => {
 
           <div className="mt-7 flex justify-between">
             <div className="">
-              <Link to={"/ContactDetails"}>
-                <button className="py-[10px] px-14 bg-white text-main font-semibold border-2 rounded-[6px] mt-2">
-                  Back
-                </button>
-              </Link>
+              <button className="py-[10px] px-14 bg-white text-main font-semibold border-2 rounded-[6px] mt-2">
+                Back
+              </button>
             </div>
 
             <div className="flex space-x-4">

@@ -2,12 +2,16 @@ import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
-// import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod";
+
 
 interface PartnerSettingsProps {
   placeholder?: string;
- }
+}
 
 const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
   return (
@@ -23,10 +27,35 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
 
           <div className="flex justify-between items-center">
             <div>
-              <h5 className="text-[18px] text-primary font-semibold">Age</h5>
+              {/* <h5 className="text-[18px] text-primary font-semibold">Age</h5> */}
               <div className="flex items-center space-x-5">
-                <InputField label={""} name={""} placeholder="From" />
-                <InputField label={""} name={""} placeholder="To" />
+                {/* <InputField label={""} name={""} placeholder="From" />
+                <InputField label={""} name={""} placeholder="To" /> */}
+
+                <div>
+                  <label htmlFor="nativeState" className="block mb-1">
+                    Age
+                  </label>
+                  <select
+                    name="age"
+                    id="age"
+                    className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                  >
+                    <option value="" selected disabled>
+                      -- Select your Age --
+                    </option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -39,6 +68,7 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
             </div>
           </div>
 
+          {/* Marital Status */}
           <div>
             <h5 className="text-[18px] text-primary font-semibold mb-2">
               Marital Status
@@ -53,7 +83,7 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
                   value="neverMarried"
                 />
                 <label htmlFor="neverMarried" className="pl-1">
-                  I have a bike
+                  Never Married
                 </label>
               </div>
 
@@ -170,10 +200,48 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
             </div>
           </div>
 
-          <InputField label={"Education"} name={"education"} />
+          {/* <InputField label={"Education"} name={"education"} /> */}
+          <div>
+            <label htmlFor="education" className="block mb-1">
+              Education
+            </label>
+            <select
+              name="education"
+              id="education"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+            >
+              <option value="" selected disabled>
+                -- Select your Education --
+              </option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Kerela">Kerela</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+            </select>
+          </div>
 
-          <InputField label={"Income"} name={"income"} />
+          {/* <InputField label={"Income"} name={"income"} /> */}
+          {/* Annual Income */}
+          <div>
+            <label htmlFor="annualIncome" className="block mb-1">
+              Annual Income
+            </label>
+            <select
+              name="annualIncome"
+              id="annualIncome"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+            >
+              <option value="" selected disabled>
+                -- Select your Annual Income --
+              </option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+              <option value="Kerela">Kerela</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+            </select>
+          </div>
 
+          {/* Dhosam */}
           <div>
             <h5 className="text-[18px] text-primary font-semibold mb-2">
               Dhosam
@@ -196,6 +264,48 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
                 <input type="checkbox" id="rehu" name="rehu" value="rehu" />
                 <label htmlFor="rehu" className="pl-1">
                   Rehu / Ketu
+                </label>
+              </div>
+
+              <div>
+                <input type="checkbox" id="unknown" name="unknown" value="unknown" />
+                <label htmlFor="unknown" className="pl-1">
+                  Unknown
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Foreign Interest */}
+          <div>
+            <h5 className="text-[18px] text-primary font-semibold mb-2">
+              Foreign Interest
+            </h5>
+
+            <div className="flex justify-start items-center space-x-10">
+              <div>
+                <input
+                  type="checkbox"
+                  id="yes"
+                  name="yes"
+                  value="yes"
+                />
+                <label htmlFor="yes" className="pl-1">
+                  Yes
+                </label>
+              </div>
+
+              <div>
+                <input type="checkbox" id="no" name="no" value="no" />
+                <label htmlFor="no" className="pl-1">
+                  No
+                </label>
+              </div>
+
+              <div>
+                <input type="checkbox" id="both" name="both" value="both" />
+                <label htmlFor="both" className="pl-1">
+                  Both
                 </label>
               </div>
             </div>
@@ -243,17 +353,97 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
             </select>
           </div>
 
+          {/* Native State */}
           <div>
-            <label htmlFor="nativeState" className="block mb-1">
+            <h5 className="text-[18px] text-primary font-semibold mb-2">
               Native State
+            </h5>
+
+            <div className="flex justify-between items-center">
+              <div>
+                <input
+                  type="checkbox"
+                  id="tamilNadu"
+                  name="tamilNadu"
+                  value="tamilNadu"
+                />
+                <label htmlFor="tamilNadu" className="pl-1">
+                  TamilNadu and Pondhicherry
+                </label>
+              </div>
+
+              <div>
+                <input
+                  type="checkbox"
+                  id="karnataka"
+                  name="karnataka"
+                  value="karnataka"
+                />
+                <label htmlFor="karnataka" className="pl-1">
+                  Karnataka
+                </label>
+              </div>
+
+              <div>
+                <input
+                  type="checkbox"
+                  id="andhraPradesh"
+                  name="andhraPradesh"
+                  value="andhraPradesh"
+                />
+                <label htmlFor="andhraPradesh" className="pl-1">
+                  Andhra Pradesh
+                </label>
+              </div>
+
+              <div>
+                <input
+                  type="checkbox"
+                  id="telangana"
+                  name="telangana"
+                  value="telangana"
+                />
+                <label htmlFor="telangana" className="pl-1">
+                  Telangana
+                </label>
+              </div>
+
+              <div>
+                <input
+                  type="checkbox"
+                  id="kerala"
+                  name="kerala"
+                  value="kerala" />
+                <label htmlFor="kerala" className="pl-1">
+                  Kerala
+                </label>
+              </div>
+
+              <div>
+                <input
+                  type="checkbox"
+                  id="others"
+                  name="others"
+                  value="others" />
+                <label htmlFor="others" className="pl-1">
+                  Others
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Matching Star */}
+          <div>
+            <label htmlFor="education" className="block mb-1">
+              Matching Start
             </label>
             <select
-              name="nativeState"
-              id="nativeState"
+              name="star"
+              id="star"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
             >
               <option value="" selected disabled>
-                -- Select your Native State --
+                -- Select your Matching Star --
               </option>
               <option value="Tamil Nadu">Tamil Nadu</option>
               <option value="Kerela">Kerela</option>

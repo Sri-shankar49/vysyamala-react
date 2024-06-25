@@ -2,12 +2,74 @@ import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
-// import { useState } from "react";
-import { Link } from "react-router-dom";
+import RasiGrid from "../Components/HoroDetails/RasiGrid";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod";
 
-interface HoroDetailsProps {}
+// Define validation schema with zod
+const schema = zod.object({
+  timeOfBirth: zod.string().min(1, "Time of birth is required"),
+  placeOfBirth: zod.string().min(3, "Place of birth is required"),
+  birthStar: zod.string().min(1, "Birth star is required"),
+  rasi: zod.string().min(1, "Rasi is required"),
+  lagnam: zod.string().min(1, "Lagnam is required"),
+  dosham: zod.string().min(1, "Dosham is required"),
+  naalikai: zod.string().min(1, "Naalikai is required"),
+  dasaName: zod.string().min(1, "Dasa name is required"),
+  dasaBalance: zod.string().min(1, "Dasa balance is required"),
+  horoscopeHints: zod.string().min(1, "Horoscope hints are required"),
+});
+
+
+interface HoroDetailsInputs {
+  timeOfBirth: string;
+  placeOfBirth: string;
+  birthStar: string;
+  rasi: string;
+  lagnam: string;
+  dosham: string;
+  naalikai: string;
+  dasaName: string;
+  dasaBalance: string;
+  horoscopeHints: string;
+}
+
+interface HoroDetailsProps { }
 
 const HoroDetails: React.FC<HoroDetailsProps> = () => {
+
+  // Navigate to next page
+  const navigate = useNavigate();
+
+  // React Hook form
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<HoroDetailsInputs>({
+    resolver: zodResolver(schema),
+  });
+
+
+
+  // Dhosam State
+  const [selectedDosham, setSelectedDosham] = useState<string | null>(null);
+
+  // Background getting selected
+  const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
+
+  const handleDoshamChange = (value: string) => {
+    setSelectedDosham(value);
+    setValue("dosham", value, { shouldValidate: true })
+  };
+
+  const onSubmit: SubmitHandler<HoroDetailsInputs> = (data) => {
+    console.log(data);
+    navigate("/PartnerSettings");
+  };
+
+
+
+
   return (
     <div className="pb-20">
       <ContentBlackCard
@@ -16,23 +78,34 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       />
 
       <div className="container mt-5 flex justify-between space-x-24">
-        <div className="w-full space-y-5 mb-5">
-          <InputField
-            label={"Time of Birth"}
-            type="time"
-            name={"timeOfBirth"}
-          />
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5 mb-5">
 
-          <InputField label={"Place of Birth"} name={"PlaceOfBirth"} />
+          <div>
+            <InputField
+              label={"Time of Birth"}
+              type="time"
+              {...register("timeOfBirth")}
+            />
+            {errors.timeOfBirth && (
+              <span className="text-red-500">{errors.timeOfBirth.message}</span>
+            )}
+          </div>
+
+          <div>
+            <InputField label={"Place of Birth"} {...register("placeOfBirth")} />
+            {errors.placeOfBirth && (
+              <span className="text-red-500">{errors.placeOfBirth.message}</span>
+            )}
+          </div>
 
           <div>
             <label htmlFor="birthStar" className="block mb-1">
               Birth Star
             </label>
             <select
-              name="birthStar"
               id="birthStar"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("birthStar")}
             >
               <option value="" selected disabled>
                 -- Select your Birth Star --
@@ -84,6 +157,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               <option value="Uttara Bhadrapada">Uttara Bhadrapada</option>
               <option value="Revati">Revati</option>
             </select>
+            {errors.birthStar && (
+              <span className="text-red-500">{errors.birthStar.message}</span>
+            )}
           </div>
 
           <div>
@@ -91,9 +167,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               Rasi
             </label>
             <select
-              name="rasi"
               id="rasi"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("rasi")}
             >
               <option value="" selected disabled>
                 -- Select your Rasi --
@@ -103,6 +179,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               <option value="BCA">BCA</option>
               <option value="B.Sc">B.Sc</option>
             </select>
+            {errors.rasi && (
+              <span className="text-red-500">{errors.rasi.message}</span>
+            )}
           </div>
 
           <div>
@@ -110,9 +189,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               lagnam / Didi
             </label>
             <select
-              name="lagnam"
               id="lagnam"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("lagnam")}
             >
               <option value="" selected disabled>
                 -- Select your Rasi --
@@ -122,42 +201,53 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               <option value="BCA">BCA</option>
               <option value="B.Sc">B.Sc</option>
             </select>
+            {errors.lagnam && (
+              <span className="text-red-500">{errors.lagnam.message}</span>
+            )}
           </div>
 
           <div className="mt-3">
             <h1 className="mb-3">Dosham</h1>
 
             <div className="w-full inline-flex rounded">
-              <button className="w-full px-5 py-3 text-sm font-medium border border-gray hover:bg-secondary hover:text-white">
-                1
-              </button>
-              <button className="w-full px-5 py-3 text-sm font-medium border border-gray hover:bg-secondary hover:text-white">
-                2
-              </button>
-              <button className="w-full px-5 py-3 text-sm font-medium border border-gray hover:bg-secondary hover:text-white">
-                3
-              </button>
-              <button className="w-full px-5 py-3 text-sm font-medium border border-gray hover:bg-secondary hover:text-white">
-                4
-              </button>
-              <button className="w-full px-5 py-3 text-sm font-medium border border-gray hover:bg-secondary hover:text-white">
-                5+
-              </button>
+              {["1", "2", "3", "4", "5+"].map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedDosham === type)}`}
+                  onClick={() => handleDoshamChange(type)}
+                >
+                  {type}
+                </button>
+              ))}
             </div>
+            {errors.dosham && (
+              <span className="text-red-500">{errors.dosham.message}</span>
+            )}
           </div>
 
-          <InputField label={"Naalikai"} name={"naalikai"} />
+          <div>
+            <InputField label={"Naalikai"} {...register("naalikai")} />
+            {errors.naalikai && (
+              <span className="text-red-500">{errors.naalikai.message}</span>
+            )}
+          </div>
 
-          <InputField label={"Dasa Name"} name={"dasaName"} />
+          <div>
+            <InputField label={"Dasa Name"} {...register("dasaName")} />
+            {errors.dasaName && (
+              <span className="text-red-500">{errors.dasaName.message}</span>
+            )}
+          </div>
 
           <div>
             <label htmlFor="dasaBalance" className="block mb-1">
               Dasa Balance
             </label>
             <select
-              name="dasaBalance"
               id="dasaBalance"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("dasaBalance")}
             >
               <option value="" selected disabled>
                 -- Select your Dasa Balance --
@@ -167,9 +257,19 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               <option value="BCA">BCA</option>
               <option value="B.Sc">B.Sc</option>
             </select>
+            {errors.dasaBalance && (
+              <span className="text-red-500">{errors.dasaBalance.message}</span>
+            )}
           </div>
 
-          <InputField label={"Horoscope Hints"} name={"horoscopeHints"} />
+          <div>
+            <InputField label={"Horoscope Hints"} {...register("horoscopeHints")} />
+            {errors.horoscopeHints && (
+              <span className="text-red-500">{errors.horoscopeHints.message}</span>
+            )}
+          </div>
+
+          <RasiGrid />
 
           <div className="mt-7 flex justify-between">
             <div className="">
@@ -184,17 +284,15 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
                 Skip
               </button>
-              <Link to="/PartnerSettings">
-                <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
-                  Next
-                  <span>
-                    <img src={arrow} alt="next arrow" className="ml-2" />
-                  </span>
-                </button>
-              </Link>
+              <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
+                Next
+                <span>
+                  <img src={arrow} alt="next arrow" className="ml-2" />
+                </span>
+              </button>
             </div>
           </div>
-        </div>
+        </form>
         <SideContent />
       </div>
     </div>
