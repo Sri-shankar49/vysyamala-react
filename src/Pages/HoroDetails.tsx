@@ -68,7 +68,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   const navigate = useNavigate();
 
   // React Hook form
-  const { register, handleSubmit, formState: { errors }, setValue,watch } = useForm<HoroDetailsInputs>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<HoroDetailsInputs>({
     resolver: zodResolver(schema),
   });
 
@@ -212,7 +212,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             </select>
           </div>
 
-          
+
 
           <div>
             <label htmlFor="rasi" className="block mb-1">

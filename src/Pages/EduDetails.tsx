@@ -75,7 +75,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   const navigate = useNavigate();
 
   // React Hook form
-  const { register, handleSubmit, formState: { errors }, setValue,watch } = useForm<EduDetailsInputs>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<EduDetailsInputs>({
     resolver: zodResolver(schema),
   });
 

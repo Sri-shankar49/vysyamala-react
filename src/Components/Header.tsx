@@ -63,9 +63,7 @@ export const Header: React.FC = () => {
 
           <nav>
             <ul className="flex justify-center items-center text-white">
-              <Link to="/D">
-                <li className="text-[16px] cursor-pointer">Search</li>
-              </Link>
+              <li className="text-[16px] cursor-pointer">Search</li>
               <li
                 className="text-[16px] cursor-pointer px-10"
                 onClick={handleRegisterClick}
