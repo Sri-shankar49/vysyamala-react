@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,6 +50,32 @@ interface FamilyDetailsInputs {
   marriedSister: number;
 }
 
+interface Occupation {
+  occupation_id: number;
+  occupation_description: string;
+}
+
+interface PropertyWorth {
+  property_id: number;
+  property_description: string;
+}
+
+interface FamilyType {
+  family_id: number;
+  family_description: string;
+}
+
+interface FamilyStatus {
+  family_status_id: number;
+  family_status_name: string;
+  family_status_description: string
+}
+
+interface FamilyValue {
+  family_value_id: number;
+  family_value_name: string;
+}
+
 const FamilyDetails: React.FC = () => {
   const navigate = useNavigate();
 
@@ -63,6 +90,92 @@ const FamilyDetails: React.FC = () => {
   const [selectedFamilyType, setSelectedFamilyType] = useState<string | null>(null);
   const [selectedFamilyValue, setSelectedFamilyValue] = useState<string | null>(null);
   const [selectedFamilyStatus, setSelectedFamilyStatus] = useState<string | null>(null);
+  const [occupations, setOccupations] = useState<Occupation[]>([]);
+  const [propertyworth, setPropertyworth] = useState<PropertyWorth[]>([]);
+  const [familyTypes, setFamilyTypes] = useState<FamilyType[]>([]);
+  const [familyStatus, setFamilyStatus] = useState<FamilyStatus[]>([]);
+  const [familyValue, setFamilyValue] = useState<FamilyValue[]>([]);
+
+
+
+
+
+  useEffect(() => {
+    const fetchOccupations = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Parent_Occupation/");
+        const options = Object.values(response.data) as Occupation[];
+        setOccupations(options);
+      } catch (error) {
+        console.error("Error fetching marital status options:", error);
+      }
+    };
+    fetchOccupations();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchPropertyworth = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Property_Worth/");
+        const options = Object.values(response.data) as PropertyWorth[];
+        setPropertyworth(options);
+      } catch (error) {
+        console.error("Error fetching property worth options:", error);
+      }
+    };
+    fetchPropertyworth();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchFamilyTypes = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_FamilyType/");
+        const data = response.data;
+        const familyTypesArray = Object.values(data) as FamilyType[];
+        setFamilyTypes(familyTypesArray);
+      } catch (error) {
+        console.error("Error fetching family types:", error);
+      }
+    };
+
+    fetchFamilyTypes();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchFamilyStatus = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_FamilyStatus/");
+        const data = response.data;
+        const familyTypesArray = Object.values(data) as FamilyStatus[];
+        setFamilyStatus(familyTypesArray);
+      } catch (error) {
+        console.error("Error fetching family status:", error);
+      }
+    };
+
+    fetchFamilyStatus();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchFamilyValue = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_FamilyValue/");
+        const data = response.data;
+        const familyTypesArray = Object.values(data) as FamilyValue[];
+        setFamilyValue(familyTypesArray);
+      } catch (error) {
+        console.error("Error fetching family value:", error);
+      }
+    };
+
+    fetchFamilyValue();
+  }, []);
+
+
 
   const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
 
@@ -116,8 +229,9 @@ const FamilyDetails: React.FC = () => {
       selectedFamilyStatus
     });
 
-     navigate("/EduDetails");
+    navigate("/EduDetails");
   };
+
 
   return (
     <div className="pb-20">
@@ -141,16 +255,23 @@ const FamilyDetails: React.FC = () => {
             <select
               id="fatheroccupation"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              defaultValue=""
               {...register("fatherOccupation")}
             >
               <option value="" disabled selected>
                 -- Select Occupation --
               </option>
-              <option value="Private">Private</option>
-              <option value="Government">Government</option>
+              {occupations.map((occupation) => (
+                <option key={occupation.occupation_id} value={occupation.occupation_description}>
+                  {occupation.occupation_description}
+                </option>
+              ))}
             </select>
-            {errors.fatherOccupation && <span className="text-red-500">{errors.fatherOccupation.message}</span>}
+            {errors.fatherOccupation && (
+              <span className="text-red-500">{errors.fatherOccupation.message}</span>
+            )}
           </div>
+
 
           <div>
             <InputField label="Mother name" required {...register("mothername")} />
@@ -164,16 +285,21 @@ const FamilyDetails: React.FC = () => {
             <select
               id="motheroccupation"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              defaultValue=""
               {...register("motherOccupation")}
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 -- Select Occupation --
               </option>
-              <option value="HomeMaker">Home Maker</option>
-              <option value="Private">Private</option>
-              <option value="Government">Government</option>
+              {occupations.map((occupation) => (
+                <option key={occupation.occupation_id} value={occupation.occupation_description}>
+                  {occupation.occupation_description}
+                </option>
+              ))}
             </select>
-            {errors.motherOccupation && <span className="text-red-500">{errors.motherOccupation.message}</span>}
+            {errors.motherOccupation && (
+              <span className="text-red-500">{errors.motherOccupation.message}</span>
+            )}
           </div>
 
           {/* Brother and Sister selection */}
@@ -266,14 +392,14 @@ const FamilyDetails: React.FC = () => {
             <h1 className="mb-3">Family Type</h1>
             <div className="flex flex-col">
               <div className="w-full inline-flex rounded">
-                {["Joint", "Nuclear"].map((type) => (
+                {familyTypes.map((type) => (
                   <button
-                    key={type}
+                    key={type.family_id}
                     type="button"
-                    className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedFamilyType === type)}`}
-                    onClick={() => handleFamilyTypeChange(type)}
+                    className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedFamilyType === type.family_description)}`}
+                    onClick={() => handleFamilyTypeChange(type.family_description)}
                   >
-                    {type}
+                    {type.family_description}
                   </button>
                 ))}
               </div>
@@ -281,41 +407,64 @@ const FamilyDetails: React.FC = () => {
             </div>
           </div>
 
-          {/* Family Value Section */}
+
+
           <div className="mt-3">
             <h1 className="mb-3">Family Value</h1>
-            <div className="w-full inline-flex rounded">
-              {["Orthodox", "Traditional", "Moderate", "Liberal"].map((value) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedFamilyValue === value)}`}
-                  onClick={() => handleFamilyValueChange(value)}
-                >
-                  {value}
-                </button>
-              ))}
+            <div className="flex flex-col">
+              <div className="w-full inline-flex rounded">
+                {familyValue.map((type) => (
+                  <button
+                    key={type.family_value_id}
+                    type="button"
+                    className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedFamilyValue === type.family_value_name)}`}
+                    onClick={() => handleFamilyValueChange(type.family_value_name)}
+                  >
+                    {type.family_value_name}
+                  </button>
+                ))}
+              </div>
+              {errors.familyValue && <span className="text-red-500">{errors.familyValue.message}</span>}
             </div>
-            {errors.familyValue && <span className="text-red-500">{errors.familyValue.message}</span>}
           </div>
 
-          {/* Family Status Section */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
           <div className="mt-3">
             <h1 className="mb-3">Family Status</h1>
-            <div className="w-full inline-flex rounded">
-              {["Middle Class", "Upper Middle Class", "Rich"].map((status) => (
-                <button
-                  key={status}
-                  type="button"
-                  className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedFamilyStatus === status)}`}
-                  onClick={() => handleFamilyStatusChange(status)}
-                >
-                  {status}
-                </button>
-              ))}
+            <div className="flex flex-col">
+              <div className="w-full inline-flex rounded">
+                {familyStatus.map((type) => (
+                  <button
+                    key={type.family_status_id}
+                    type="button"
+                    className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedFamilyStatus === type.family_status_name)}`}
+                    onClick={() => handleFamilyStatusChange(type.family_status_name)}
+                  >
+                    {type.family_status_name}
+                  </button>
+                ))}
+              </div>
+              {errors.familyStatus && <span className="text-red-500">{errors.familyStatus.message}</span>}
             </div>
-            {errors.familyStatus && <span className="text-red-500">{errors.familyStatus.message}</span>}
           </div>
+
+
+
+
+
 
           {/* Additional Input Fields */}
           <div>
@@ -323,7 +472,25 @@ const FamilyDetails: React.FC = () => {
           </div>
 
           <div>
-            <InputField label="Property Worth" {...register("propertyWorth")} />
+            <label htmlFor="propertyWorth" className="block mb-1">
+              Property Worth
+            </label>
+            <select
+              id="propertyWorth"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              defaultValue=""
+              {...register("propertyWorth")}
+            >
+              <option value="" disabled>
+                -- Select Property Worth --
+              </option>
+              {propertyworth.map(property => (
+                <option key={property.property_id} value={property.property_id}>
+                  {property.property_description}
+                </option>
+              ))}
+            </select>
+            {/* {errors.motherOccupation && <span className="text-red-500">{errors.motherOccupation.message}</span>} */}
           </div>
 
           <div>

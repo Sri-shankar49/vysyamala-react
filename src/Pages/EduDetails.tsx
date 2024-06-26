@@ -3,7 +3,8 @@ import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
@@ -22,6 +23,11 @@ const schema = zod.object({
   careerPlans: zod.string().min(1, "Career plans are required"),
 });
 
+
+// API call
+const COUNTRY_API_URL = "http://103.214.132.20:8000/auth/Get_Country/";
+const STATE_API_URL = "http://103.214.132.20:8000/auth/Get_State/";
+
 interface EduDetailsInputs {
   highestEducationLevel: string;
   ugDegree?: string;
@@ -37,18 +43,127 @@ interface EduDetailsInputs {
 
 interface EduDetailsProps { }
 
+
+interface HighesEducation {
+  education_id: number;
+  education_description: string;
+}
+
+interface Ugdegree {
+  degree_id: number;
+  degree_description: string;
+}
+
+interface AnnualIncome {
+  income_id: number;
+  income_description: string;
+}
+
+interface CountryOption {
+  country_id: number;
+  country_name: string;
+}
+
+interface StateOption {
+  state_id: number;
+  state_name: string;
+}
+
 const EduDetails: React.FC<EduDetailsProps> = () => {
 
   // Navigate to next page
   const navigate = useNavigate();
 
   // React Hook form
-  const { register, handleSubmit, formState: { errors }, setValue, } = useForm<EduDetailsInputs>({
+  const { register, handleSubmit, formState: { errors }, setValue,watch } = useForm<EduDetailsInputs>({
     resolver: zodResolver(schema),
   });
 
   // Profession State
   const [selectedProfession, setSelectedProfession] = useState<string | null>(null);
+  const [highestEdu, setHighestEdu] = useState<HighesEducation[]>([]);
+  const [ugdegree, setUgdegree] = useState<Ugdegree[]>([]);
+  const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
+
+
+  useEffect(() => {
+    const fetchHighestEdu = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Highest_Education/");
+        const options = Object.values(response.data) as HighesEducation[];
+        setHighestEdu(options);
+      } catch (error) {
+        console.error("Error fetching Highest Education options:", error);
+      }
+    };
+    fetchHighestEdu();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchUgDegree = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Ug_Degree/");
+        const options = Object.values(response.data) as Ugdegree[];
+        setUgdegree(options);
+      } catch (error) {
+        console.error("Error fetching UG Degree  options:", error);
+      }
+    };
+    fetchUgDegree();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchAnnualIncome = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Annual_Income/");
+        const options = Object.values(response.data) as AnnualIncome[];
+        setAnnualIncome(options);
+      } catch (error) {
+        console.error("Error fetching Annual Income  options:", error);
+      }
+    };
+    fetchAnnualIncome();
+  }, []);
+
+
+  const [countryOptions, setCountryOptions] = useState<CountryOption[]>([]);
+  const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
+
+
+
+
+  useEffect(() => {
+    const fetchCountryStatus = async () => {
+      try {
+        const response = await axios.post(COUNTRY_API_URL);
+        const options = Object.values(response.data) as CountryOption[];
+        setCountryOptions(options);
+      } catch (error) {
+        console.error("Error fetching country options:", error);
+      }
+    };
+    fetchCountryStatus();
+  }, []);
+
+  const selectedCountry = watch("country");
+
+  useEffect(() => {
+    if (selectedCountry) {
+      const fetchStateStatus = async () => {
+        try {
+          const response = await axios.post(STATE_API_URL, { country_id: selectedCountry });
+          const options = Object.values(response.data) as StateOption[];
+          setStateOptions(options);
+        } catch (error) {
+          console.error("Error fetching state options:", error);
+        }
+      };
+      fetchStateStatus();
+    }
+  }, [selectedCountry]);
+
 
   // Background getting selected
   const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
@@ -81,13 +196,14 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
               {...register("highestEducationLevel")}
             >
-              <option value="" disabled>
+              <option value="" disabled selected>
                 -- Select your Highest Education Level --
               </option>
-              <option value="Ph.D">Ph.D</option>
-              <option value="PG">PG</option>
-              <option value="UG">UG</option>
-              <option value="Diploma">Diploma</option>
+              {highestEdu.map((option) => (
+                <option key={option.education_id} value={option.education_id}>
+                  {option.education_description}
+                </option>
+              ))}
             </select>
             {errors.highestEducationLevel && (
               <span className="text-red-500">{errors.highestEducationLevel.message}</span>
@@ -103,13 +219,14 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
               {...register("ugDegree")}
             >
-              <option value="" disabled>
+              <option value="" disabled selected>
                 -- Select your UG Degree --
               </option>
-              <option value="B.E">B.E</option>
-              <option value="B.Tech">B.Tech</option>
-              <option value="BCA">BCA</option>
-              <option value="B.Sc">B.Sc</option>
+              {ugdegree.map((option) => (
+                <option key={option.degree_id} value={option.degree_id}>
+                  {option.degree_description}
+                </option>
+              ))}
             </select>
             {errors.ugDegree && <span className="text-red-500">{errors.ugDegree.message}</span>}
           </div>
@@ -153,12 +270,14 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
               {...register("annualIncome")}
             >
-              <option value="" disabled>
+              <option value="" disabled selected>
                 -- Select your Annual Income --
               </option>
-              <option value="Greater than 10 LPA">Greater than 10 LPA</option>
-              <option value="Greater than 6 LPA">Greater than 6 LPA</option>
-              <option value="3 to 5 LPA">3 to 5 LPA</option>
+              {annualIncome.map((option) => (
+                <option key={option.income_id} value={option.income_id}>
+                  {option.income_description}
+                </option>
+              ))}
             </select>
             {errors.annualIncome && (
               <span className="text-red-500">{errors.annualIncome.message}</span>
@@ -178,39 +297,42 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
             <div className="w-full space-y-5 mb-5">
               <div>
                 <label htmlFor="country" className="block mb-1">
-                  Country
+                  Country <span className="text-main">*</span>
                 </label>
                 <select
                   id="country"
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                   {...register("country")}
                 >
-                  <option value="" disabled>
+                  <option value="" selected disabled>
                     -- Select your Country --
                   </option>
-                  <option value="India">India</option>
-                  <option value="Pakistan">Pakistan</option>
-                  <option value="Bangladesh">Bangladesh</option>
+                  {countryOptions.map((option) => (
+                    <option key={option.country_id} value={option.country_id}>
+                      {option.country_name}
+                    </option>
+                  ))}
                 </select>
                 {errors.country && <span className="text-red-500">{errors.country.message}</span>}
               </div>
 
               <div>
                 <label htmlFor="state" className="block mb-1">
-                  State
+                  State <span className="text-main">*</span> (Based on country selection)
                 </label>
                 <select
                   id="state"
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                   {...register("state")}
                 >
-                  <option value="" disabled>
-                    -- Select your State * (Based on Country Selection) --
+                  <option value="" selected disabled>
+                    -- Select State --
                   </option>
-                  <option value="Tamil Nadu">Tamil Nadu</option>
-                  <option value="Kerela">Kerela</option>
-                  <option value="Karnataka">Karnataka</option>
-                  <option value="Andhra Pradesh">Andhra Pradesh</option>
+                  {stateOptions.map((option) => (
+                    <option key={option.state_id} value={option.state_id}>
+                      {option.state_name}
+                    </option>
+                  ))}
                 </select>
                 {errors.state && <span className="text-red-500">{errors.state.message}</span>}
               </div>
