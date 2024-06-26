@@ -17,7 +17,7 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
   return (
     <div className="pb-20">
       <ContentBlackCard
-        heading={"Partner Settings"}
+        heading={"Partner Preference"}
         desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis"
       />
 

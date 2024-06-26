@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import VysyamalaWhite from "../assets/icons/VysyamalaWhite.png";
 import { Link } from "react-router-dom";
-import { PopupModal } from "../Components/HomePage/PopUps/PopupModal";
+import { PopupModal } from "./HomePage/PopUpsReg/PopupModal";
+import { LoginPopupModal } from "./HomePage/PopUpsLogin/LoginPopupModal";
 
 export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,7 +22,7 @@ export const Header: React.FC = () => {
     };
   }, []);
 
-  // Popup
+  // Login Popup
   const [isAccountSetupOpen, setIsAccountSetupOpen] = useState(false);
 
   const handleRegisterClick = () => {
@@ -33,12 +34,25 @@ export const Header: React.FC = () => {
     console.log("Closing PopupModal popup"); // Debug log
   };
 
+  // Register Popup
+  const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
+
+  const handleLoginClick = () => {
+    setIsLoginPopupOpen(true);
+  };
+
+  const handleCloseLoginPopup = () => {
+    setIsLoginPopupOpen(false);
+    console.log("Closing Login PopupModal popup"); // Debug log
+  };
+
+
+
   return (
     <div>
       <header
-        className={`fixed top-0 left-0 right-0 transition-all duration-300 z-[1] ${
-          isScrolled ? "backdrop-blur-lg bg-opacity-50" : "bg-transparent"
-        }`}
+        className={`fixed top-0 left-0 right-0 transition-all duration-300 z-[1] ${isScrolled ? "backdrop-blur-lg bg-opacity-50" : "bg-transparent"
+          }`}
       >
         <div className="container mx-auto flex justify-between items-center py-5 bg-transparent">
           <div>
@@ -58,11 +72,18 @@ export const Header: React.FC = () => {
               >
                 Register
               </li>
-              <li className="bg-light-pink rounded-[6px] py-[8px] px-[24px] text-main text-[16px] font-semibold cursor-pointer">
+              <li className="bg-light-pink rounded-[6px] py-[8px] px-[24px] text-main text-[16px] font-semibold cursor-pointer"
+                onClick={handleLoginClick}
+              >
                 Login
               </li>
               {isAccountSetupOpen && (
                 <PopupModal onClose={handleCloseAccountSetup} />
+              )}
+              {isLoginPopupOpen && (
+                <LoginPopupModal onClose={handleCloseLoginPopup} onForgetPassword={function (): void {
+                  throw new Error("Function not implemented.");
+                }} />
               )}
             </ul>
           </nav>
