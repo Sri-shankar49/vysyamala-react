@@ -94,6 +94,17 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
                 {errors.profileFor && <span className="text-red-500">{errors.profileFor.message}</span>}
             </div>
 
+            <div className="w-36 flex justify-between items-center mb-5">
+                <div>
+                    <input type="radio" name="radio" id="male" value="" />
+                    <label htmlFor="male" className="text-ash ml-1">Male</label>
+                </div>
+                <div>
+                    <input type="radio" name="radio" id="female" value="" />
+                    <label htmlFor="female" className="text-ash ml-1">Female</label>
+                </div>
+            </div>
+
             <div className="mb-5">
                 <input
                     type="tel"

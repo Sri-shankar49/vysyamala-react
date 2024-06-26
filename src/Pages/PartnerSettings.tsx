@@ -3,17 +3,65 @@ import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+// import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
+import MatchingStars from "../Components/PartnerPreference/MatchingStars"
 
 
-interface PartnerSettingsProps {
-  placeholder?: string;
+
+// Define validation schema with zod
+const schema = zod.object({
+  age: zod.string().nonempty("Age is required"),
+  heightFrom: zod.string().min(1, "Height From is required"),
+  heightTo: zod.string().min(1, "Height To is required"),
+  education: zod.string().min(1, "Education is required"),
+  annualIncome: zod.string().min(1, "Annual Income is required"),
+  birthStar: zod.string().min(1, "Birth Star is required"),
+  matchingStar: zod.string().min(1, "Matching Star is required"),
+  workLocation: zod.string().min(1, "Work Location is required"),
+  maritalStatus: zod.array(zod.string()).min(1, "At least one marital status is required"),
+  profession: zod.array(zod.string()).min(1, "At least one profession is required"),
+  dhosam: zod.array(zod.string()),
+  foreignInterest: zod.array(zod.string()),
+  nativeState: zod.array(zod.string()),
+  profilePhoto: zod.boolean(),
+}).required();
+
+
+interface PartnerSettingsInputs {
+  age: string;
+  heightFrom: string;
+  heightTo: string;
+  education: string;
+  annualIncome: string;
+  birthStar: string;
+  workLocation: string;
+  maritalStatus: string[];
+  profession: string[];
+  dhosam: string[];
+  foreignInterest: string[];
+  nativeState: string[];
+  profilePhoto: boolean;
 }
 
-const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
+const PartnerSettings: React.FC<PartnerSettingsInputs> = () => {
+
+  // Navigate to next page
+  const navigate = useNavigate();
+
+  // React Hook form
+  const { register, handleSubmit, formState: { errors }, } = useForm<PartnerSettingsInputs>({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit: SubmitHandler<PartnerSettingsInputs> = data => {
+    console.log(data);
+    navigate("/MembershipPlan");
+  };
+
+
   return (
     <div className="pb-20">
       <ContentBlackCard
@@ -22,7 +70,7 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
       />
 
       <div className="container mt-5 flex justify-between space-x-24">
-        <div className="w-full space-y-5 mb-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5 mb-5">
           <h5 className="text-[24px] font-semibold">Advanced Search</h5>
 
           <div className="flex justify-between items-center">
@@ -37,9 +85,9 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
                     Age
                   </label>
                   <select
-                    name="age"
                     id="age"
                     className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                    {...register("age")}
                   >
                     <option value="" selected disabled>
                       -- Select your Age --
@@ -55,6 +103,7 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
                     <option value="9">9</option>
                     <option value="10">10</option>
                   </select>
+                  {errors.age && <span className="text-red-500">{errors.age.message}</span>}
                 </div>
               </div>
             </div>
@@ -62,8 +111,16 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
             <div>
               <h5 className="text-[18px] text-primary font-semibold">Height</h5>
               <div className="flex items-center space-x-5">
-                <InputField label={""} name={""} placeholder="From" />
-                <InputField label={""} name={""} placeholder="To" />
+                <div>
+                  <InputField label={""} placeholder="From" {...register("heightFrom")} />
+                  {errors.heightFrom && <span className="text-red-500">{errors.heightFrom.message}</span>}
+
+                </div>
+                <div>
+                  <InputField label={""} placeholder="To" {...register("heightTo")} />
+                  {errors.heightTo && <span className="text-red-500">{errors.heightTo.message}</span>}
+
+                </div>
               </div>
             </div>
           </div>
@@ -130,6 +187,7 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
                 </label>
               </div>
             </div>
+            {errors.maritalStatus && <span className="text-red-500">{errors.maritalStatus.message}</span>}
           </div>
 
           <div>
@@ -198,6 +256,7 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
                 </label>
               </div>
             </div>
+            {errors.profession && <span className="text-red-500">{errors.profession.message}</span>}
           </div>
 
           {/* <InputField label={"Education"} name={"education"} /> */}
@@ -206,9 +265,9 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
               Education
             </label>
             <select
-              name="education"
               id="education"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("education")}
             >
               <option value="" selected disabled>
                 -- Select your Education --
@@ -218,6 +277,8 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
               <option value="Karnataka">Karnataka</option>
               <option value="Andhra Pradesh">Andhra Pradesh</option>
             </select>
+            {errors.education && <span className="text-red-500">{errors.education.message}</span>}
+
           </div>
 
           {/* <InputField label={"Income"} name={"income"} /> */}
@@ -227,9 +288,9 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
               Annual Income
             </label>
             <select
-              name="annualIncome"
               id="annualIncome"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("annualIncome")}
             >
               <option value="" selected disabled>
                 -- Select your Annual Income --
@@ -239,6 +300,8 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
               <option value="Karnataka">Karnataka</option>
               <option value="Andhra Pradesh">Andhra Pradesh</option>
             </select>
+            {errors.annualIncome && <span className="text-red-500">{errors.annualIncome.message}</span>}
+
           </div>
 
           {/* Dhosam */}
@@ -316,9 +379,9 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
               Birth Star
             </label>
             <select
-              name="birthStar"
               id="birthStar"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("birthStar")}
             >
               <option value="" selected disabled>
                 -- Select your Birth Star --
@@ -351,6 +414,8 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
               <option value="Uttara Bhadrapada">Uttara Bhadrapada</option>
               <option value="Revati">Revati</option>
             </select>
+            {errors.birthStar && <span className="text-red-500">{errors.birthStar.message}</span>}
+
           </div>
 
           {/* Native State */}
@@ -435,7 +500,7 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
           {/* Matching Star */}
           <div>
             <label htmlFor="education" className="block mb-1">
-              Matching Start
+              Matching Star
             </label>
             <select
               name="star"
@@ -458,10 +523,20 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
             <h5 className="text-[18px] text-primary font-semibold mb-2">
               Profile Photo
             </h5>
-            <input type="checkbox" id="profilePhoto" name="profilePhoto" value="profilePhoto" />
+            <input type="checkbox" id="profilePhoto" value="profilePhoto" {...register("profilePhoto")} />
             <label htmlFor="profilePhoto" className="pl-1">
               People only with photo
             </label>
+          </div>
+
+          <div className="justify-start items-center gap-x-5">
+            <MatchingStars initialPoruthas="8 Poruthas" />
+            <MatchingStars initialPoruthas="7 Poruthas" />
+            <MatchingStars initialPoruthas="6 Poruthas" />
+            <MatchingStars initialPoruthas="5 Poruthas" />
+            <MatchingStars initialPoruthas="4 Poruthas" />
+            <MatchingStars initialPoruthas="3 Poruthas" />
+            <MatchingStars initialPoruthas="2 Poruthas" />
           </div>
 
           <div className="mt-7 flex justify-between">
@@ -474,21 +549,22 @@ const PartnerSettings: React.FC<PartnerSettingsProps> = () => {
             </div>
 
             <div className="flex space-x-4">
+
               <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
                 Cancel
               </button>
-              <Link to="/MembershipPlan">
-                <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
-                  Find Match
-                  <span>
-                    <img src={arrow} alt="next arrow" className="ml-2" />
-                  </span>
-                </button>
-              </Link>
+
+              <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
+                Find Match
+                <span>
+                  <img src={arrow} alt="next arrow" className="ml-2" />
+                </span>
+              </button>
+
             </div>
           </div>
 
-        </div>
+        </form>
         <SideContent />
       </div>
     </div>
