@@ -4,10 +4,12 @@ import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
 import RasiGrid from "../Components/HoroDetails/RasiGrid";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
+import axios from "axios";
+
 
 // Define validation schema with zod
 const schema = zod.object({
@@ -39,13 +41,34 @@ interface HoroDetailsInputs {
 
 interface HoroDetailsProps { }
 
+
+interface BirthStar {
+  birth_id: number;
+  birth_star: string;
+}
+
+interface Rasi {
+  rasi_id: number;
+  rasi_name: string;
+}
+
+interface Lagnam {
+  didi_id: number;
+  didi_description: string;
+}
+
+interface DasaBalance {
+  balance_id: number;
+  balance_description: string;
+}
+
 const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
   // Navigate to next page
   const navigate = useNavigate();
 
   // React Hook form
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<HoroDetailsInputs>({
+  const { register, handleSubmit, formState: { errors }, setValue,watch } = useForm<HoroDetailsInputs>({
     resolver: zodResolver(schema),
   });
 
@@ -53,6 +76,77 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
   // Dhosam State
   const [selectedDosham, setSelectedDosham] = useState<string | null>(null);
+  const [birthStar, setBirthStar] = useState<BirthStar[]>([]);
+  const [rasi, setRasiOptions] = useState<Rasi[]>([]);
+  const [lagnam, setLagnamOptions] = useState<Lagnam[]>([]);
+  const [dasa, setDasaOptions] = useState<DasaBalance[]>([]);
+
+  const selectedStar = watch("birthStar");
+
+
+
+
+
+
+  useEffect(() => {
+    const fetchBirthStar = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Birth_Star/");
+        const options = Object.values(response.data) as BirthStar[];
+        setBirthStar(options);
+      } catch (error) {
+        console.error("Error fetching birth star options:", error);
+      }
+    };
+    fetchBirthStar();
+  }, []);
+
+
+  useEffect(() => {
+    if (selectedStar) {
+      const fetchStateStatus = async () => {
+        try {
+          const response = await axios.post("http://103.214.132.20:8000/auth/Get_Rasi/", { birth_id: selectedStar });
+          const options = Object.values(response.data) as Rasi[];
+          setRasiOptions(options);
+        } catch (error) {
+          console.error("Error fetching state options:", error);
+        }
+      };
+      fetchStateStatus();
+    }
+  }, [selectedStar]);
+
+
+
+  useEffect(() => {
+    const fetchLagnam = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Lagnam_Didi/");
+        const options = Object.values(response.data) as Lagnam[];
+        setLagnamOptions(options);
+      } catch (error) {
+        console.error("Error fetching Laganam options:", error);
+      }
+    };
+    fetchLagnam();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchDasa = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Dasa_Balance/");
+        const options = Object.values(response.data) as DasaBalance[];
+        setDasaOptions(options);
+      } catch (error) {
+        console.error("Error fetching Dasa options:", error);
+      }
+    };
+    fetchDasa();
+  }, []);
+
+
 
   // Background getting selected
   const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
@@ -110,57 +204,15 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               <option value="" selected disabled>
                 -- Select your Birth Star --
               </option>
-              <option value="B.E">B.E</option>
-              <option value="B.Tech">B.Tech</option>
-              <option value="BCA">BCA</option>
-              <option value="B.Sc">B.Sc</option>
+              {birthStar.map((option) => (
+                <option key={option.birth_id} value={option.birth_id}>
+                  {option.birth_star}
+                </option>
+              ))}
             </select>
           </div>
 
-          <div>
-            <label htmlFor="birthStar" className="block mb-1">
-              Birth Star
-            </label>
-            <select
-              name="birthStar"
-              id="birthStar"
-              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-            >
-              <option value="" selected disabled>
-                -- Select your Birth Star --
-              </option>
-              <option value="Ashwini">Ashwini</option>
-              <option value="Bharani">Bharani</option>
-              <option value="Krittika">Krittika</option>
-              <option value="Rohini">Rohini</option>
-              <option value="Mrigashirsha">Mrigashirsha</option>
-              <option value="Ardra">Ardra</option>
-              <option value="Punarvasu">Punarvasu</option>
-              <option value="Pushya">Pushya</option>
-              <option value="Ashlesha">Ashlesha</option>
-              <option value="Magha">Magha</option>
-              <option value="Purva Phalguni">Purva Phalguni</option>
-              <option value="Uttara Phalguni">Uttara Phalguni</option>
-              <option value="Hasta">Hasta</option>
-              <option value="Chitra">Chitra</option>
-              <option value="Swati">Swati</option>
-              <option value="Vishaka">Vishaka</option>
-              <option value="Anuradha">Anuradha</option>
-              <option value="Jyeshta">Jyeshta</option>
-              <option value="Moola">Moola</option>
-              <option value="Purva Ashadha">Purva Ashadha</option>
-              <option value="Uttara Ashadha">Uttara Ashadha</option>
-              <option value="Shravana">Shravana</option>
-              <option value="Dhanistha">Dhanistha</option>
-              <option value="Shatabhisaa">Shatabhisaa</option>
-              <option value="Purva Bhadrapada">Purva Bhadrapada</option>
-              <option value="Uttara Bhadrapada">Uttara Bhadrapada</option>
-              <option value="Revati">Revati</option>
-            </select>
-            {errors.birthStar && (
-              <span className="text-red-500">{errors.birthStar.message}</span>
-            )}
-          </div>
+          
 
           <div>
             <label htmlFor="rasi" className="block mb-1">
@@ -174,10 +226,11 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               <option value="" selected disabled>
                 -- Select your Rasi --
               </option>
-              <option value="B.E">B.E</option>
-              <option value="B.Tech">B.Tech</option>
-              <option value="BCA">BCA</option>
-              <option value="B.Sc">B.Sc</option>
+              {rasi.map((option) => (
+                <option key={option.rasi_id} value={option.rasi_id}>
+                  {option.rasi_name}
+                </option>
+              ))}
             </select>
             {errors.rasi && (
               <span className="text-red-500">{errors.rasi.message}</span>
@@ -194,12 +247,13 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               {...register("lagnam")}
             >
               <option value="" selected disabled>
-                -- Select your Rasi --
+                -- Select your lagnam / Didi --
               </option>
-              <option value="B.E">B.E</option>
-              <option value="B.Tech">B.Tech</option>
-              <option value="BCA">BCA</option>
-              <option value="B.Sc">B.Sc</option>
+              {lagnam.map((option) => (
+                <option key={option.didi_id} value={option.didi_id}>
+                  {option.didi_description}
+                </option>
+              ))}
             </select>
             {errors.lagnam && (
               <span className="text-red-500">{errors.lagnam.message}</span>
@@ -252,10 +306,11 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               <option value="" selected disabled>
                 -- Select your Dasa Balance --
               </option>
-              <option value="B.E">B.E</option>
-              <option value="B.Tech">B.Tech</option>
-              <option value="BCA">BCA</option>
-              <option value="B.Sc">B.Sc</option>
+              {dasa.map((option) => (
+                <option key={option.balance_id} value={option.balance_id}>
+                  {option.balance_description}
+                </option>
+              ))}
             </select>
             {errors.dasaBalance && (
               <span className="text-red-500">{errors.dasaBalance.message}</span>
