@@ -9,6 +9,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import axios from "axios";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 
 // Define validation schema with zod
@@ -68,7 +70,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   const navigate = useNavigate();
 
   // React Hook form
-  const { register, handleSubmit, formState: { errors }, setValue,watch } = useForm<HoroDetailsInputs>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<HoroDetailsInputs>({
     resolver: zodResolver(schema),
   });
 
@@ -212,7 +214,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             </select>
           </div>
 
-          
+
 
           <div>
             <label htmlFor="rasi" className="block mb-1">
@@ -324,8 +326,10 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             )}
           </div>
 
-          <RasiGrid />
-
+          <DndProvider backend={HTML5Backend}>
+            <RasiGrid />
+          </DndProvider>
+          
           <div className="mt-7 flex justify-between">
             <div className="">
               <Link to={"/"}>
