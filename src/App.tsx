@@ -19,6 +19,7 @@ import PartnerSettings from "./Pages/PartnerSettings";
 import { MembershipPlan } from "./Pages/MembershipPlan";
 import { PayNow } from "./Pages/PayNow";
 import { ThankYouReg } from "./Pages/ThankYouReg";
+import { LoginHome } from "./Pages/LoginHome";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -65,6 +66,7 @@ function App() {
             <Route path="/MembershipPlan" element={<MembershipPlan />} />
             <Route path="/PayNow" element={<PayNow />} />
             <Route path="/ThankYouReg" element={<ThankYouReg />} />
+            <Route path="/LoginHome" element={<LoginHome />} />
           </Route>
         </Routes>
       </BrowserRouter>
