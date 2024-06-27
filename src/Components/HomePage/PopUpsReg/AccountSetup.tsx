@@ -35,6 +35,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
     // Toggle the Password field
     const [showPassword, setShowPassword] = useState(false);
     const [profileOptions, setProfileOptions] = useState<{ owner_id: number; owner_description: string; }[]>([]);
+    const [gender, setGender] = useState<string>(''); // State for gender selection
 
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
@@ -68,9 +69,41 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
         resolver: zodResolver(schema),
     });
 
-    const onSubmit: SubmitHandler<FormInputs> = (data) => {
-        console.log(data);
-        onNext(data.mobile); // Pass mobile number to onNext function
+    // Function to handle gender selection
+    const handleGenderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setGender(event.target.value);
+    };
+
+    const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+        // Combine form data with selected gender
+        const registrationData = {
+            Profile_for: data.profileFor,
+            Gender: gender, // Include gender from state
+            Mobile_no: data.mobile,
+            EmailId: data.email,
+            Password: data.password
+        };
+
+        try {
+            const response = await axios.post('http://103.214.132.20:8000/auth/Registrationstep1/', registrationData, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            // Extract profile_id and profile_owner from the response
+            const { profile_id, profile_owner } = response.data;
+
+            // Store profile_id and profile_owner in session storage
+            sessionStorage.setItem('profile_id', profile_id);
+            sessionStorage.setItem('profile_owner', profile_owner);
+
+            console.log('API Response:', response.data);
+            onNext(data.mobile); // Pass mobile number to onNext function
+        } catch (error) {
+            console.error('Error registering user:', error);
+            // Handle error (show error message, etc.)
+        }
     };
 
     return (
@@ -96,11 +129,25 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
 
             <div className="w-36 flex justify-between items-center mb-5">
                 <div>
-                    <input type="radio" name="radio" id="male" value="" />
+                    <input
+                        type="radio"
+                        id="male"
+                        name="gender"
+                        value="male"
+                        checked={gender === 'male'}
+                        onChange={handleGenderChange}
+                    />
                     <label htmlFor="male" className="text-ash ml-1">Male</label>
                 </div>
                 <div>
-                    <input type="radio" name="radio" id="female" value="" />
+                    <input
+                        type="radio"
+                        id="female"
+                        name="gender"
+                        value="female"
+                        checked={gender === 'female'}
+                        onChange={handleGenderChange}
+                    />
                     <label htmlFor="female" className="text-ash ml-1">Female</label>
                 </div>
             </div>

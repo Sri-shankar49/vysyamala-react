@@ -1,5 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
+import axios from 'axios';
 
 interface OtpVerificationProps {
     onNext: () => void;
@@ -10,9 +11,18 @@ interface OtpVerificationProps {
 export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClose, mobileNumber }) => {
     const [otpValues, setOtpValues] = useState<string[]>(Array(6).fill(""));
     const [error, setError] = useState<boolean>(false); // State to track validation error
-    // const [shouldNavigate, setShouldNavigate] = useState<boolean>(false); // State to control navigation
+    const [errorMessage, setErrorMessage] = useState<string>(""); // State to store error message
     const totalInputs = 6;
     const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(totalInputs).fill(null));
+    const [profileId, setProfileId] = useState<string>(''); // State to store profile ID
+
+    useEffect(() => {
+        // Retrieve profile_id from session storage
+        const storedProfileId = sessionStorage.getItem('profile_id');
+        if (storedProfileId) {
+            setProfileId(storedProfileId);
+        }
+    }, []);
 
     const handleChange = (index: number, value: string) => {
         if (/^\d$/.test(value) || value === "") {
@@ -40,14 +50,36 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         const isValid = otpValues.every((value) => value !== "");
         if (isValid) {
-            onNext();
+            try {
+                const otp = otpValues.join(''); // Concatenate OTP values
+                const response = await axios.post('http://103.214.132.20:8000/auth/Otp_verify/', {
+                    Otp: otp,
+                    ProfileId: profileId
+                });
+
+                console.log('OTP Verification Response:', response.data);
+
+                // Check the response for success or failure
+                if (response.data.message === "OTP verified successfully.") {
+                    onNext(); // Proceed to the next step upon successful OTP verification
+                } else {
+                    setError(true);
+                    setErrorMessage("Invalid OTP. Please try again.");
+                }
+            } catch (error) {
+                console.error('Error verifying OTP:', error);
+                // Handle error (show error message, etc.)
+                setError(true);
+                setErrorMessage("Error verifying OTP. Please try again later.");
+            }
         } else {
             setError(true);
+            setErrorMessage("Please enter OTP.");
         }
     };
 
@@ -64,7 +96,7 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
                 <h2 className="text-ash text-[23px] font-semibold">OTP Verification</h2>
                 <p className="text-primary">
                     We have sent a verification code to<br />
-                    {mobileNumber}                
+                    {mobileNumber}
                 </p>
             </div>
 
@@ -82,6 +114,12 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
                     />
                 ))}
             </div>
+
+            {error && (
+                <div className="text-red-500 text-sm mb-4">
+                    {errorMessage}
+                </div>
+            )}
 
             <div className="text-center mb-4">
                 <p className="text-primary">

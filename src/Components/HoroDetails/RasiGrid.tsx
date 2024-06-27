@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { RiDraggable } from "react-icons/ri";
+import { AiOutlineClose } from "react-icons/ai";
 
 const RasiGrid = () => {
-  const labels = [
+  const initialLabels = [
     "Raghu/Rahu",
     "Mars/Chevai",
     "Jupiter/Guru",
@@ -15,6 +16,54 @@ const RasiGrid = () => {
     "Kethu/Ketu",
   ];
 
+  // State to store labels
+  const [labels, setLabels] = useState(initialLabels);
+
+  // State to manage contents of each rasi-box
+  const [rasiContents, setRasiContents] = useState(Array(12).fill([]));
+
+  // Drag start handler
+  const handleDragStart = (e, label) => {
+    e.dataTransfer.setData("text", label);
+  };
+
+  // Drag over handler
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  // Drop handler for "rasi-box"
+  const handleDropRasiBox = (e, index) => {
+    e.preventDefault();
+    const draggedLabel = e.dataTransfer.getData("text");
+
+    // Check if the dragged label is not already in the box and the box is not full
+    if (
+      !rasiContents[index].includes(draggedLabel) &&
+      rasiContents[index].length < 6
+    ) {
+      const newContents = [...rasiContents];
+      newContents[index] = [...newContents[index], draggedLabel];
+      setRasiContents(newContents);
+
+      // Remove the dragged label from the labels array
+      setLabels((prevLabels) =>
+        prevLabels.filter((label) => label !== draggedLabel)
+      );
+    }
+  };
+
+  // Remove label from rasi-box
+  const handleRemoveLabel = (index, labelIndex) => {
+    const newContents = [...rasiContents];
+    const removedLabel = newContents[index][labelIndex];
+    newContents[index].splice(labelIndex, 1);
+    setRasiContents(newContents);
+
+    // Add the removed label back to the labels array
+    setLabels((prevLabels) => [...prevLabels, removedLabel]);
+  };
+
   return (
     <div className="flex space-x-16 justify-start items-start bg-gray-200">
       {/* Labels */}
@@ -22,54 +71,46 @@ const RasiGrid = () => {
         {labels.map((label, index) => (
           <div
             key={index}
+            draggable
+            onDragStart={(e) => handleDragStart(e, label)}
             className="flex items-center bg-yellow-200 text-sm px-2 py-3 rounded text-center hover:cursor-grab"
           >
             <RiDraggable className="mr-2" />
-            {label}
-
             {label}
           </div>
         ))}
       </div>
 
       {/* Rasi Grid */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="">
         {/* Top Row */}
         <div className="col-span-3 grid grid-cols-4 gap-2">
-          {/* {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="w-24 h-24 border"></div>
-            ))} */}
-          <div className="w-48 h-48 rounded border border-ash"></div>
-          <div className="w-48 h-48 rounded border border-ash"></div>
-          <div className="w-48 h-48 rounded border border-ash"></div>
-          <div className="w-48 h-48 rounded border border-ash"></div>
-        </div>
-        {/* Middle Row */}
-        <div className="col-span-3 grid grid-cols-4 gap-2 relative">
-          <div className="w-48 h-48 rounded border border-ash"></div>
-          <div className="absolute left-[200px] w-[392px] h-[392px] bg-ashSecondary rounded flex justify-center items-center font-bold text-center">
-            Rasi
+          {/* Render rasi-box with drag and drop functionality */}
+          {Array.from({ length: 12 }).map((_, index) => (
+            <div
+              key={index}
+              onDrop={(e) => handleDropRasiBox(e, index)}
+              onDragOver={handleDragOver}
+              className="w-48 h-48 rasi-box rounded border border-ash flex items-center justify-center"
+            >
+              {rasiContents[index].map((label, labelIndex) => (
+                <div
+                  key={labelIndex}
+                  className="relative bg-yellow-200 text-xs px-2 py-1 rounded text-center flex items-center justify-between"
+                >
+                  {label}
+                  <AiOutlineClose
+                    className="cursor-pointer ml-2"
+                    onClick={() => handleRemoveLabel(index, labelIndex)}
+                  />
+                </div>
+              ))}
+            </div>
+          ))}
+
+          <div className="row-start-2 ras-center-box col-start-2 col-end-4 row-end-4 rounded border border-ash">
+            rasi
           </div>
-          <div className="absolute right-0 w-48 h-48 rounded border border-ash"></div>
-        </div>
-        {/* Bottom Row */}
-        <div className="col-span-3 grid grid-cols-3 gap-2 relative">
-          {/* {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="w-48 h-48 border"></div>
-            ))} */}
-
-          <div className="w-48 h-48  rounded border border-ash"></div>
-          <div className="absolute right-0 w-48 h-48  rounded border"></div>
-        </div>
-
-        <div className="col-span-3 grid grid-cols-4 gap-2">
-          {/* {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="w-48 h-48 border"></div>
-            ))} */}
-          <div className="w-48 h-48 rounded border border-ash"></div>
-          <div className="w-48 h-48 rounded border border-ash"></div>
-          <div className="w-48 h-48 rounded border border-ash"></div>
-          <div className="w-48 h-48 rounded border border-ash"></div>
         </div>
       </div>
     </div>
