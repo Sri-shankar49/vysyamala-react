@@ -1,13 +1,18 @@
-import React from 'react'
-import { HeroSection } from '../Components/HomePage/HeroSection'
-import { VysyamalaAbout } from '../Components/HomePage/VysyamalaAbout'
-import { FeaturedBride } from '../Components/HomePage/FeaturedBride'
+import { HeroSection } from '../Components/HomePage/HeroSection';
+import { VysyamalaAbout } from '../Components/HomePage/VysyamalaAbout';
+import { FeaturedBride } from '../Components/HomePage/FeaturedBride';
+import { FeaturedGroom } from '../Components/HomePage/FeaturedGroom'
+import { WhyVysyamala } from '../Components/HomePage/WhyVysyamala';
+import { AwardsGallery } from '../Components/HomePage/AwardsGallery';
 
 export const HomePage = () => {
     return (
         <div>
             <HeroSection />
             <FeaturedBride />
+            <FeaturedGroom />
+            <WhyVysyamala />
+            <AwardsGallery />
             <VysyamalaAbout />
         </div>
     )

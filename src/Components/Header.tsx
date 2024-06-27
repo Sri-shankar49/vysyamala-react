@@ -51,7 +51,7 @@ export const Header: React.FC = () => {
   return (
     <div>
       <header
-        className={`fixed top-0 left-0 right-0 transition-all duration-300 z-[1] ${isScrolled ? "backdrop-blur-lg bg-opacity-50" : "bg-transparent"
+        className={`fixed top-0 left-0 right-0 transition-all duration-300 z-[1] ${isScrolled ? "bg-secondary backdrop-blur-lg bg-opacity-100" : "bg-transparent"
           }`}
       >
         <div className="container mx-auto flex justify-between items-center py-5 bg-transparent">

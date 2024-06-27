@@ -399,6 +399,7 @@ const FamilyDetails: React.FC = () => {
                   <button
                     key={type.family_id}
                     type="button"
+                    title={type.family_description}
                     className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedFamilyType === type.family_description)}`}
                     onClick={() => handleFamilyTypeChange(type.family_description)}
                   >
@@ -411,7 +412,7 @@ const FamilyDetails: React.FC = () => {
           </div>
 
 
-
+          {/* Family Value Section */}
           <div className="mt-3">
             <h1 className="mb-3">Family Value</h1>
             <div className="flex flex-col">
@@ -420,6 +421,7 @@ const FamilyDetails: React.FC = () => {
                   <button
                     key={type.family_value_id}
                     type="button"
+                    title={type.family_value_name}
                     className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedFamilyValue === type.family_value_name)}`}
                     onClick={() => handleFamilyValueChange(type.family_value_name)}
                   >
@@ -431,20 +433,7 @@ const FamilyDetails: React.FC = () => {
             </div>
           </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          {/* Family Status Section */}
           <div className="mt-3">
             <h1 className="mb-3">Family Status</h1>
             <div className="flex flex-col">
@@ -453,6 +442,7 @@ const FamilyDetails: React.FC = () => {
                   <button
                     key={type.family_status_id}
                     type="button"
+                    title={type.family_status_description}
                     className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedFamilyStatus === type.family_status_name)}`}
                     onClick={() => handleFamilyStatusChange(type.family_status_name)}
                   >

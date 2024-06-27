@@ -76,3 +76,9 @@ button:focus-visible {
 .arrowDisabled {
   @apply text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none;
 }
+
+
+/*** slick ***/
+.slick-list {
+  padding: 3em 0em !important;
+}
