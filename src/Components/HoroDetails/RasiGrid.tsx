@@ -3,7 +3,7 @@ import { RiDraggable } from "react-icons/ri";
 import { AiOutlineClose } from "react-icons/ai";
 
 const RasiGrid = () => {
-  const labels = [
+  const initialLabels = [
     "Raghu/Rahu",
     "Mars/Chevai",
     "Jupiter/Guru",
@@ -16,15 +16,15 @@ const RasiGrid = () => {
     "Kethu/Ketu",
   ];
 
-  // State to store dragged label
-  const [draggedLabel, setDraggedLabel] = useState("");
+  // State to store labels
+  const [labels, setLabels] = useState(initialLabels);
 
   // State to manage contents of each rasi-box
   const [rasiContents, setRasiContents] = useState(Array(12).fill([]));
 
   // Drag start handler
   const handleDragStart = (e, label) => {
-    setDraggedLabel(label);
+    e.dataTransfer.setData("text", label);
   };
 
   // Drag over handler
@@ -35,6 +35,8 @@ const RasiGrid = () => {
   // Drop handler for "rasi-box"
   const handleDropRasiBox = (e, index) => {
     e.preventDefault();
+    const draggedLabel = e.dataTransfer.getData("text");
+
     // Check if the dragged label is not already in the box and the box is not full
     if (
       !rasiContents[index].includes(draggedLabel) &&
@@ -45,8 +47,9 @@ const RasiGrid = () => {
       setRasiContents(newContents);
 
       // Remove the dragged label from the labels array
-      const updatedLabels = labels.filter((label) => label !== draggedLabel);
-      setDraggedLabel("");
+      setLabels((prevLabels) =>
+        prevLabels.filter((label) => label !== draggedLabel)
+      );
     }
   };
 
@@ -58,7 +61,7 @@ const RasiGrid = () => {
     setRasiContents(newContents);
 
     // Add the removed label back to the labels array
-    setDraggedLabel(removedLabel);
+    setLabels((prevLabels) => [...prevLabels, removedLabel]);
   };
 
   return (

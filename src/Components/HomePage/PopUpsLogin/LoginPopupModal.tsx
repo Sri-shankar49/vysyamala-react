@@ -4,6 +4,8 @@ import { ForgetPassword } from './ForgetPassword';
 import { PhoneLoginPopup } from '../PopUpsLogin/PhoneLoginPopup';
 import { OtpVerify } from './OtpVerify';
 import { EmailSent } from "./EmailSent";
+import { useNavigate } from 'react-router-dom';
+
 
 
 interface LoginPopupModalProps {
@@ -12,6 +14,9 @@ interface LoginPopupModalProps {
 }
 
 export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => {
+
+    const navigate = useNavigate();
+
 
     const [showPopup, setShowPopup] = useState<"loginPopup" | "forgetPassword" | "phoneLoginPopup" | "otpVerify" | "emailSent">("loginPopup");
 
@@ -38,6 +43,8 @@ export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => 
     const handleLogin = () => {
         console.log('Navigating to LoginHome');
         // window.location.href = '/LoginHome';   // Navigate to LoginHome page after successful login
+        navigate('/LoginHome');  // Navigate to LoginHome page after successful login
+
     };
 
     const handleSendOtp = () => {
