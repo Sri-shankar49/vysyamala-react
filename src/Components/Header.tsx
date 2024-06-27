@@ -56,8 +56,8 @@ export const Header: React.FC = () => {
       >
         <div className="container mx-auto flex justify-between items-center py-5 bg-transparent">
           <div>
-            <Link to="/HomePage" className="">
-              <img src={VysyamalaWhite} alt="" className="w-36" />
+            <Link to="/" className="">
+              <img src={VysyamalaWhite} alt="" className="w-36 cursor-pointer" />
             </Link>
           </div>
 
