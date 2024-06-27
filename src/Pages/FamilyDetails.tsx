@@ -55,6 +55,9 @@ interface Occupation {
   occupation_description: string;
 }
 
+
+
+
 interface PropertyWorth {
   property_id: number;
   property_description: string;
