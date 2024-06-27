@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { IoIosCloseCircle } from "react-icons/io";
 import { FaArrowRightLong } from "react-icons/fa6";
-// import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
@@ -28,9 +28,9 @@ interface FormInputs {
 }
 
 export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, onForgetPassword, onClose }) => {
-
     // Toggle the Password field
     const [showPassword, setShowPassword] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
@@ -42,9 +42,25 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, on
     });
 
     // Handle form submission
-    const onSubmit: SubmitHandler<FormInputs> = (data) => {
-        console.log(data);
-        onNext();
+    const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+        try {
+            const response = await axios.post('http://103.214.132.20:8000/auth/login/', {
+                username: data.profileID,
+                password: data.password
+            });
+
+            console.log('Login Response:', response.data);
+            sessionStorage.setItem('token', response.data.token);
+            if (response.data.status === 1) {
+                setErrorMessage(null); // Clear error message on success
+                onNext(); // Proceed to the next step upon successful login
+            } else {
+                setErrorMessage('Please Enter the Correct Username and Password.');
+            }
+        } catch (error) {
+            console.error('Error logging in:', error);
+            setErrorMessage('An error occurred while logging in. Please try again later.');
+        }
     };
 
     return (
@@ -96,6 +112,12 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, on
                 <div className="text-[16px] text-white font-semibold">Login</div>
                 <FaArrowRightLong className="text-white text-[22px]" />
             </button>
+
+            {errorMessage && (
+                <div className="text-red-500 mt-2">
+                    {errorMessage}
+                </div>
+            )}
 
             <p className="text-ash font-semibold text-center my-5">or</p>
 

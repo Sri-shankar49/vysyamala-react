@@ -9,6 +9,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import axios from "axios";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 
 // Define validation schema with zod
@@ -324,8 +326,10 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             )}
           </div>
 
-          <RasiGrid />
-
+          <DndProvider backend={HTML5Backend}>
+            <RasiGrid />
+          </DndProvider>
+          
           <div className="mt-7 flex justify-between">
             <div className="">
               <Link to={"/"}>
