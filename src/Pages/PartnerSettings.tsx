@@ -2,12 +2,16 @@ import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 // import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import MatchingStars from "../Components/PartnerPreference/MatchingStars"
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+
 
 
 
@@ -46,21 +50,111 @@ interface PartnerSettingsInputs {
   profilePhoto: boolean;
 }
 
-const PartnerSettings: React.FC<PartnerSettingsInputs> = () => {
+interface EduPref {
+  Edu_Pref_id: number;
+  Edu_name: string;
+}
 
-  // Navigate to next page
-  const navigate = useNavigate();
+interface AnnualIncome {
+  income_id: number;
+  income_description: string;
+}
 
-  // React Hook form
-  const { register, handleSubmit, formState: { errors }, } = useForm<PartnerSettingsInputs>({
+interface BirthStar {
+  birth_id: number;
+  birth_star: string;
+}
+
+interface MatchingStar {
+  dest_rasi_id: number;
+  dest_star_id: number;
+  id: number;
+  match_count: number;
+  matching_porutham: string;
+  matching_starname: string;
+  matching_rasiname:string;
+  protham_names: null | string[];
+  source_star_id: number;
+}
+
+const PartnerSettings: React.FC = () => {
+  const [eduPref, setEduPref] = useState<EduPref[]>([]);
+  const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
+  const [birthStar, setBirthStar] = useState<BirthStar[]>([]);
+  const [matchStars, setMatchStars] = useState<MatchingStar[][]>([]); // Array to hold nested arrays of MatchingStar
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<PartnerSettingsInputs>({
     resolver: zodResolver(schema),
   });
 
+  const selectedStar = watch('birthStar');
+
+  useEffect(() => {
+    const fetchEduPref = async () => {
+      try {
+        const response = await axios.post('http://103.214.132.20:8000/auth/Get_Edu_Pref/');
+        const options = Object.values(response.data) as EduPref[];
+        setEduPref(options);
+      } catch (error) {
+        console.error('Error fetching Edu Pref options:', error);
+      }
+    };
+    fetchEduPref();
+  }, []);
+
+  useEffect(() => {
+    const fetchAnnualIncome = async () => {
+      try {
+        const response = await axios.post('http://103.214.132.20:8000/auth/Get_Annual_Income/');
+        const options = Object.values(response.data) as AnnualIncome[];
+        setAnnualIncome(options);
+      } catch (error) {
+        console.error('Error fetching Annual Income  options:', error);
+      }
+    };
+    fetchAnnualIncome();
+  }, []);
+
+  useEffect(() => {
+    const fetchBirthStar = async () => {
+      try {
+        const response = await axios.post('http://103.214.132.20:8000/auth/Get_Birth_Star/');
+        const options = Object.values(response.data) as BirthStar[];
+        setBirthStar(options);
+      } catch (error) {
+        console.error('Error fetching birth star options:', error);
+      }
+    };
+    fetchBirthStar();
+  }, []);
+
+  useEffect(() => {
+    if (selectedStar) {
+      const fetchMatchingStars = async () => {
+        try {
+          const response = await axios.post('http://103.214.132.20:8000/auth/Get_Matchstr_Pref/', {
+            birth_star_id: selectedStar,
+            gender: 'male', // Replace 'male' with the actual value you want to pass
+          });
+
+          // Extract nested arrays from response data
+          const matchCountArrays: MatchingStar[][] = Object.values(response.data).map((matchCount: any) => matchCount);
+
+          setMatchStars(matchCountArrays);
+          console.log('Response from server:', matchCountArrays); // Print the nested arrays of MatchingStar
+        } catch (error) {
+          console.error('Error fetching matching star options:', error);
+        }
+      };
+
+      fetchMatchingStars();
+    }
+  }, [selectedStar]);
+
+  const navigate = useNavigate();
   const onSubmit: SubmitHandler<PartnerSettingsInputs> = data => {
     console.log(data);
-    navigate("/MembershipPlan");
+    navigate('/MembershipPlan');
   };
-
 
   return (
     <div className="pb-20">
@@ -272,10 +366,11 @@ const PartnerSettings: React.FC<PartnerSettingsInputs> = () => {
               <option value="" selected disabled>
                 -- Select your Education --
               </option>
-              <option value="Tamil Nadu">Tamil Nadu</option>
-              <option value="Kerela">Kerela</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              {eduPref.map((options) => (
+                <option key={options.Edu_Pref_id} value={options.Edu_Pref_id}>
+                  {options.Edu_name}
+                </option>
+              ))}
             </select>
             {errors.education && <span className="text-red-500">{errors.education.message}</span>}
 
@@ -292,16 +387,18 @@ const PartnerSettings: React.FC<PartnerSettingsInputs> = () => {
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
               {...register("annualIncome")}
             >
-              <option value="" selected disabled>
+              <option value="" disabled selected>
                 -- Select your Annual Income --
               </option>
-              <option value="Tamil Nadu">Tamil Nadu</option>
-              <option value="Kerela">Kerela</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              {annualIncome.map((option) => (
+                <option key={option.income_id} value={option.income_id}>
+                  {option.income_description}
+                </option>
+              ))}
             </select>
-            {errors.annualIncome && <span className="text-red-500">{errors.annualIncome.message}</span>}
-
+            {errors.annualIncome && (
+              <span className="text-red-500">{errors.annualIncome.message}</span>
+            )}
           </div>
 
           {/* Dhosam */}
@@ -386,36 +483,12 @@ const PartnerSettings: React.FC<PartnerSettingsInputs> = () => {
               <option value="" selected disabled>
                 -- Select your Birth Star --
               </option>
-              <option value="Ashwini">Ashwini</option>
-              <option value="Bharani">Bharani</option>
-              <option value="Krittika">Krittika</option>
-              <option value="Rohini">Rohini</option>
-              <option value="Mrigashirsha">Mrigashirsha</option>
-              <option value="Ardra">Ardra</option>
-              <option value="Punarvasu">Punarvasu</option>
-              <option value="Pushya">Pushya</option>
-              <option value="Ashlesha">Ashlesha</option>
-              <option value="Magha">Magha</option>
-              <option value="Purva Phalguni">Purva Phalguni</option>
-              <option value="Uttara Phalguni">Uttara Phalguni</option>
-              <option value="Hasta">Hasta</option>
-              <option value="Chitra">Chitra</option>
-              <option value="Swati">Swati</option>
-              <option value="Vishaka">Vishaka</option>
-              <option value="Anuradha">Anuradha</option>
-              <option value="Jyeshta">Jyeshta</option>
-              <option value="Moola">Moola</option>
-              <option value="Purva Ashadha">Purva Ashadha</option>
-              <option value="Uttara Ashadha">Uttara Ashadha</option>
-              <option value="Shravana">Shravana</option>
-              <option value="Dhanistha">Dhanistha</option>
-              <option value="Shatabhisaa">Shatabhisaa</option>
-              <option value="Purva Bhadrapada">Purva Bhadrapada</option>
-              <option value="Uttara Bhadrapada">Uttara Bhadrapada</option>
-              <option value="Revati">Revati</option>
+              {birthStar.map((option) => (
+                <option key={option.birth_id} value={option.birth_id}>
+                  {option.birth_star}
+                </option>
+              ))}
             </select>
-            {errors.birthStar && <span className="text-red-500">{errors.birthStar.message}</span>}
-
           </div>
 
           {/* Native State */}
@@ -498,7 +571,7 @@ const PartnerSettings: React.FC<PartnerSettingsInputs> = () => {
           </div>
 
           {/* Matching Star */}
-          <div>
+          {/* <div>
             <label htmlFor="education" className="block mb-1">
               Matching Star
             </label>
@@ -515,7 +588,7 @@ const PartnerSettings: React.FC<PartnerSettingsInputs> = () => {
               <option value="Karnataka">Karnataka</option>
               <option value="Andhra Pradesh">Andhra Pradesh</option>
             </select>
-          </div>
+          </div> */}
 
           <InputField label={"Work Location"} name={"workLocation"} />
 
@@ -530,14 +603,17 @@ const PartnerSettings: React.FC<PartnerSettingsInputs> = () => {
           </div>
 
           <div className="justify-start items-center gap-x-5">
-            <MatchingStars initialPoruthas="8 Poruthas" />
-            <MatchingStars initialPoruthas="7 Poruthas" />
-            <MatchingStars initialPoruthas="6 Poruthas" />
-            <MatchingStars initialPoruthas="5 Poruthas" />
-            <MatchingStars initialPoruthas="4 Poruthas" />
-            <MatchingStars initialPoruthas="3 Poruthas" />
-            <MatchingStars initialPoruthas="2 Poruthas" />
-          </div>
+                    {matchStars.map((matchCountArray, index) => (
+                        <MatchingStars
+                            key={index}
+                            initialPoruthas={`Matching Set ${index + 1}`}
+                            starAndRasi={matchCountArray.map(star => ({
+                                star: star.matching_starname,
+                                rasi: star.matching_rasiname
+                            }))}
+                        />
+                    ))}
+                </div>
 
           <div className="mt-7 flex justify-between">
             <div className="">
