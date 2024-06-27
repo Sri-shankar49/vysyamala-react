@@ -17,6 +17,7 @@ export default {
         secondary: "#FF6666",
         white: "#FFFFFF",
         vysyamalaBlack: "#282C3F",
+        vysyamalaSandal: "#FFFBE3",
         checkGreen: "#53C840",
         checkRed: "#cd3040",
         gray: "#E9EAEC",

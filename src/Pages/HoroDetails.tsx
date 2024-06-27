@@ -326,10 +326,12 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             )}
           </div>
 
+          {/* RasiGrid */}
           <DndProvider backend={HTML5Backend}>
-            <RasiGrid />
+            <RasiGrid centerLabel={"Rasi"} />
+            <RasiGrid centerLabel={"Amsam"} />
           </DndProvider>
-          
+
           <div className="mt-7 flex justify-between">
             <div className="">
               <Link to={"/"}>
