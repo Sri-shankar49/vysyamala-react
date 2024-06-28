@@ -463,7 +463,7 @@ const PartnerSettings: React.FC = () => {
           </div>
 
 
-          <div>
+          {/* <div>
             <label htmlFor="birthStar" className="block mb-1">
               Birth Star
             </label>
@@ -481,7 +481,7 @@ const PartnerSettings: React.FC = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           {/* Native State */}
           <div>
@@ -595,17 +595,23 @@ const PartnerSettings: React.FC = () => {
           </div>
 
           <div className="justify-start items-center gap-x-5">
-            {matchStars.map((matchCountArray, index) => (
-              <MatchingStars
-                key={index}
-                initialPoruthas={`Matching Set ${index + 1}`}
-                starAndRasi={matchCountArray.map(star => ({
-                  star: star.matching_starname,
-                  rasi: star.matching_rasiname
-                }))}
-              />
-            ))}
+            {matchStars
+              .slice() // Create a shallow copy to avoid mutating original array
+              .sort((a, b) => b.length - a.length) // Sort by length in descending order
+              .map((matchCountArray, index) => (
+                <MatchingStars
+                  key={index}
+                  initialPoruthas={`No of porutham ${matchCountArray.length}`} // Example: Assuming matchCountArray.length is the number you want to display
+
+                  starAndRasi={matchCountArray.map(star => ({
+                    star: star.matching_starname,
+                    rasi: star.matching_rasiname
+                  }))}
+                />
+              ))}
           </div>
+
+
 
           <div className="mt-7 flex justify-between">
             <div className="">
