@@ -22,13 +22,13 @@ type ProfileOption = {
   owner_description: string;
 };
 
-interface AccountSetupProps {
+interface HeroSectionProps {
   onNext: (mobile: string) => void;
 }
 
 type FormData = z.infer<typeof schema>;
 
-export const HeroSection: React.FC<AccountSetupProps> = () => {
+export const HeroSection: React.FC<HeroSectionProps> = () => {
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });

@@ -18,7 +18,7 @@ export const LoginHeader: React.FC = () => {
 
           <nav className="flex items-center space-x-10">
             <ul className="flex justify-center items-center text-ash space-x-14">
-              <Link to="/D">
+              <Link to="/LoginHome">
                 <li className="text-[16px] cursor-pointer font-medium">Home</li>
               </Link>
               <li className="text-[16px] cursor-pointer font-medium">Search</li>

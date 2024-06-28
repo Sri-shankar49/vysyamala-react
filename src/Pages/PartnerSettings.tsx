@@ -4,6 +4,7 @@ import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
 import { useNavigate } from "react-router-dom";
 // import { useState } from "react";
+// import Checkbox from "../Components/PartnerPreference/CheckBox";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
@@ -146,22 +147,22 @@ const PartnerSettings: React.FC = () => {
 
 
   useEffect(() => {
-      const fetchMatchingStars = async () => {
-        try {
-          const response = await axios.post('http://103.214.132.20:8000/auth/Get_Matchstr_Pref/', {
-            birth_star_id: storedBirthStar,
-            gender:gender, // Replace 'male' with the actual value you want to pass
-          });
+    const fetchMatchingStars = async () => {
+      try {
+        const response = await axios.post('http://103.214.132.20:8000/auth/Get_Matchstr_Pref/', {
+          birth_star_id: storedBirthStar,
+          gender: gender, // Replace 'male' with the actual value you want to pass
+        });
 
-          const matchCountArrays: MatchingStar[][] = Object.values(response.data).map((matchCount: any) => matchCount);
-          setMatchStars(matchCountArrays);
-          console.log('Response from server:', matchCountArrays);
-        } catch (error) {
-          console.error('Error fetching matching star options:', error);
-        }
-      };
-      fetchMatchingStars();
-    
+        const matchCountArrays: MatchingStar[][] = Object.values(response.data).map((matchCount: any) => matchCount);
+        setMatchStars(matchCountArrays);
+        console.log('Response from server:', matchCountArrays);
+      } catch (error) {
+        console.error('Error fetching matching star options:', error);
+      }
+    };
+    fetchMatchingStars();
+
   }, [selectedStar]);
 
   useEffect(() => {
@@ -387,40 +388,44 @@ const PartnerSettings: React.FC = () => {
 
           {/* <InputField label={"Education"} name={"education"} /> */}
           <div>
-            <label className="block mb-1">Education</label>
-            {eduPref.map((option) => (
-              <div key={option.Edu_Pref_id}>
-                <input
-                  type="checkbox"
-                  id={`education-${option.Edu_Pref_id}`}
-                  value={option.Edu_Pref_id}
-                  {...register("education")}
-                />
-                <label htmlFor={`education-${option.Edu_Pref_id}`}>
-                  {option.Edu_name}
-                </label>
-              </div>
-            ))}
+            <label className="text-[18px] text-primary font-semibold mb-2">Education</label>
+            <div className="flex justify-between items-center">
+              {eduPref.map((option) => (
+                <div key={option.Edu_Pref_id}>
+                  <input
+                    type="checkbox"
+                    id={`education-${option.Edu_Pref_id}`}
+                    value={option.Edu_Pref_id}
+                    {...register("education")}
+                  />
+                  <label htmlFor={`education-${option.Edu_Pref_id}`} className="pl-1">
+                    {option.Edu_name}
+                  </label>
+                </div>
+              ))}
+            </div>
             {errors.education && <span className="text-red-500">{errors.education.message}</span>}
           </div>
 
           {/* <InputField label={"Income"} name={"income"} /> */}
           {/* Annual Income */}
           <div>
-            <label className="block mb-1">Annual Income</label>
-            {annualIncome.map((option) => (
-              <div key={option.income_id}>
-                <input
-                  type="checkbox"
-                  id={`annualIncome-${option.income_id}`}
-                  value={option.income_id}
-                  {...register("annualIncome")}
-                />
-                <label htmlFor={`annualIncome-${option.income_id}`}>
-                  {option.income_description}
-                </label>
-              </div>
-            ))}
+            <label className="text-[18px] text-primary font-semibold mb-2">Annual Income</label>
+            <div className="grid grid-rows-1 grid-cols-5">
+              {annualIncome.map((option) => (
+                <div key={option.income_id} className="mb-2">
+                  <input
+                    type="checkbox"
+                    id={`annualIncome-${option.income_id}`}
+                    value={option.income_id}
+                    {...register("annualIncome")}
+                  />
+                  <label htmlFor={`annualIncome-${option.income_id}`} className="pl-1">
+                    {option.income_description}
+                  </label>
+                </div>
+              ))}
+            </div>
             {errors.annualIncome && (
               <span className="text-red-500">{errors.annualIncome.message}</span>
             )}
