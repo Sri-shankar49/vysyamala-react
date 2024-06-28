@@ -14,6 +14,10 @@ const schema = zod.object({
   fathername: zod.string().min(3, "Father name is required"),
   fatherOccupation: zod.string().min(3, "Father's Occupation is required"),
   mothername: zod.string().min(3, "Mother name is required"),
+  familyname: zod.string().min(3, "Family name is required"),
+  aboutmyself: zod.string().min(3, "Required"),
+  myhobbies: zod.string().min(3, "Required"),
+  bloodGroup: zod.string().min(3, "Blood Group Required"),
   motherOccupation: zod.string().min(3, "Mother's Occupation is required"),
   brother: zod.number().min(0, "Brother count is required"),
   marriedBrother: zod.number().min(0, "Married Brother count is required"),
@@ -28,12 +32,30 @@ const schema = zod.object({
   uncleGothram: zod.string().optional(),
   ancestorOrigin: zod.string().optional(),
   aboutMyFamily: zod.string().optional(),
+  // physicallyChallenged: zod.string().optional(),
+  // defectDetails: zod.string().optional(),
 }).required();
+
+
+// const bloodGroupOptions = [
+//   { label: "Select Blood Group", value: "" },
+//   { label: "A+", value: "A+" },
+//   { label: "A-", value: "A-" },
+//   { label: "B+", value: "B+" },
+//   { label: "B-", value: "B-" },
+//   { label: "AB+", value: "AB+" },
+//   { label: "AB-", value: "AB-" },
+//   { label: "O+", value: "O+" },
+//   { label: "O-", value: "O-" },
+// ];
 
 interface FamilyDetailsInputs {
   fathername: string;
   fatherOccupation: string;
   mothername?: string;
+  familyname?: string;
+  aboutmyself?: string;
+  myhobbies?: string;
   motherOccupation?: string;
   familyType?: string;
   familyValue?: string;
@@ -48,6 +70,9 @@ interface FamilyDetailsInputs {
   marriedBrother: number;
   sister: number;
   marriedSister: number;
+  bloodGroup?: string;
+  physicallyChallenged?: string;
+  defectDetails?: string;
 }
 
 interface Occupation {
@@ -82,7 +107,7 @@ interface FamilyValue {
 const FamilyDetails: React.FC = () => {
   const navigate = useNavigate();
 
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<FamilyDetailsInputs>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<FamilyDetailsInputs>({
     resolver: zodResolver(schema),
   });
 
@@ -99,6 +124,7 @@ const FamilyDetails: React.FC = () => {
   const [familyStatus, setFamilyStatus] = useState<FamilyStatus[]>([]);
   const [familyValue, setFamilyValue] = useState<FamilyValue[]>([]);
 
+  const physicallyChallengedValue = watch("physicallyChallenged");
 
 
 
@@ -304,6 +330,76 @@ const FamilyDetails: React.FC = () => {
               <span className="text-red-500">{errors.motherOccupation.message}</span>
             )}
           </div>
+
+
+          <div>
+            <InputField label="Family name" required {...register("familyname")} />
+            {errors.familyname && <span className="text-red-500">{errors.familyname.message}</span>}
+          </div>
+
+          <div>
+            <InputField label="About Myself" required {...register("aboutmyself")} />
+            {errors.aboutmyself && <span className="text-red-500">{errors.aboutmyself.message}</span>}
+          </div>
+
+          <div>
+            <InputField label="My Hobbies" required {...register("myhobbies")} />
+            {errors.myhobbies && <span className="text-red-500">{errors.myhobbies.message}</span>}
+          </div>
+
+          <div>
+            <InputField label="Blod Group" required {...register("bloodGroup")} />
+            {errors.bloodGroup && <span className="text-red-500">{errors.bloodGroup.message}</span>}
+          </div>
+
+
+
+
+
+
+          {/* <div>
+            <label htmlFor="bloodGroup" className="block mb-1">
+              Blood Group
+            </label>
+            <select
+              id="bloodGroup"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              defaultValue=""
+              {...register("bloodGroup")}
+            >
+              
+              {bloodGroupOptions.map(option => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+            {errors.bloodGroup && <p>{errors.bloodGroup.message}</p>}
+
+          </div> */}
+
+
+          <div>
+            <label>Physically Challenged</label>
+            <div style={{ marginTop: '8px' }}>
+              <label style={{ marginRight: '16px' }}>
+                <input type="radio" value="yes" {...register("physicallyChallenged")} />
+                Yes
+              </label>
+              <label>
+                <input type="radio" value="no" {...register("physicallyChallenged")} />
+                No
+              </label>
+            </div>
+          </div>
+
+
+          {physicallyChallengedValue === "yes" && (
+            <div>
+              <InputField label="Defect Details" />
+            </div>
+          )}
+
+
+
 
           {/* Brother and Sister selection */}
           <div className="mt-3 flex items-center space-x-48">

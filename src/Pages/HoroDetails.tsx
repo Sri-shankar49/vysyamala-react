@@ -15,6 +15,9 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 
 // Define validation schema with zod
 const schema = zod.object({
+  day: zod.string().min(1, "Day is required"),
+  month: zod.string().min(1, "Month is required"),
+  year: zod.string().min(1, "Year is required"),
   timeOfBirth: zod.string().min(1, "Time of birth is required"),
   placeOfBirth: zod.string().min(3, "Place of birth is required"),
   birthStar: zod.string().min(1, "Birth star is required"),
@@ -23,12 +26,21 @@ const schema = zod.object({
   dosham: zod.string().min(1, "Dosham is required"),
   naalikai: zod.string().min(1, "Naalikai is required"),
   dasaName: zod.string().min(1, "Dasa name is required"),
-  dasaBalance: zod.string().min(1, "Dasa balance is required"),
+  //dasaBalance: zod.string().min(1, "Dasa balance is required"),
   horoscopeHints: zod.string().min(1, "Horoscope hints are required"),
+}).refine((data) => {
+  const { day, month, year } = data;
+  const date = new Date(`${year}-${month}-${day}`);
+  return date instanceof Date && !isNaN(date.valueOf());
+}, {
+  message: "Invalid date",
+  path: ["day", "month", "year"],
 });
 
-
 interface HoroDetailsInputs {
+  day: string;
+  month: string;
+  year: string;
   timeOfBirth: string;
   placeOfBirth: string;
   birthStar: string;
@@ -42,7 +54,6 @@ interface HoroDetailsInputs {
 }
 
 interface HoroDetailsProps { }
-
 
 interface BirthStar {
   birth_id: number;
@@ -59,35 +70,28 @@ interface Lagnam {
   didi_description: string;
 }
 
-interface DasaBalance {
-  balance_id: number;
-  balance_description: string;
-}
+
 
 const HoroDetails: React.FC<HoroDetailsProps> = () => {
-
-  // Navigate to next page
   const navigate = useNavigate();
-
-  // React Hook form
   const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<HoroDetailsInputs>({
     resolver: zodResolver(schema),
   });
 
+  const onSubmit: SubmitHandler<HoroDetailsInputs> = (data) => {
+    console.log(data);
+    console.log("hiiiii");
+    navigate("/PartnerSettings");
+  };
 
-
-  // Dhosam State
   const [selectedDosham, setSelectedDosham] = useState<string | null>(null);
   const [birthStar, setBirthStar] = useState<BirthStar[]>([]);
   const [rasi, setRasiOptions] = useState<Rasi[]>([]);
   const [lagnam, setLagnamOptions] = useState<Lagnam[]>([]);
-  const [dasa, setDasaOptions] = useState<DasaBalance[]>([]);
-
+  //const [dasa, setDasaOptions] = useState<DasaBalance[]>([]);
   const selectedStar = watch("birthStar");
 
-
-
-
+  sessionStorage.setItem('selectedstar', selectedStar);
 
 
   useEffect(() => {
@@ -102,7 +106,6 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     };
     fetchBirthStar();
   }, []);
-
 
   useEffect(() => {
     if (selectedStar) {
@@ -119,8 +122,6 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     }
   }, [selectedStar]);
 
-
-
   useEffect(() => {
     const fetchLagnam = async () => {
       try {
@@ -134,34 +135,28 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     fetchLagnam();
   }, []);
 
+  // useEffect(() => {
+  //   const fetchDasa = async () => {
+  //     try {
+  //       const response = await axios.post("http://103.214.132.20:8000/auth/Get_Dasa_Balance/");
+  //       const options = Object.values(response.data) as DasaBalance[];
+  //       setDasaOptions(options);
+  //     } catch (error) {
+  //       console.error("Error fetching Dasa options:", error);
+  //     }
+  //   };
+  //   fetchDasa();
+  // }, []);
 
-  useEffect(() => {
-    const fetchDasa = async () => {
-      try {
-        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Dasa_Balance/");
-        const options = Object.values(response.data) as DasaBalance[];
-        setDasaOptions(options);
-      } catch (error) {
-        console.error("Error fetching Dasa options:", error);
-      }
-    };
-    fetchDasa();
-  }, []);
-
-
-
-  // Background getting selected
   const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
 
   const handleDoshamChange = (value: string) => {
     setSelectedDosham(value);
-    setValue("dosham", value, { shouldValidate: true })
+    setValue("dosham", value, { shouldValidate: true });
   };
 
-  const onSubmit: SubmitHandler<HoroDetailsInputs> = (data) => {
-    console.log(data);
-    navigate("/PartnerSettings");
-  };
+
+
 
 
 
@@ -212,6 +207,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                 </option>
               ))}
             </select>
+            {errors.birthStar && (
+              <span className="text-red-500">{errors.birthStar.message}</span>
+            )}
           </div>
 
 
@@ -296,28 +294,54 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             )}
           </div>
 
+
+
           <div>
-            <label htmlFor="dasaBalance" className="block mb-1">
-              Dasa Balance
-            </label>
-            <select
-              id="dasaBalance"
-              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("dasaBalance")}
-            >
-              <option value="" selected disabled>
-                -- Select your Dasa Balance --
-              </option>
-              {dasa.map((option) => (
-                <option key={option.balance_id} value={option.balance_id}>
-                  {option.balance_description}
-                </option>
-              ))}
-            </select>
-            {errors.dasaBalance && (
-              <span className="text-red-500">{errors.dasaBalance.message}</span>
-            )}
+            <label htmlFor="dateOfBirth" className="block mb-1">Dasa Balance</label>
+            <div className="flex space-x-2">
+              <div>
+                <select
+                  id="day"
+                  className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                  {...register("day")}
+                >
+                  <option value="" selected disabled>Day</option>
+                  {[...Array(31)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                  ))}
+                </select>
+                {errors.day && <span className="text-red-500">{errors.day.message}</span>}
+              </div>
+              <div>
+                <select
+                  id="month"
+                  className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                  {...register("month")}
+                >
+                  <option value="" selected disabled>Month</option>
+                  {[...Array(12)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>{i + 1}</option>
+                  ))}
+                </select>
+                {errors.month && <span className="text-red-500">{errors.month.message}</span>}
+              </div>
+              <div>
+                <select
+                  id="year"
+                  className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                  {...register("year")}
+                >
+                  <option value="" selected disabled>Year</option>
+                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+                    <option key={year} value={year}>{year}</option>
+                  ))}
+                </select>
+                {errors.year && <span className="text-red-500">{errors.year.message}</span>}
+              </div>
+            </div>
           </div>
+
+
 
           <div>
             <InputField label={"Horoscope Hints"} {...register("horoscopeHints")} />

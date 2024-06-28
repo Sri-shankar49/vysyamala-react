@@ -25,8 +25,8 @@ const schema = zod.object({
   pincode: zod.string().min(6, "Pincode is required"),
   alternatemobileNumber: zod.string().optional(),
   whatsappNumber: zod.string().min(10, 'Whatsapp number must be exactly 10 characters').max(10, 'Whatsapp number must be exactly 10 characters'),
-  daughterMobileNumber: zod.string().min(10, "Daughter Mobile Number is required"),
-  daughterEmail: zod.string().email('Invalid email address').optional(),
+ // daughterMobileNumber: zod.string().min(10, "Daughter Mobile Number is required"),
+  //daughterEmail: zod.string().email('Invalid email address').optional(),
 }).required();
 
 interface FormInputs {

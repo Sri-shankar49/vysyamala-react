@@ -20,19 +20,18 @@ const schema = zod.object({
   age: zod.string().nonempty("Age is required"),
   heightFrom: zod.string().min(1, "Height From is required"),
   heightTo: zod.string().min(1, "Height To is required"),
+  ageFrom: zod.string().min(1, "Age from is required"),
+  ageTo: zod.string().min(1, "Age To is required"),
   education: zod.string().min(1, "Education is required"),
   annualIncome: zod.string().min(1, "Annual Income is required"),
   birthStar: zod.string().min(1, "Birth Star is required"),
-  matchingStar: zod.string().min(1, "Matching Star is required"),
-  workLocation: zod.string().min(1, "Work Location is required"),
-  maritalStatus: zod.array(zod.string()).min(1, "At least one marital status is required"),
-  profession: zod.array(zod.string()).min(1, "At least one profession is required"),
-  dhosam: zod.array(zod.string()),
-  foreignInterest: zod.array(zod.string()),
-  nativeState: zod.array(zod.string()),
-  profilePhoto: zod.boolean(),
+  // maritalStatus: zod.array(zod.string()).min( "At least one marital status is required"),
+  //profession: zod.array(zod.string()).min(1, "At least one profession is required"),
+  //  dhosam: zod.array(zod.string()),
+  //  foreignInterest: zod.array(zod.string()),
+  //  nativeState: zod.array(zod.string()),
+  //  profilePhoto: zod.boolean(),
 }).required();
-
 
 interface PartnerSettingsInputs {
   age: string;
@@ -48,6 +47,8 @@ interface PartnerSettingsInputs {
   foreignInterest: string[];
   nativeState: string[];
   profilePhoto: boolean;
+  ageFrom: string;
+  ageTo: string;
 }
 
 interface EduPref {
@@ -72,7 +73,7 @@ interface MatchingStar {
   match_count: number;
   matching_porutham: string;
   matching_starname: string;
-  matching_rasiname:string;
+  matching_rasiname: string;
   protham_names: null | string[];
   source_star_id: number;
 }
@@ -81,10 +82,20 @@ const PartnerSettings: React.FC = () => {
   const [eduPref, setEduPref] = useState<EduPref[]>([]);
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
   const [birthStar, setBirthStar] = useState<BirthStar[]>([]);
-  const [matchStars, setMatchStars] = useState<MatchingStar[][]>([]); // Array to hold nested arrays of MatchingStar
-  const { register, handleSubmit, formState: { errors }, watch } = useForm<PartnerSettingsInputs>({
+  const [matchStars, setMatchStars] = useState<MatchingStar[][]>([]);
+  const [height, setHeight] = useState<string | null>(null);
+  const [gender, setGender] = useState<string | null>(null);
+
+  const { register, handleSubmit, setValue, formState: { errors }, watch } = useForm<PartnerSettingsInputs>({
     resolver: zodResolver(schema),
   });
+
+
+  const navigate = useNavigate();
+  const onSubmit: SubmitHandler<PartnerSettingsInputs> = data => {
+    console.log(data);
+    navigate('/MembershipPlan');
+  };
 
   const selectedStar = watch('birthStar');
 
@@ -127,34 +138,59 @@ const PartnerSettings: React.FC = () => {
     fetchBirthStar();
   }, []);
 
+  const storedBirthStar = sessionStorage.getItem("selectedstar");
+  const storedGender = sessionStorage.getItem("gender");
+
+  console.log(storedBirthStar);
+  console.log(storedGender);
+
+
   useEffect(() => {
-    if (selectedStar) {
       const fetchMatchingStars = async () => {
         try {
           const response = await axios.post('http://103.214.132.20:8000/auth/Get_Matchstr_Pref/', {
-            birth_star_id: selectedStar,
-            gender: 'male', // Replace 'male' with the actual value you want to pass
+            birth_star_id: storedBirthStar,
+            gender:gender, // Replace 'male' with the actual value you want to pass
           });
 
-          // Extract nested arrays from response data
           const matchCountArrays: MatchingStar[][] = Object.values(response.data).map((matchCount: any) => matchCount);
-
           setMatchStars(matchCountArrays);
-          console.log('Response from server:', matchCountArrays); // Print the nested arrays of MatchingStar
+          console.log('Response from server:', matchCountArrays);
         } catch (error) {
           console.error('Error fetching matching star options:', error);
         }
       };
-
       fetchMatchingStars();
-    }
+    
   }, [selectedStar]);
 
-  const navigate = useNavigate();
-  const onSubmit: SubmitHandler<PartnerSettingsInputs> = data => {
-    console.log(data);
-    navigate('/MembershipPlan');
-  };
+  useEffect(() => {
+    const storedHeight = sessionStorage.getItem("userHeight");
+    const storedAge = sessionStorage.getItem("userAge");
+
+
+
+    if (storedHeight) {
+      setHeight(storedHeight);
+      if (storedGender === 'male') {
+        setValue("heightFrom", storedHeight);
+      } else {
+        setValue("heightTo", storedHeight);
+      }
+    }
+    if (storedGender) {
+      setGender(storedGender);
+    }
+    if (storedAge) {
+      if (storedGender === 'male') {
+        setValue("ageFrom", storedAge);
+      } else {
+        setValue("ageTo", storedAge);
+      }
+    }
+  }, [setValue]);
+
+
 
   return (
     <div className="pb-20">
@@ -168,39 +204,27 @@ const PartnerSettings: React.FC = () => {
           <h5 className="text-[24px] font-semibold">Advanced Search</h5>
 
           <div className="flex justify-between items-center">
-            <div>
-              {/* <h5 className="text-[18px] text-primary font-semibold">Age</h5> */}
-              <div className="flex items-center space-x-5">
-                {/* <InputField label={""} name={""} placeholder="From" />
-                <InputField label={""} name={""} placeholder="To" /> */}
 
+
+
+
+            <div>
+              <h5 className="text-[18px] text-primary font-semibold">Age</h5>
+              <div className="flex items-center space-x-5">
                 <div>
-                  <label htmlFor="nativeState" className="block mb-1">
-                    Age
-                  </label>
-                  <select
-                    id="age"
-                    className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-                    {...register("age")}
-                  >
-                    <option value="" selected disabled>
-                      -- Select your Age --
-                    </option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                  </select>
-                  {errors.age && <span className="text-red-500">{errors.age.message}</span>}
+                  <InputField label={""} placeholder="From" {...register("ageFrom")} />
+                  {errors.ageFrom && <span className="text-red-500">{errors.ageFrom.message}</span>}
+                </div>
+                <div>
+                  <InputField label={""} placeholder="To" {...register("ageTo")} />
+                  {errors.ageTo && <span className="text-red-500">{errors.ageTo.message}</span>}
                 </div>
               </div>
             </div>
+
+
+
+
 
             <div>
               <h5 className="text-[18px] text-primary font-semibold">Height</h5>
@@ -208,12 +232,10 @@ const PartnerSettings: React.FC = () => {
                 <div>
                   <InputField label={""} placeholder="From" {...register("heightFrom")} />
                   {errors.heightFrom && <span className="text-red-500">{errors.heightFrom.message}</span>}
-
                 </div>
                 <div>
                   <InputField label={""} placeholder="To" {...register("heightTo")} />
                   {errors.heightTo && <span className="text-red-500">{errors.heightTo.message}</span>}
-
                 </div>
               </div>
             </div>
@@ -230,8 +252,8 @@ const PartnerSettings: React.FC = () => {
                 <input
                   type="checkbox"
                   id="neverMarried"
-                  name="neverMarried"
                   value="neverMarried"
+                  {...register("maritalStatus")}
                 />
                 <label htmlFor="neverMarried" className="pl-1">
                   Never Married
@@ -242,8 +264,8 @@ const PartnerSettings: React.FC = () => {
                 <input
                   type="checkbox"
                   id="married"
-                  name="married"
                   value="married"
+                  {...register("maritalStatus")}
                 />
                 <label htmlFor="married" className="pl-1">
                   Married
@@ -254,8 +276,8 @@ const PartnerSettings: React.FC = () => {
                 <input
                   type="checkbox"
                   id="divorced"
-                  name="divorced"
                   value="divorced"
+                  {...register("maritalStatus")}
                 />
                 <label htmlFor="divorced" className="pl-1">
                   Divorced
@@ -266,8 +288,8 @@ const PartnerSettings: React.FC = () => {
                 <input
                   type="checkbox"
                   id="seperated"
-                  name="seperated"
                   value="seperated"
+                  {...register("maritalStatus")}
                 />
                 <label htmlFor="seperated" className="pl-1">
                   Seperated
@@ -275,13 +297,20 @@ const PartnerSettings: React.FC = () => {
               </div>
 
               <div>
-                <input type="checkbox" id="widow" name="widow" value="widow" />
+                <input
+                  type="checkbox"
+                  id="widow"
+                  value="widow"
+                  {...register("maritalStatus")}
+                />
                 <label htmlFor="widow" className="pl-1">
                   Widow / Widower
                 </label>
               </div>
             </div>
-            {errors.maritalStatus && <span className="text-red-500">{errors.maritalStatus.message}</span>}
+            {errors.maritalStatus && (
+              <span className="text-red-500">{errors.maritalStatus.message}</span>
+            )}
           </div>
 
           <div>
@@ -294,8 +323,8 @@ const PartnerSettings: React.FC = () => {
                 <input
                   type="checkbox"
                   id="employed"
-                  name="employed"
                   value="employed"
+                  {...register("profession")}
                 />
                 <label htmlFor="employed" className="pl-1">
                   Employed
@@ -306,8 +335,8 @@ const PartnerSettings: React.FC = () => {
                 <input
                   type="checkbox"
                   id="business"
-                  name="business"
                   value="business"
+                  {...register("profession")}
                 />
                 <label htmlFor="business" className="pl-1">
                   Business
@@ -318,8 +347,8 @@ const PartnerSettings: React.FC = () => {
                 <input
                   type="checkbox"
                   id="student"
-                  name="student"
                   value="student"
+                  {...register("profession")}
                 />
                 <label htmlFor="student" className="pl-1">
                   Student
@@ -330,8 +359,8 @@ const PartnerSettings: React.FC = () => {
                 <input
                   type="checkbox"
                   id="notWorking"
-                  name="notWorking"
                   value="notWorking"
+                  {...register("profession")}
                 />
                 <label htmlFor="notWorking" className="pl-1">
                   Not Working
@@ -342,60 +371,56 @@ const PartnerSettings: React.FC = () => {
                 <input
                   type="checkbox"
                   id="notMentioned"
-                  name="notMentioned"
                   value="notMentioned"
+                  {...register("profession")}
                 />
                 <label htmlFor="notMentioned" className="pl-1">
                   Not Mentioned
                 </label>
               </div>
             </div>
-            {errors.profession && <span className="text-red-500">{errors.profession.message}</span>}
+            {errors.profession && (
+              <span className="text-red-500">{errors.profession.message}</span>
+            )}
           </div>
+
 
           {/* <InputField label={"Education"} name={"education"} /> */}
           <div>
-            <label htmlFor="education" className="block mb-1">
-              Education
-            </label>
-            <select
-              id="education"
-              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("education")}
-            >
-              <option value="" selected disabled>
-                -- Select your Education --
-              </option>
-              {eduPref.map((options) => (
-                <option key={options.Edu_Pref_id} value={options.Edu_Pref_id}>
-                  {options.Edu_name}
-                </option>
-              ))}
-            </select>
+            <label className="block mb-1">Education</label>
+            {eduPref.map((option) => (
+              <div key={option.Edu_Pref_id}>
+                <input
+                  type="checkbox"
+                  id={`education-${option.Edu_Pref_id}`}
+                  value={option.Edu_Pref_id}
+                  {...register("education")}
+                />
+                <label htmlFor={`education-${option.Edu_Pref_id}`}>
+                  {option.Edu_name}
+                </label>
+              </div>
+            ))}
             {errors.education && <span className="text-red-500">{errors.education.message}</span>}
-
           </div>
 
           {/* <InputField label={"Income"} name={"income"} /> */}
           {/* Annual Income */}
           <div>
-            <label htmlFor="annualIncome" className="block mb-1">
-              Annual Income
-            </label>
-            <select
-              id="annualIncome"
-              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("annualIncome")}
-            >
-              <option value="" disabled selected>
-                -- Select your Annual Income --
-              </option>
-              {annualIncome.map((option) => (
-                <option key={option.income_id} value={option.income_id}>
+            <label className="block mb-1">Annual Income</label>
+            {annualIncome.map((option) => (
+              <div key={option.income_id}>
+                <input
+                  type="checkbox"
+                  id={`annualIncome-${option.income_id}`}
+                  value={option.income_id}
+                  {...register("annualIncome")}
+                />
+                <label htmlFor={`annualIncome-${option.income_id}`}>
                   {option.income_description}
-                </option>
-              ))}
-            </select>
+                </label>
+              </div>
+            ))}
             {errors.annualIncome && (
               <span className="text-red-500">{errors.annualIncome.message}</span>
             )}
@@ -403,73 +428,35 @@ const PartnerSettings: React.FC = () => {
 
           {/* Dhosam */}
           <div>
-            <h5 className="text-[18px] text-primary font-semibold mb-2">
-              Dhosam
-            </h5>
-
-            <div className="flex justify-start items-center space-x-10">
-              <div>
-                <input
-                  type="checkbox"
-                  id="chevvai"
-                  name="chevvai"
-                  value="chevvai"
-                />
-                <label htmlFor="chevvai" className="pl-1">
-                  Chevvai
-                </label>
-              </div>
-
-              <div>
-                <input type="checkbox" id="rehu" name="rehu" value="rehu" />
-                <label htmlFor="rehu" className="pl-1">
-                  Rehu / Ketu
-                </label>
-              </div>
-
-              <div>
-                <input type="checkbox" id="unknown" name="unknown" value="unknown" />
-                <label htmlFor="unknown" className="pl-1">
-                  Unknown
-                </label>
-              </div>
-            </div>
+            <h5 className="text-[18px] text-primary font-semibold mb-2">Dhosam</h5>
+            <select
+              id="dhosam"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("dhosam")}
+              defaultValue="unknown" // Set default value to "unknown"
+            >
+              <option value="chevvai">Chevvai</option>
+              <option value="rehu">Rehu / Ketu</option>
+              <option value="unknown">Unknown</option>
+            </select>
+            {errors.dhosam && <span className="text-red-500">{errors.dhosam.message}</span>}
           </div>
 
-          {/* Foreign Interest */}
           <div>
-            <h5 className="text-[18px] text-primary font-semibold mb-2">
-              Foreign Interest
-            </h5>
-
-            <div className="flex justify-start items-center space-x-10">
-              <div>
-                <input
-                  type="checkbox"
-                  id="yes"
-                  name="yes"
-                  value="yes"
-                />
-                <label htmlFor="yes" className="pl-1">
-                  Yes
-                </label>
-              </div>
-
-              <div>
-                <input type="checkbox" id="no" name="no" value="no" />
-                <label htmlFor="no" className="pl-1">
-                  No
-                </label>
-              </div>
-
-              <div>
-                <input type="checkbox" id="both" name="both" value="both" />
-                <label htmlFor="both" className="pl-1">
-                  Both
-                </label>
-              </div>
-            </div>
+            <h5 className="text-[18px] text-primary font-semibold mb-2">Foreign Interest</h5>
+            <select
+              id="foreignInterest"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("foreignInterest")}
+              defaultValue="both" // Set default value to "both"
+            >
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+              <option value="both">Both</option>
+            </select>
+            {errors.foreignInterest && <span className="text-red-500">{errors.foreignInterest.message}</span>}
           </div>
+
 
           <div>
             <label htmlFor="birthStar" className="block mb-1">
@@ -603,17 +590,17 @@ const PartnerSettings: React.FC = () => {
           </div>
 
           <div className="justify-start items-center gap-x-5">
-                    {matchStars.map((matchCountArray, index) => (
-                        <MatchingStars
-                            key={index}
-                            initialPoruthas={`Matching Set ${index + 1}`}
-                            starAndRasi={matchCountArray.map(star => ({
-                                star: star.matching_starname,
-                                rasi: star.matching_rasiname
-                            }))}
-                        />
-                    ))}
-                </div>
+            {matchStars.map((matchCountArray, index) => (
+              <MatchingStars
+                key={index}
+                initialPoruthas={`Matching Set ${index + 1}`}
+                starAndRasi={matchCountArray.map(star => ({
+                  star: star.matching_starname,
+                  rasi: star.matching_rasiname
+                }))}
+              />
+            ))}
+          </div>
 
           <div className="mt-7 flex justify-between">
             <div className="">
