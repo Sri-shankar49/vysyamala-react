@@ -63,6 +63,15 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
   // Marital Status Options
   const [maritalStatusOptions, setMaritalStatusOptions] = useState<MaritalStatusOption[]>([]);
   const [complexionOptions, setComplexionOptions] = useState<ComplexionOption[]>([]);
+  const [profileowner, setProfileOwner] = useState<string | null>(null);
+
+  // Get the value from sessionStorage
+  useEffect(() => {
+    const profileowner = sessionStorage.getItem("profile_owner");
+    setProfileOwner(profileowner);
+  }, []);
+  
+
 
   // React Hook form
   const { register, handleSubmit, formState: { errors }, watch, } = useForm<FormInputs>({ resolver: zodResolver(schema), });
@@ -81,7 +90,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
     fetchMaritalStatus();
   }, []);
 
-
+  // Fetch complexion options
   useEffect(() => {
     const fetchComplexionStatus = async () => {
       try {
@@ -94,9 +103,6 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
     };
     fetchComplexionStatus();
   }, []);
-
-
-
 
   // Calculate age based on date of birth
   const calculateAge = (dob: string) => {
@@ -119,10 +125,25 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
     if (dateOfBirth) {
       const age = calculateAge(dateOfBirth);
       setAgeMessage(`Your age is ${age}`);
+      sessionStorage.setItem('userAge', age.toString()); // Convert age to string before storing
     } else {
       setAgeMessage("");
+      sessionStorage.removeItem('userAge'); // Remove age from session storage if date of birth is not provided
     }
   }, [dateOfBirth]);
+
+  // Watch the height input field and store height in session storage
+  const height = watch("height");
+  useEffect(() => {
+    if (height) {
+      sessionStorage.setItem("userHeight", height);
+    }
+  }, [height]);
+
+ 
+
+ 
+
 
   // Date Validation
   useEffect(() => {
@@ -139,7 +160,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
     <form onSubmit={handleSubmit(onSubmit)}>
       <h2 className="text-primary text-[22px] text-center mb-4 font-semibold">
         Great! Now some basic <br />
-        details about your daughter
+        details about your {profileowner}
       </h2>
       <div className="mb-5 space-y-5">
 
@@ -147,29 +168,28 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
           <input
             type="text"
             id="name"
-            placeholder="Daughter name (based on create profile for)"
+            placeholder={`${profileowner} name`} 
             className={`outline-none px-3 py-2 w-full text-primary border border-footer-text-gray rounded`}
             {...register("name")}
           />
           {errors.name && <span className="text-red-500">{errors.name.message}</span>}
-
         </div>
 
         <div>
-        <select
-          id="maritalStatus"
-          className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
-          {...register("maritalStatus")}
-        >
-          <option value="" disabled selected>Select your Marital Status</option>
-          {maritalStatusOptions.map((option) => (
-            <option key={option.marital_sts_id} value={option.marital_sts_id}>
-              {option.marital_sts_name}
-            </option>
-          ))}
-        </select>
-        {errors.maritalStatus && <span className="text-red-500">{errors.maritalStatus.message}</span>}
-      </div>
+          <select
+            id="maritalStatus"
+            className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+            {...register("maritalStatus")}
+          >
+            <option value="" disabled>Select your Marital Status</option>
+            {maritalStatusOptions.map((option) => (
+              <option key={option.marital_sts_id} value={option.marital_sts_id}>
+                {option.marital_sts_name}
+              </option>
+            ))}
+          </select>
+          {errors.maritalStatus && <span className="text-red-500">{errors.maritalStatus.message}</span>}
+        </div>
 
         <div>
           <input
@@ -179,11 +199,8 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
             className={`outline-none px-3 py-2 w-full text-primary border border-footer-text-gray rounded`}
             {...register("dob")}
           />
-
           {ageMessage && <p className="text-green-500">{ageMessage}</p>}
-
           {errors.dob && <span className="text-red-500">{errors.dob.message}</span>}
-
         </div>
 
         <div>
@@ -202,12 +219,12 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
             className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
             {...register("complexion")}
           >
-            <option value="" disabled selected>Select your complexion</option>
+            <option value="" disabled>Select your complexion</option>
             {complexionOptions.map((option) => (
-            <option key={option.complexion_id} value={option.complexion_id}>
-              {option.complexion_description}
-            </option>
-          ))}
+              <option key={option.complexion_id} value={option.complexion_id}>
+                {option.complexion_description}
+              </option>
+            ))}
           </select>
           {errors.complexion && <span className="text-red-500">{errors.complexion.message}</span>}
         </div>

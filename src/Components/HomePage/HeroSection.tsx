@@ -71,6 +71,7 @@ export const HeroSection: React.FC<AccountSetupProps> = () => {
       // Set profile_id and profile_owner in session storage
       sessionStorage.setItem('profile_id', response.data.profile_id);
       sessionStorage.setItem('profile_owner', response.data.profile_owner);
+      sessionStorage.setItem('gender', response.data.gender);
 
       setMobileNumber(data.mobileNumber); // Set mobile number
       setShowOtpPopup(true); // Show OTP popup after successful registration

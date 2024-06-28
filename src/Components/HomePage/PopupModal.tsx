@@ -97,11 +97,8 @@ export const PopupModal: React.FC<PopupModalProps> = ({ onClose, mobileNumber })
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg p-8 max-w-md w-full">
-        <IoIosCloseCircle
-          onClick={onClose}
-          className="absolute top-2 right-2 text-3xl text-black cursor-pointer hover:text-gray-600"
-        />
+      <div className="bg-white rounded-lg p-8 max-w-md w-full relative">
+     
         {!openNextPopup ? (
           <form onSubmit={handleSubmit}>
             <h2 className="text-primary text-2xl font-semibold mb-4 text-center">OTP Verification</h2>

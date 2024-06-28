@@ -92,11 +92,13 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
             });
 
             // Extract profile_id and profile_owner from the response
-            const { profile_id, profile_owner } = response.data;
+            const { profile_id, profile_owner,Gender } = response.data;
 
             // Store profile_id and profile_owner in session storage
             sessionStorage.setItem('profile_id', profile_id);
             sessionStorage.setItem('profile_owner', profile_owner);
+            sessionStorage.setItem('gender', Gender);
+
 
             console.log('API Response:', response.data);
             onNext(data.mobile); // Pass mobile number to onNext function
