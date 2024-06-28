@@ -89,7 +89,7 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
           <h5 className="text-[20px] font-semibold text-white">A Platform to</h5>
           <h3 className="text-[36px] font-bold text-secondary">Find your perfect partner and family</h3>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex items-center justify-between flex-wrap gap-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex items-start justify-between flex-wrap gap-4">
             <div>
               <select {...register("profileFor")} className="bg-gloss-black text-[16px] text-white font-semibold py-[13px] px-[24px] border-[3px] border-[white] rounded-[8px] focus-visible:outline-0">
                 <option value="" hidden className="text-white">Select Profile for</option>

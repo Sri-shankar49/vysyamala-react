@@ -8,7 +8,9 @@ import { AwardsGallery } from '../Components/HomePage/AwardsGallery';
 export const HomePage = () => {
     return (
         <div>
-            <HeroSection />
+            <HeroSection onNext={function (): void {
+                throw new Error('Function not implemented.');
+            }} />
             <FeaturedBride />
             <FeaturedGroom />
             <WhyVysyamala />

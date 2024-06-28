@@ -1,3 +1,5 @@
+import { HeroSlider } from "../Components/LoginHome/HeroSlider";
+import { MatchingProfiles } from "../Components/LoginHome/MatchingProfiles";
 
 export const LoginHome = () => {
   // Retrieve token from sessionStorage
@@ -15,6 +17,8 @@ export const LoginHome = () => {
       <h2>LoginHome</h2>
       <p>Token: {token}</p>
       <button onClick={handleLogout}>Logout</button>
+      <HeroSlider />
+      <MatchingProfiles />
     </div>
   );
 };
