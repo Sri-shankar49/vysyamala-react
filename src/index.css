@@ -77,23 +77,16 @@ button:focus-visible {
   @apply text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none;
 }
 
-
-/*** slick ***/
-.slick-list {
-  padding: 3em 0em !important;
+.active-nav {
+  @apply font-semibold hover:text-main
+    hover:cursor-pointer relative before:content-[''] before:absolute before:block before:w-full before:h-[3px] before:rounded 
+    before:-bottom-5 before:left-0 before:bg-main
+    before:hover:scale-x-100 before:scale-x-0 before:origin-top-left
+    before:transition before:ease-in-out before:duration-300;
 }
 
-.slick-prev:before, .slick-next:before {
-  font-size: 75px !important;
-}
-
-.slick-dots {
-  bottom: 50px !important;
-}
-
-.slick-dots li button:before {
-  color: white !important;
-  font-size: 16px !important;
+.active-nav.active {
+  @apply text-main cursor-pointer before:scale-x-100 transition-all hover:transition-all;
 }
 
 /*** fade profile image bottom ***/
@@ -102,7 +95,7 @@ button:focus-visible {
 }
 
 .fade-bottom::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0.25rem;

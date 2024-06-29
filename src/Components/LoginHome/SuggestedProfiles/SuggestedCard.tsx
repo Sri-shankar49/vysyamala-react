@@ -1,10 +1,20 @@
 import React, { useState } from "react";
-import GridProfileImg from "../../../../assets/images/GridProfileImg.png";
+import GridProfileImg from "../../../assets/images/GridProfileImg.png";
 import { IoCalendar } from "react-icons/io5";
 import { FaPersonArrowUpFromLine } from "react-icons/fa6";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 
-export const GridCard = () => {
+interface SuggestedCardProps {
+  profileImg?: string;
+  profileId: string;
+  age: string;
+}
+
+export const SuggestedCard: React.FC<SuggestedCardProps> = ({
+  profileImg,
+  profileId,
+  age,
+}) => {
   // State to track if the card is bookmarked or not
   const [isBookmarked, setIsBookmarked] = useState(false);
 
@@ -12,7 +22,7 @@ export const GridCard = () => {
     setIsBookmarked(!isBookmarked);
   };
   return (
-    <div className="relative w-11/12 rounded-xl shadow-md px-3 py-3">
+    <div className="relative w-fit mx-auto bg-white rounded-xl shadow-md px-3 py-3 my-5 cursor-grab">
       <div className="mb-3">
         <img src={GridProfileImg} alt="" className="w-full" />
       </div>
@@ -25,8 +35,7 @@ export const GridCard = () => {
         </h4>
         <div className="flex justify-between items-center">
           <p className="text-primary flex items-center">
-            {" "}
-            <IoCalendar className="mr-2" /> 28 yrs
+            <IoCalendar className="mr-2" /> 28 yrs{" "}
           </p>
           <p className="text-primary flex items-center">
             {" "}

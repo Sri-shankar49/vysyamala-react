@@ -2,6 +2,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { HeroSliderContent } from "./HeroSlider/HeroSliderContent";
+import "./HeroSlider/HeroSlickStyle.css";
 
 const settings = {
     dots: true,
@@ -47,7 +48,7 @@ export const HeroSlider = () => {
     return (
         <section className="bg-heroSliderBgImg bg-repeat bg-cover w-full h-full ">
 
-            <div className="container mx-auto">
+            <div className="container mx-auto heroSlickStyle">
                 <div className="slider-container">
                     <Slider {...settings}>
                         <HeroSliderContent />
