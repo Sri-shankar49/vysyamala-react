@@ -1,0 +1,17 @@
+/*** Hero Section Slick ***/
+.heroSlickStyle .slick-prev:before{
+  font-size: 75px !important;
+}
+
+.heroSlickStyle .slick-next:before{
+  font-size: 75px !important;
+}
+
+.heroSlickStyle .slick-dots {
+  bottom: 50px !important;
+}
+
+.heroSlickStyle .slick-dots li button:before {
+  color: white !important;
+  font-size: 16px !important;
+}

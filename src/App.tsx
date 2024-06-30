@@ -19,7 +19,8 @@ import PartnerSettings from "./Pages/PartnerSettings";
 import { MembershipPlan } from "./Pages/MembershipPlan";
 import { PayNow } from "./Pages/PayNow";
 import { ThankYouReg } from "./Pages/ThankYouReg";
-import { LoginHome } from "./Pages/LoginHome";
+import { LoginHome } from "./Pages/AfterLogin/LoginHome";
+import Search from "./Pages/AfterLogin/Search";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -67,6 +68,7 @@ function App() {
             <Route path="/PayNow" element={<PayNow />} />
             <Route path="/ThankYouReg" element={<ThankYouReg />} />
             <Route path="/LoginHome" element={<LoginHome />} />
+            <Route path="/Search" element={<Search />} />
           </Route>
         </Routes>
       </BrowserRouter>

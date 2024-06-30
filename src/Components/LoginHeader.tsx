@@ -3,7 +3,7 @@ import VysyamalaLogo from "../assets/icons/VysyamalaLogo.png";
 import ProfileImg from "../assets/icons/profileRound.png";
 import { MdMessage } from "react-icons/md";
 import { FaBell } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 export const LoginHeader: React.FC = () => {
   return (
@@ -18,16 +18,37 @@ export const LoginHeader: React.FC = () => {
 
           <nav className="flex items-center space-x-10">
             <ul className="flex justify-center items-center text-ash space-x-14">
-              <Link to="/LoginHome">
+              <NavLink
+                to="/LoginHome"
+                className="active-nav"
+                aria-current="page"
+              >
                 <li className="text-[16px] cursor-pointer font-medium">Home</li>
-              </Link>
-              <li className="text-[16px] cursor-pointer font-medium">Search</li>
-              <li className="text-[16px] cursor-pointer font-medium">
-                Dashboard
-              </li>
-              <li className="text-[16px] cursor-pointer font-medium">
-                Wishlist
-              </li>
+              </NavLink>
+              <NavLink to="/Search" aria-current="page" className="active-nav">
+                <li className="text-[16px] cursor-pointer font-medium">
+                  Search
+                </li>
+              </NavLink>
+
+              <NavLink
+                to="/Dashboard"
+                aria-current="page"
+                className="active-nav"
+              >
+                <li className="text-[16px] cursor-pointer font-medium">
+                  Dashboard
+                </li>
+              </NavLink>
+              <NavLink
+                to={"/Wishlist"}
+                aria-current="page"
+                className="active-nav"
+              >
+                <li className="text-[16px] cursor-pointer font-medium">
+                  Wishlist
+                </li>
+              </NavLink>
               <li className="text-[16px] cursor-pointer font-medium">
                 <MdMessage className="text-[22px]" />
               </li>
