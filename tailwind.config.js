@@ -9,6 +9,7 @@ export default {
         gradientLight:
           "linear-gradient(to right, #bd1225, #cd1f2f, #de2b3a, #ee3645, #ff4050)",
         gradientBgImg: "url('assets/images/gradientBgImg.png'), linear-gradient(92.08deg, #BD1225 0.6%, #FF4050 103.08%)",
+        heroSliderBgImg: "url('assets/images/HeroSliderBg.png')",
       },
 
       colors: {
@@ -17,6 +18,7 @@ export default {
         secondary: "#FF6666",
         white: "#FFFFFF",
         vysyamalaBlack: "#282C3F",
+        vysyamalaBlackSecondary: "#14181B",
         vysyamalaSandal: "#FFFBE3",
         checkGreen: "#53C840",
         checkRed: "#cd3040",

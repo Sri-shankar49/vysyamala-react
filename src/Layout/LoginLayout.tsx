@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { LoginHeader } from "../Components/LoginHeader";
-import { Footer } from "../Components/Footer";
+import { LoginFooter } from "../Components/LoginFooter";
 
 const LoginLayout: React.FC = () => {
   return (
@@ -9,7 +9,7 @@ const LoginLayout: React.FC = () => {
       <main>
         <Outlet />
       </main>
-      <Footer />
+      <LoginFooter />
     </>
   );
 };
