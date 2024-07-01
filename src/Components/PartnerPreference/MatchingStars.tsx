@@ -15,14 +15,14 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({ initialPoruthas, starAndR
                     {initialPoruthas}
                 </h5>
 
-                <div  className="grid grid-cols-5 grid-rows-1 justify-between items-center gap-x-3 gap-y-2">
+                <div className="grid grid-cols-5 grid-rows-1 justify-between items-center gap-x-3 gap-y-2">
                     {/* Display stars and rasi */}
                     {starAndRasi.map((item, index) => (
                         <div key={`star-rasi-${index}`}>
                             <Checkbox
                                 id={`star-${index}`}
                                 name={`star-${index}`}
-                                value={`star-${index}`}
+                                value={`${item.star} - ${item.rasi}`}  // Ensure value reflects star and rasi
                                 label={`${item.star} - ${item.rasi}`}
                             />
                         </div>

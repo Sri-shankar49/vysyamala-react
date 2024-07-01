@@ -3,35 +3,23 @@ import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
 import { useNavigate } from "react-router-dom";
-// import { useState } from "react";
-// import Checkbox from "../Components/PartnerPreference/CheckBox";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
-import MatchingStars from "../Components/PartnerPreference/MatchingStars"
+import MatchingStars from "../Components/PartnerPreference/MatchingStars";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-
-
-
-
 
 // Define validation schema with zod
 const schema = zod.object({
   age: zod.string().nonempty("Age is required"),
   heightFrom: zod.string().min(1, "Height From is required"),
   heightTo: zod.string().min(1, "Height To is required"),
-  ageFrom: zod.string().min(1, "Age from is required"),
-  ageTo: zod.string().min(1, "Age To is required"),
-  education: zod.string().min(1, "Education is required"),
-  annualIncome: zod.string().min(1, "Annual Income is required"),
-  birthStar: zod.string().min(1, "Birth Star is required"),
-  // maritalStatus: zod.array(zod.string()).min( "At least one marital status is required"),
-  //profession: zod.array(zod.string()).min(1, "At least one profession is required"),
-  //  dhosam: zod.array(zod.string()),
-  //  foreignInterest: zod.array(zod.string()),
-  //  nativeState: zod.array(zod.string()),
-  //  profilePhoto: zod.boolean(),
+  // ageFrom: zod.string().min(1, "Age from is required"),
+  // ageTo: zod.string().min(1, "Age To is required"),
+  // education: zod.string().min(1, "Education is required"),
+  // annualIncome: zod.string().min(1, "Annual Income is required"),
+  //birthStar: zod.string().min(1, "Birth Star is required"),
 }).required();
 
 interface PartnerSettingsInputs {
@@ -87,18 +75,15 @@ const PartnerSettings: React.FC = () => {
   const [height, setHeight] = useState<string | null>(null);
   const [gender, setGender] = useState<string | null>(null);
 
-  const { register, handleSubmit, setValue, formState: { errors }, watch } = useForm<PartnerSettingsInputs>({
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm<PartnerSettingsInputs>({
     resolver: zodResolver(schema),
   });
-
 
   const navigate = useNavigate();
   const onSubmit: SubmitHandler<PartnerSettingsInputs> = data => {
     console.log(data);
     navigate('/MembershipPlan');
   };
-
-  const selectedStar = watch('birthStar');
 
   useEffect(() => {
     const fetchEduPref = async () => {
@@ -145,31 +130,29 @@ const PartnerSettings: React.FC = () => {
   console.log(storedBirthStar);
   console.log(storedGender);
 
-
   useEffect(() => {
-    const fetchMatchingStars = async () => {
-      try {
-        const response = await axios.post('http://103.214.132.20:8000/auth/Get_Matchstr_Pref/', {
-          birth_star_id: storedBirthStar,
-          gender: gender, // Replace 'male' with the actual value you want to pass
-        });
+    if (storedBirthStar && storedGender) {
+      const fetchMatchingStars = async () => {
+        try {
+          const response = await axios.post('http://103.214.132.20:8000/auth/Get_Matchstr_Pref/', {
+            birth_star_id: storedBirthStar,
+            gender: storedGender,
+          });
 
-        const matchCountArrays: MatchingStar[][] = Object.values(response.data).map((matchCount: any) => matchCount);
-        setMatchStars(matchCountArrays);
-        console.log('Response from server:', matchCountArrays);
-      } catch (error) {
-        console.error('Error fetching matching star options:', error);
-      }
-    };
-    fetchMatchingStars();
-
-  }, [selectedStar]);
+          const matchCountArrays: MatchingStar[][] = Object.values(response.data).map((matchCount: any) => matchCount);
+          setMatchStars(matchCountArrays);
+          console.log('Response from server:', matchCountArrays);
+        } catch (error) {
+          console.error('Error fetching matching star options:', error);
+        }
+      };
+      fetchMatchingStars();
+    }
+  }, [storedBirthStar, storedGender]);
 
   useEffect(() => {
     const storedHeight = sessionStorage.getItem("userHeight");
-    const storedAge = sessionStorage.getItem("userAge");
-
-
+   // const storedAge = sessionStorage.getItem("userAge");
 
     if (storedHeight) {
       setHeight(storedHeight);
@@ -182,15 +165,14 @@ const PartnerSettings: React.FC = () => {
     if (storedGender) {
       setGender(storedGender);
     }
-    if (storedAge) {
-      if (storedGender === 'male') {
-        setValue("ageFrom", storedAge);
-      } else {
-        setValue("ageTo", storedAge);
-      }
-    }
+    // if (storedAge) {
+    //   if (storedGender === 'male') {
+    //     setValue("ageFrom", storedAge);
+    //   } else {
+    //     setValue("ageTo", storedAge);
+    //   }
+    // }
   }, [setValue]);
-
 
 
   return (
@@ -206,9 +188,43 @@ const PartnerSettings: React.FC = () => {
 
           <div className="flex justify-between items-center">
 
+          <div>
+              {/* <h5 className="text-[18px] text-primary font-semibold">Age</h5> */}
+              <div className="flex items-center space-x-5">
+                {/* <InputField label={""} name={""} placeholder="From" />
+                <InputField label={""} name={""} placeholder="To" /> */}
+
+                <div>
+                  <label htmlFor="nativeState" className="block mb-1">
+                    Age Difference
+                  </label>
+                  <select
+                    id="age"
+                    className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                    {...register("age")}
+                  >
+                    <option value="" selected disabled>
+                      -- Select your Age --
+                    </option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                  {errors.age && <span className="text-red-500">{errors.age.message}</span>}
+                </div>
+              </div>
+            </div>
 
 
 
+{/* 
             <div>
               <h5 className="text-[18px] text-primary font-semibold">Age</h5>
               <div className="flex items-center space-x-5">
@@ -221,7 +237,7 @@ const PartnerSettings: React.FC = () => {
                   {errors.ageTo && <span className="text-red-500">{errors.ageTo.message}</span>}
                 </div>
               </div>
-            </div>
+            </div> */}
 
 
 
@@ -595,21 +611,25 @@ const PartnerSettings: React.FC = () => {
           </div>
 
           <div className="justify-start items-center gap-x-5">
-            {matchStars
-              .slice() // Create a shallow copy to avoid mutating original array
-              .sort((a, b) => b.length - a.length) // Sort by length in descending order
-              .map((matchCountArray, index) => (
+            {matchStars.sort((a, b) => b[0].match_count - a[0].match_count).map((matchCountArray, index) => {
+              const starAndRasi = matchCountArray.map(star => ({
+                star: star.matching_starname,
+                rasi: star.matching_rasiname,
+              }));
+
+              // Assuming matchCountArray has the structure [{ matchCount: number, otherProperties: ... }]
+              const matchCountValue = matchCountArray[0].match_count; // Adjust according to the structure
+
+              return (
                 <MatchingStars
                   key={index}
-                  initialPoruthas={`No of porutham ${matchCountArray.length}`} // Example: Assuming matchCountArray.length is the number you want to display
-
-                  starAndRasi={matchCountArray.map(star => ({
-                    star: star.matching_starname,
-                    rasi: star.matching_rasiname
-                  }))}
+                  initialPoruthas={`No of porutham ${matchCountValue}`}
+                  starAndRasi={starAndRasi}
                 />
-              ))}
+              );
+            })}
           </div>
+
 
 
 
