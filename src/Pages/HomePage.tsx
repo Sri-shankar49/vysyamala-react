@@ -8,6 +8,8 @@ import TrustedPeople from "../Components/HomePage/TrustedPeople";
 import FindSomeone from "../Components/HomePage/FindSomeone";
 import HappyStories from "../Components/HomePage/HappyStories";
 import VysyamalaApps from "../Components/HomePage/VysyamalaApps";
+import ReviewsTestimonial from "../Components/HomePage/ReviewsTestimonial";
+import SearchProfiles from "../Components/HomePage/SearchProfiles";
 
 export const HomePage = () => {
   return (
@@ -25,6 +27,8 @@ export const HomePage = () => {
       <FindSomeone />
       <HappyStories />
       <VysyamalaApps />
+      <ReviewsTestimonial />
+      <SearchProfiles />
       <VysyamalaAbout />
     </div>
   );
