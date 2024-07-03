@@ -1,20 +1,19 @@
+import React, { useState, useEffect } from "react";
 import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
-// import { useState, useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as zod from "zod"
+import { useForm, SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
-import React, { useState, useEffect } from "react";
 
-
-// API call
+// API call URLs
 const COUNTRY_API_URL = "http://103.214.132.20:8000/auth/Get_Country/";
 const STATE_API_URL = "http://103.214.132.20:8000/auth/Get_State/";
-
+const CONTACT_REGISTRATION_API_URL = "http://103.214.132.20:8000/auth/Contact_registration/";
+const COUNTRY_DATA_API_URL = "http://103.214.132.20:8000/auth/Get_save_details/";
 
 // ZOD Schema
 const schema = zod.object({
@@ -23,10 +22,10 @@ const schema = zod.object({
   state: zod.string().min(1, "State is required"),
   city: zod.string().min(3, "City is required"),
   pincode: zod.string().min(6, "Pincode is required"),
-  alternatemobileNumber: zod.string().optional(),
-  whatsappNumber: zod.string().min(10, 'Whatsapp number must be exactly 10 characters').max(10, 'Whatsapp number must be exactly 10 characters'),
- // daughterMobileNumber: zod.string().min(10, "Daughter Mobile Number is required"),
-  //daughterEmail: zod.string().email('Invalid email address').optional(),
+  alternatemobileNumber: zod.string().min(10, 'Mobile number must be exactly 10 characters').max(10, 'Mobile number must be exactly 10 characters').optional(),
+  whatsappNumber: zod.string().min(10, 'Whatsapp number must be exactly 10 characters').max(10, 'Whatsapp number must be exactly 10 characters').optional(),
+  daughterMobileNumber: zod.string().optional(),
+  daughterEmail: zod.string().email().optional(),
 }).required();
 
 interface FormInputs {
@@ -44,9 +43,6 @@ interface FormInputs {
 interface ContactDetailsProps {
   heading?: string;
   desc?: string;
-  name?: string;
-  label?: string;
-  type?: string; // Make type optional with a default value
 }
 
 interface CountryOption {
@@ -59,17 +55,81 @@ interface StateOption {
   state_name: string;
 }
 
+// interface CountryData {
+//   ProfileId: string;
+//   Profile_address: string;
+//   Profile_country: string;
+//   Profile_state: string;
+//   Profile_city: string;
+//   Profile_pincode: string;
+//   Profile_alternate_mobile: string;
+//   Profile_whatsapp: string;
+//   Profile_mobile_no: string;
+// }
+
 const ContactDetails: React.FC<ContactDetailsProps> = () => {
-
-  // Navigate to next page
   const navigate = useNavigate();
-
-  // React Hook form
-  const { register, handleSubmit, formState: { errors },watch } = useForm<FormInputs>({ resolver: zodResolver(schema), });
+  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormInputs>({ resolver: zodResolver(schema) });
 
   const [countryOptions, setCountryOptions] = useState<CountryOption[]>([]);
   const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
+  // const [selectedCountryName, setSelectedCountryName] = useState("");
+  // const [selectedStateName, setSelectedStateName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const profileId = sessionStorage.getItem("profile_id_new");
+
+  useEffect(() => {
+    const fetchCountryData = async () => {
+      if (profileId) {
+        try {
+          const requestData = {
+            profile_id: profileId,
+            page_id: 1
+          };
+
+          const response = await axios.post(COUNTRY_DATA_API_URL, requestData, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          console.log("API Response:", response.data); // Log the entire API response
+
+          const profileData = response.data.data; // Access the 'data' object directly
+
+          console.log("Profile Data:", profileData); // Log the profile data
+
+          // Set form values here after fetching data
+          setValue("address", profileData.Profile_address);
+          setValue("country", profileData.Profile_country);
+          setValue("state", profileData.Profile_state);
+          setValue("city", profileData.Profile_city);
+          setValue("pincode", profileData.Profile_pincode);
+          setValue("alternatemobileNumber", profileData.Profile_alternate_mobile);
+          setValue("whatsappNumber", profileData.Profile_whatsapp);
+          setValue("daughterMobileNumber", profileData.Profile_mobile_no);
+
+          // // Print the values to console after setting them
+          // console.log("Address:", profileData.Profile_address);
+          // console.log("Country:", profileData.Profile_country);
+          // console.log("State:", profileData.Profile_state);
+          // console.log("City:", profileData.Profile_city);
+          // console.log("Pincode:", profileData.Profile_pincode);
+          // console.log("Alternate Mobile Number:", profileData.Profile_alternate_mobile);
+          // console.log("Whatsapp Number:", profileData.Profile_whatsapp);
+          // console.log("Daughter Mobile Number:", profileData.Profile_mobile_no);
+
+        } catch (error) {
+          console.error("Error fetching country data:", error);
+        }
+      } else {
+        console.warn("Profile ID not found in sessionStorage");
+      }
+    };
+
+    fetchCountryData();
+  }, [profileId, setValue]);
 
 
 
@@ -86,13 +146,13 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
     fetchCountryStatus();
   }, []);
 
-  const selectedCountry = watch("country");
+  const selectedCountryId = watch("country");
 
   useEffect(() => {
-    if (selectedCountry) {
+    if (selectedCountryId) {
       const fetchStateStatus = async () => {
         try {
-          const response = await axios.post(STATE_API_URL, { country_id: selectedCountry });
+          const response = await axios.post(STATE_API_URL, { country_id: selectedCountryId });
           const options = Object.values(response.data) as StateOption[];
           setStateOptions(options);
         } catch (error) {
@@ -100,37 +160,58 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
         }
       };
       fetchStateStatus();
+
+      // const country = countryOptions.find(option => option.country_id === Number(selectedCountryId));
+      // if (country) {
+      //   setSelectedCountryName(country.country_name);
+      // }
     }
-  }, [selectedCountry]);
+  }, [selectedCountryId, countryOptions]);
 
+  // const selectedStateId = watch("state");
 
-  const onSubmit: SubmitHandler<FormInputs> = data => {
-    console.log(data);
-    navigate('/UploadImages');
+  // useEffect(() => {
+  //   if (selectedStateId) {
+  //     const state = stateOptions.find(option => option.state_id === Number(selectedStateId));
+  //     if (state) {
+  //       setSelectedStateName(state.state_name);
+  //     }
+  //   }
+  // }, [selectedStateId, stateOptions]);
+
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+    setIsSubmitting(true);
+
+    try {
+      const profileId = sessionStorage.getItem("profile_id_new");
+      if (!profileId) {
+        throw new Error("ProfileId not found in sessionStorage");
+      }
+
+      const postData = {
+        ProfileId: profileId,
+        Profile_address: data.address,
+        Profile_country: data.country,
+        Profile_state: data.state,
+        Profile_city: data.city,
+        Profile_pincode: data.pincode,
+        Profile_alternate_mobile: data.alternatemobileNumber,
+        Profile_whatsapp: data.whatsappNumber,
+        Profile_mobile_no: data.daughterMobileNumber,
+      };
+
+      const response = await axios.post(CONTACT_REGISTRATION_API_URL, postData);
+      if (response.data.Status === 1) {
+        navigate('/UploadImages');
+      } else {
+        console.log("Registration unsuccessful:", response.data);
+      }
+    } catch (error) {
+      console.error("Error submitting contact details:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
-
-  // const [formData, setFormData] = useState({
-  //   address: "",
-  //   country: "",
-  //   state: "",
-  //   city: "",
-  //   pincode: "",
-  //   alternatemobileNumber: "",
-  //   whatsappNumber: "",
-  //   daughterMobileNumber: "",
-  //   daughterEmail: "",
-  // });
-
-  // const handleInputChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  // ) => {
-  //   const { name, value } = e.target;
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     [name]: value,
-  //   }));
-  // };
 
   return (
     <div className="pb-20">
@@ -145,7 +226,8 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
             <InputField
               label="Address"
               {...register("address")}
-              required />
+              required
+            />
             {errors.address && <span className="text-red-500">{errors.address.message}</span>}
           </div>
 
@@ -191,31 +273,12 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
             {errors.state && <span className="text-red-500">{errors.state.message}</span>}
           </div>
 
-          {/* <div>
-            <label htmlFor="city" className="block mb-1">
-              City * (Based on country selection )
-            </label>
-            <select
-              id="city"
-              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("city")}
-            >
-              <option value="" selected disabled>
-                -- Select City --
-              </option>
-              <option value="Chennai">Chennai</option>
-              <option value="Tirunelveli">Tirunelveli</option>
-              <option value="Trichy">Trichy</option>
-              <option value="Salem">Salem</option>
-            </select>
-            {errors.city && <span className="text-red-500">{errors.city.message}</span>}
-          </div> */}
-
-
           <div>
             <InputField
-              label="City" required
-              {...register("city")} />
+              label="City"
+              required
+              {...register("city")}
+            />
             {errors.city && <span className="text-red-500">{errors.city.message}</span>}
           </div>
 
@@ -227,7 +290,6 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               {...register("pincode")}
             />
             {errors.pincode && <span className="text-red-500">{errors.pincode.message}</span>}
-
           </div>
 
           <div>
@@ -236,6 +298,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               type="tel"
               {...register("alternatemobileNumber")}
             />
+            {errors.alternatemobileNumber && <span className="text-red-500">{errors.alternatemobileNumber.message}</span>}
           </div>
 
           <div>
@@ -245,7 +308,6 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               {...register("whatsappNumber")}
             />
             {errors.whatsappNumber && <span className="text-red-500">{errors.whatsappNumber.message}</span>}
-
           </div>
 
           <div className="!mt-12">
@@ -261,7 +323,6 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
                   {...register("daughterMobileNumber")}
                 />
                 {errors.daughterMobileNumber && <span className="text-red-500">{errors.daughterMobileNumber.message}</span>}
-
               </div>
 
               <div>
@@ -271,13 +332,12 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
                   {...register("daughterEmail")}
                 />
                 {errors.daughterEmail && <span className="text-red-500">{errors.daughterEmail.message}</span>}
-
               </div>
             </div>
 
             <div className="mt-6 flex justify-end space-x-4">
-              <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
-                Next
+              <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2" disabled={isSubmitting}>
+                {isSubmitting ? 'Submitting...' : 'Next'}
                 <span>
                   <img src={arrow} alt="next arrow" className="ml-2" />
                 </span>

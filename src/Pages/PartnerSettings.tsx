@@ -10,39 +10,46 @@ import * as zod from "zod";
 import MatchingStars from "../Components/PartnerPreference/MatchingStars";
 import axios from "axios";
 
+// API CALL
+const PARTNER_API_URL = 'http://103.214.132.20:8000/auth/Partner_pref_registration/'
+
+
 // Define validation schema with zod
 const schema = zod.object({
   age: zod.string().nonempty("Age is required"),
   heightFrom: zod.string().min(1, "Height From is required"),
   heightTo: zod.string().min(1, "Height To is required"),
-  // ageFrom: zod.string().min(1, "Age from is required"),
-  // ageTo: zod.string().min(1, "Age To is required"),
-  // education: zod.string().min(1, "Education is required"),
-  // annualIncome: zod.string().min(1, "Annual Income is required"),
-  //birthStar: zod.string().min(1, "Birth Star is required"),
+  education: zod.array(zod.string()).min(1, "Education is required"),
+  annualIncome: zod.array(zod.string()).min(1, "Annual Income is required"),
+  chevvai: zod.string().min(1, "Chevvai option is required"),
+  rehu: zod.string().min(1, "Rehu/Kethu option is required"),
 }).required();
 
 interface PartnerSettingsInputs {
   age: string;
   heightFrom: string;
   heightTo: string;
-  education: string;
-  annualIncome: string;
-  birthStar: string;
-  workLocation: string;
-  maritalStatus: string[];
+  education: string[];
+  annualIncome: string[];
+  chevvai: string;
+  rehu: string;
   profession: string[];
-  dhosam: string[];
+  maritalStatus: string[];
   foreignInterest: string[];
-  nativeState: string[];
-  profilePhoto: boolean;
-  ageFrom: string;
-  ageTo: string;
+  nativeState?: string[];
+  profilePhoto?: boolean;
+  ageFrom?: string;
+  ageTo?: string;
 }
 
 interface EduPref {
   Edu_Pref_id: number;
   Edu_name: string;
+}
+
+interface MaritalStatus {
+  marital_sts_id: number;
+  marital_sts_name: string;
 }
 
 interface AnnualIncome {
@@ -70,26 +77,179 @@ interface MatchingStar {
 const PartnerSettings: React.FC = () => {
   const [eduPref, setEduPref] = useState<EduPref[]>([]);
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
-  const [birthStar, setBirthStar] = useState<BirthStar[]>([]);
   const [matchStars, setMatchStars] = useState<MatchingStar[][]>([]);
-  const [height, setHeight] = useState<string | null>(null);
-  const [gender, setGender] = useState<string | null>(null);
-
+  const [maritalStatuses, setMaritalStatuses] = useState<MaritalStatus[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<PartnerSettingsInputs>({
     resolver: zodResolver(schema),
   });
 
   const navigate = useNavigate();
-  const onSubmit: SubmitHandler<PartnerSettingsInputs> = data => {
-    console.log(data);
-    navigate('/MembershipPlan');
+  // const onSubmit: SubmitHandler<PartnerSettingsInputs> = async (data) => {
+  //   setIsSubmitting(true);
+  //   console.log(data);
+  //   try {
+  //     const profileId = sessionStorage.getItem("profile_id_new");
+  //     if (!profileId) {
+  //       throw new Error("ProfileId not found in sessionStorage");
+  //     }
+
+  //     console.log("Form Data: ", data);
+
+  //     const postData = {
+  //       ProfileId: profileId,
+  //       pref_age_differences: data.age,
+  //       pref_height_from: data.heightFrom,
+  //       pref_height_to: data.heightTo,
+  //       education: data.education,
+  //       annualIncome: data.annualIncome,
+  //       chevvai: data.chevvai,
+  //       rehu: data.rehu,
+  //       profession: data.profession,
+  //       maritalStatus: data.maritalStatus,
+  //       foreignInterest: data.foreignInterest,
+  //       nativeState: data.nativeState,
+  //       profilePhoto: data.profilePhoto,
+  //       status: 1
+  //     };
+
+  //     console.log("Post Data: ", postData);
+
+  //     const response = await axios.post('http://103.214.132.20:8000/auth/Partner_pref_registration/', postData);
+  //     console.log("Registration successful:", response.data);
+  //     if (response.data.Status === 1) {
+  //       navigate('/UploadImages');
+  //     } else {
+  //       setIsSubmitting(false);
+  //       console.log("Registration unsuccessful:", response.data);
+  //     }
+  //   } catch (error) {
+  //     setIsSubmitting(false);
+  //     console.error("Error submitting contact details:", error);
+  //   }
+  // };
+
+
+  const profileId = sessionStorage.getItem('profile_id_new');
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (profileId) {
+        try {
+          const requestData = {
+            profile_id: profileId,
+            page_id: 6
+          };
+
+          const response = await axios.post("http://103.214.132.20:8000/auth/Get_save_details/", requestData, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          console.log("API Response:", response.data); // Log the entire API response
+
+          const profileData = response.data.data; // Access the 'data' object directly
+
+          console.log("Profile Data:", profileData); // Log the profile data
+
+          // Set form values here after fetching data
+          setValue("age", profileData.pref_age_differences);
+          setValue("heightFrom", profileData.pref_height_from);
+          setValue("heightTo", profileData.pref_height_to);
+          setValue("maritalStatus", profileData.pref_marital_status);
+          setValue("profession", profileData.pref_profession);
+          setValue("education", profileData.pref_education);
+          setValue("annualIncome", profileData.pref_anual_income);
+          setValue("chevvai", profileData.pref_chevvai);
+          setValue("rehu", profileData.pref_ragukethu);
+          setValue("foreignInterest", profileData.pref_foreign_intrest);
+
+
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      } else {
+        console.warn("Profile ID not found in sessionStorage");
+      }
+    };
+
+    fetchProfileData();
+  }, [profileId, setValue]);
+
+
+
+
+
+
+
+  const onSubmit: SubmitHandler<PartnerSettingsInputs> = async (data) => {
+    setIsSubmitting(true);
+    console.log('Form data:', data);
+
+    try {
+      const profileId = sessionStorage.getItem("profile_id_new");
+      if (!profileId) {
+        throw new Error("ProfileId not found in sessionStorage");
+      }
+
+      const postData = {
+        profile_id: profileId,
+        pref_age_differences: data.age,
+        pref_height_from: data.heightFrom,
+        pref_height_to: data.heightTo,
+        // education: data.education,
+        // annualIncome: data.annualIncome,
+        // chevvai: data.chevvai,
+        // rehu: data.rehu,
+        // profession: data.profession,
+        // maritalStatus: data.maritalStatus,
+        // foreignInterest: data.foreignInterest,
+        // nativeState: data.nativeState,
+        // profilePhoto: data.profilePhoto,
+        status:"1"
+      };
+
+      console.log("Post Data:", postData);
+
+      const response = await axios.post(PARTNER_API_URL, postData);
+      console.log("Registration response:", response.data);
+
+      if (response.data.Status === 1) {
+        navigate('/MembershipPlan');
+      } else {
+        setIsSubmitting(false);
+        console.log("Registration unsuccessful:", response.data);
+        // Handle other status codes or error conditions if needed
+      }
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error("Error submitting contact details:", error);
+      // Handle specific errors or display user-friendly messages
+    }
   };
+
+
+  useEffect(() => {
+    const fetchMaritalStatuses = async () => {
+      try {
+        const response = await axios.post<{ [key: string]: MaritalStatus }>('http://103.214.132.20:8000/auth/Get_Marital_Status/');
+        const options = Object.values(response.data);
+        setMaritalStatuses(options);
+      } catch (error) {
+        console.error('Error fetching marital statuses:', error);
+      }
+    };
+
+    fetchMaritalStatuses();
+  }, []);
 
   useEffect(() => {
     const fetchEduPref = async () => {
       try {
         const response = await axios.post('http://103.214.132.20:8000/auth/Get_Edu_Pref/');
         const options = Object.values(response.data) as EduPref[];
+        console.log(options)
         setEduPref(options);
       } catch (error) {
         console.error('Error fetching Edu Pref options:', error);
@@ -105,23 +265,10 @@ const PartnerSettings: React.FC = () => {
         const options = Object.values(response.data) as AnnualIncome[];
         setAnnualIncome(options);
       } catch (error) {
-        console.error('Error fetching Annual Income  options:', error);
+        console.error('Error fetching Annual Income options:', error);
       }
     };
     fetchAnnualIncome();
-  }, []);
-
-  useEffect(() => {
-    const fetchBirthStar = async () => {
-      try {
-        const response = await axios.post('http://103.214.132.20:8000/auth/Get_Birth_Star/');
-        const options = Object.values(response.data) as BirthStar[];
-        setBirthStar(options);
-      } catch (error) {
-        console.error('Error fetching birth star options:', error);
-      }
-    };
-    fetchBirthStar();
   }, []);
 
   const storedBirthStar = sessionStorage.getItem("selectedstar");
@@ -134,7 +281,7 @@ const PartnerSettings: React.FC = () => {
     if (storedBirthStar && storedGender) {
       const fetchMatchingStars = async () => {
         try {
-          const response = await axios.post('http://103.214.132.20:8000/auth/Get_Matchstr_Pref/', {
+          const response = await axios.post('http://103.214.132.20:8000/auth/Partner_pref_registration/', {
             birth_star_id: storedBirthStar,
             gender: storedGender,
           });
@@ -152,28 +299,41 @@ const PartnerSettings: React.FC = () => {
 
   useEffect(() => {
     const storedHeight = sessionStorage.getItem("userHeight");
-   // const storedAge = sessionStorage.getItem("userAge");
 
     if (storedHeight) {
-      setHeight(storedHeight);
       if (storedGender === 'male') {
         setValue("heightFrom", storedHeight);
       } else {
         setValue("heightTo", storedHeight);
       }
     }
-    if (storedGender) {
-      setGender(storedGender);
-    }
-    // if (storedAge) {
-    //   if (storedGender === 'male') {
-    //     setValue("ageFrom", storedAge);
-    //   } else {
-    //     setValue("ageTo", storedAge);
-    //   }
-    // }
   }, [setValue]);
+  // useEffect(() => {
+  //   const storedHeight = sessionStorage.getItem("userHeight");
+  //  // const storedAge = sessionStorage.getItem("userAge");
 
+  //   if (storedHeight) {
+  //     setHeight(storedHeight);
+  //     if (storedGender === 'male') {
+  //       setValue("heightFrom", storedHeight);
+  //     } else {
+  //       setValue("heightTo", storedHeight);
+  //     }
+  //   }
+  //   if (storedGender) {
+  //     setGender(storedGender);
+  //   }
+  //   // if (storedAge) {
+  //   //   if (storedGender === 'male') {
+  //   //     setValue("ageFrom", storedAge);
+  //   //   } else {
+  //   //     setValue("ageTo", storedAge);
+  //   //   }
+  //   // }
+  // }, [setValue]);
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <div className="pb-20">
@@ -188,7 +348,7 @@ const PartnerSettings: React.FC = () => {
 
           <div className="flex justify-between items-center">
 
-          <div>
+            <div>
               {/* <h5 className="text-[18px] text-primary font-semibold">Age</h5> */}
               <div className="flex items-center space-x-5">
                 {/* <InputField label={""} name={""} placeholder="From" />
@@ -224,7 +384,7 @@ const PartnerSettings: React.FC = () => {
 
 
 
-{/* 
+            {/* 
             <div>
               <h5 className="text-[18px] text-primary font-semibold">Age</h5>
               <div className="flex items-center space-x-5">
@@ -260,74 +420,20 @@ const PartnerSettings: React.FC = () => {
 
           {/* Marital Status */}
           <div>
-            <h5 className="text-[18px] text-primary font-semibold mb-2">
-              Marital Status
-            </h5>
-
+            <h5 className="text-[18px] text-primary font-semibold mb-2">Marital Status</h5>
             <div className="flex justify-between items-center">
-              <div>
-                <input
-                  type="checkbox"
-                  id="neverMarried"
-                  value="neverMarried"
-                  {...register("maritalStatus")}
-                />
-                <label htmlFor="neverMarried" className="pl-1">
-                  Never Married
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="married"
-                  value="married"
-                  {...register("maritalStatus")}
-                />
-                <label htmlFor="married" className="pl-1">
-                  Married
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="divorced"
-                  value="divorced"
-                  {...register("maritalStatus")}
-                />
-                <label htmlFor="divorced" className="pl-1">
-                  Divorced
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="seperated"
-                  value="seperated"
-                  {...register("maritalStatus")}
-                />
-                <label htmlFor="seperated" className="pl-1">
-                  Seperated
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="widow"
-                  value="widow"
-                  {...register("maritalStatus")}
-                />
-                <label htmlFor="widow" className="pl-1">
-                  Widow / Widower
-                </label>
-              </div>
+              {maritalStatuses.map(status => (
+                <div key={status.marital_sts_id}>
+                  <input
+                    type="checkbox"
+                    id={`maritalStatus-${status.marital_sts_id}`}
+                    value={status.marital_sts_id}
+                    {...register("maritalStatus")}
+                  />
+                  <label htmlFor={`maritalStatus-${status.marital_sts_id}`}>{status.marital_sts_name}</label>
+                </div>
+              ))}
             </div>
-            {errors.maritalStatus && (
-              <span className="text-red-500">{errors.maritalStatus.message}</span>
-            )}
           </div>
 
           <div>
@@ -403,7 +509,7 @@ const PartnerSettings: React.FC = () => {
 
 
           {/* <InputField label={"Education"} name={"education"} /> */}
-          <div>
+          {/* <div>
             <label className="text-[18px] text-primary font-semibold mb-2">Education</label>
             <div className="flex justify-between items-center">
               {eduPref.map((option) => (
@@ -413,6 +519,25 @@ const PartnerSettings: React.FC = () => {
                     id={`education-${option.Edu_Pref_id}`}
                     value={option.Edu_Pref_id}
                     {...register("education")}
+                  />
+                  <label htmlFor={`education-${option.Edu_Pref_id}`} className="pl-1">
+                    {option.Edu_name}
+                  </label>
+                </div>
+              ))}
+            </div>
+            {errors.education && <span className="text-red-500">{errors.education.message}</span>}
+          </div> */}
+          <div>
+            <label className="text-[18px] text-primary font-semibold mb-2">Education</label>
+            <div className="flex flex-wrap gap-4">
+              {eduPref.map((option) => (
+                <div key={option.Edu_Pref_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`education-${option.Edu_Pref_id}`}
+                    value={option.Edu_name}
+                    {...register("education", { setValueAs: v => (v ? [...v] : []) })}
                   />
                   <label htmlFor={`education-${option.Edu_Pref_id}`} className="pl-1">
                     {option.Edu_name}
@@ -434,7 +559,7 @@ const PartnerSettings: React.FC = () => {
                     type="checkbox"
                     id={`annualIncome-${option.income_id}`}
                     value={option.income_id}
-                    {...register("annualIncome")}
+                    {...register("annualIncome", { setValueAs: v => (v ? [...v] : []) })}
                   />
                   <label htmlFor={`annualIncome-${option.income_id}`} className="pl-1">
                     {option.income_description}
@@ -448,7 +573,7 @@ const PartnerSettings: React.FC = () => {
           </div>
 
           {/* Dhosam */}
-          <div>
+          {/* <div>
             <h5 className="text-[18px] text-primary font-semibold mb-2">Dhosam</h5>
             <select
               id="dhosam"
@@ -461,6 +586,49 @@ const PartnerSettings: React.FC = () => {
               <option value="unknown">Unknown</option>
             </select>
             {errors.dhosam && <span className="text-red-500">{errors.dhosam.message}</span>}
+          </div> */}
+          <div>
+            <label htmlFor="chevvaiDhosam" className="block mb-1">
+              Chevvai
+            </label>
+            <select
+              id="chevvaiDhosam"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("chevvai")}
+            >
+              <option value="" selected disabled>
+                -- Select Chevvai --
+              </option>
+              {["UnKnown", "Yes", "No"].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            {errors.chevvai && (
+              <span className="text-red-500">{errors.chevvai.message}</span>
+            )}
+          </div>
+          <div>
+            <label htmlFor="Rehu" className="block mb-1">  Rehu / Ketu
+            </label>
+            <select
+              id="Rehu"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("rehu")}
+            >
+              <option value="" selected disabled>
+                -- Select Rehu / Ketu  --
+              </option>
+              {["UnKnown", "Yes", "No"].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            {errors.rehu && (
+              <span className="text-red-500">{errors.rehu.message}</span>
+            )}
           </div>
 
           <div>
@@ -473,7 +641,7 @@ const PartnerSettings: React.FC = () => {
             >
               <option value="yes">Yes</option>
               <option value="no">No</option>
-              <option value="both">Both</option>
+              <option value="both" selected>Both</option>
             </select>
             {errors.foreignInterest && <span className="text-red-500">{errors.foreignInterest.message}</span>}
           </div>
@@ -500,83 +668,6 @@ const PartnerSettings: React.FC = () => {
           </div> */}
 
           {/* Native State */}
-          <div>
-            <h5 className="text-[18px] text-primary font-semibold mb-2">
-              Native State
-            </h5>
-
-            <div className="flex justify-between items-center">
-              <div>
-                <input
-                  type="checkbox"
-                  id="tamilNadu"
-                  name="tamilNadu"
-                  value="tamilNadu"
-                />
-                <label htmlFor="tamilNadu" className="pl-1">
-                  TamilNadu and Pondhicherry
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="karnataka"
-                  name="karnataka"
-                  value="karnataka"
-                />
-                <label htmlFor="karnataka" className="pl-1">
-                  Karnataka
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="andhraPradesh"
-                  name="andhraPradesh"
-                  value="andhraPradesh"
-                />
-                <label htmlFor="andhraPradesh" className="pl-1">
-                  Andhra Pradesh
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="telangana"
-                  name="telangana"
-                  value="telangana"
-                />
-                <label htmlFor="telangana" className="pl-1">
-                  Telangana
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="kerala"
-                  name="kerala"
-                  value="kerala" />
-                <label htmlFor="kerala" className="pl-1">
-                  Kerala
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="others"
-                  name="others"
-                  value="others" />
-                <label htmlFor="others" className="pl-1">
-                  Others
-                </label>
-              </div>
-            </div>
-          </div>
 
           {/* Matching Star */}
           {/* <div>
@@ -598,17 +689,7 @@ const PartnerSettings: React.FC = () => {
             </select>
           </div> */}
 
-          <InputField label={"Work Location"} name={"workLocation"} />
 
-          <div>
-            <h5 className="text-[18px] text-primary font-semibold mb-2">
-              Profile Photo
-            </h5>
-            <input type="checkbox" id="profilePhoto" value="profilePhoto" {...register("profilePhoto")} />
-            <label htmlFor="profilePhoto" className="pl-1">
-              People only with photo
-            </label>
-          </div>
 
           <div className="justify-start items-center gap-x-5">
             {matchStars.sort((a, b) => b[0].match_count - a[0].match_count).map((matchCountArray, index) => {
@@ -648,13 +729,16 @@ const PartnerSettings: React.FC = () => {
                 Cancel
               </button>
 
-              <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
+              {/* <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
                 Find Match
                 <span>
                   <img src={arrow} alt="next arrow" className="ml-2" />
                 </span>
+              </button> */}
+              <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2" disabled={isSubmitting}>
+                {isSubmitting ? 'Submitting...' : 'Find Match'}
+                {!isSubmitting && <span><img src={arrow} alt="next arrow" className="ml-2" /></span>}
               </button>
-
             </div>
           </div>
 
@@ -666,3 +750,4 @@ const PartnerSettings: React.FC = () => {
 };
 
 export default PartnerSettings;
+

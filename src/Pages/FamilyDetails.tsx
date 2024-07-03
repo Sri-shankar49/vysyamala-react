@@ -20,9 +20,9 @@ const schema = zod.object({
   bloodGroup: zod.string().min(3, "Blood Group Required"),
   motherOccupation: zod.string().min(3, "Mother's Occupation is required"),
   brother: zod.number().min(0, "Brother count is required"),
-  marriedBrother: zod.number().min(0, "Married Brother count is required"),
+  marriedBrother: zod.number().optional(),
   sister: zod.number().min(0, "Sister count is required"),
-  marriedSister: zod.number().min(0, "Married Sister count is required"),
+  marriedSister: zod.number().min(0, "Married Sister count is required").optional(),
   familyType: zod.string().min(1, "Family Type is required"),
   familyValue: zod.string().min(1, "Family Value is required"),
   familyStatus: zod.string().min(1, "Family Status is required"),
@@ -32,22 +32,19 @@ const schema = zod.object({
   uncleGothram: zod.string().optional(),
   ancestorOrigin: zod.string().optional(),
   aboutMyFamily: zod.string().optional(),
-  // physicallyChallenged: zod.string().optional(),
-  // defectDetails: zod.string().optional(),
-}).required();
-
-
-// const bloodGroupOptions = [
-//   { label: "Select Blood Group", value: "" },
-//   { label: "A+", value: "A+" },
-//   { label: "A-", value: "A-" },
-//   { label: "B+", value: "B+" },
-//   { label: "B-", value: "B-" },
-//   { label: "AB+", value: "AB+" },
-//   { label: "AB-", value: "AB-" },
-//   { label: "O+", value: "O+" },
-//   { label: "O-", value: "O-" },
-// ];
+}).refine(
+  (data) => data.brother === 0 || (data.brother > 0 && data.marriedBrother !== undefined),
+  {
+    message: "Married Brother count is required if there are brothers",
+    path: ["marriedBrother"],
+  }
+).refine(
+  (data) => data.sister === 0 || (data.sister > 0 && data.marriedSister !== undefined),
+  {
+    message: "Married Sister count is required if there are sisters",
+    path: ["marriedSister"],
+  }
+);
 
 interface FamilyDetailsInputs {
   fathername: string;
@@ -80,9 +77,6 @@ interface Occupation {
   occupation_description: string;
 }
 
-
-
-
 interface PropertyWorth {
   property_id: number;
   property_description: string;
@@ -96,13 +90,15 @@ interface FamilyType {
 interface FamilyStatus {
   family_status_id: number;
   family_status_name: string;
-  family_status_description: string
+  family_status_description: string;
 }
 
 interface FamilyValue {
   family_value_id: number;
   family_value_name: string;
 }
+
+
 
 const FamilyDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -123,8 +119,107 @@ const FamilyDetails: React.FC = () => {
   const [familyTypes, setFamilyTypes] = useState<FamilyType[]>([]);
   const [familyStatus, setFamilyStatus] = useState<FamilyStatus[]>([]);
   const [familyValue, setFamilyValue] = useState<FamilyValue[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
 
   const physicallyChallengedValue = watch("physicallyChallenged");
+
+
+
+
+  const profileId = sessionStorage.getItem('profile_id_new');
+
+  useEffect(() => {
+    const fetchFamilyData = async () => {
+      if (profileId) {
+        try {
+          const requestData = {
+            profile_id: profileId,
+            page_id: 3
+          };
+
+          const response = await axios.post(
+            'http://103.214.132.20:8000/auth/Get_save_details/',
+            requestData,
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          console.log('API Response:', response.data);
+
+          const profileData = response.data.data;
+
+          console.log('Profile Data:', profileData);
+
+          // Set form values here after fetching data
+          setValue('fathername', profileData.father_name);
+          setValue('fatherOccupation', profileData.father_occupation);
+          setValue('mothername', profileData.mother_name);
+          setValue('motherOccupation', profileData.mother_occupation);
+          setValue('familyname', profileData.family_name);
+          setValue('aboutmyself', profileData.about_self);
+          setValue('myhobbies', profileData.hobbies);
+          setValue('bloodGroup', profileData.blood_group);
+
+          // Handle radio button for physically challenged
+          setValue('physicallyChallenged', profileData.Pysically_changed === 'yes' ? 'yes' : 'no');
+
+          // Set brother and sister values based on the fetched data
+      
+
+          const numberOfBrothers = parseInt(profileData.no_of_brother);
+          const numberOfSisters = parseInt(profileData.no_of_sister);
+          const numberOfMarriedSisters = parseInt(profileData.no_of_sis_married);
+
+          setValue('brother', numberOfBrothers);
+          setValue('sister', numberOfSisters);
+          setValue('marriedSister', numberOfMarriedSisters);
+
+          setSelectedBrother(numberOfBrothers);
+          setSelectedSister(numberOfSisters);
+          setSelectedMarriedSister(numberOfMarriedSisters);
+
+
+
+          // Set family type, value, and status
+          setValue('familyType', profileData.family_type);
+          setSelectedFamilyType(profileData.family_type);
+
+          setValue('familyValue', profileData.family_value);
+          setSelectedFamilyValue(profileData.family_value);
+
+          setValue('familyStatus', profileData.family_status);
+          setSelectedFamilyStatus(profileData.family_status);
+
+          // Set property details, suya gothram, uncle gothram, ancestor origin, about family
+          setValue('propertyDetails', profileData.property_details);
+          setValue('propertyWorth', profileData.property_worth);
+          setValue('suyaGothram', profileData.suya_gothram);
+          setValue('uncleGothram', profileData.uncle_gothram);
+          setValue('ancestorOrigin', profileData.ancestor_origin);
+          setValue('aboutMyFamily', profileData.about_family);
+
+        } catch (error) {
+          console.error('Error fetching family data:', error);
+        }
+      } else {
+        console.warn('Profile ID not found in sessionStorage');
+      }
+    };
+
+    fetchFamilyData();
+  }, [profileId, setValue]);
+
+
+
+
+
+
+
+
+
 
 
 
@@ -142,7 +237,6 @@ const FamilyDetails: React.FC = () => {
     fetchOccupations();
   }, []);
 
-
   useEffect(() => {
     const fetchPropertyworth = async () => {
       try {
@@ -155,7 +249,6 @@ const FamilyDetails: React.FC = () => {
     };
     fetchPropertyworth();
   }, []);
-
 
   useEffect(() => {
     const fetchFamilyTypes = async () => {
@@ -172,7 +265,6 @@ const FamilyDetails: React.FC = () => {
     fetchFamilyTypes();
   }, []);
 
-
   useEffect(() => {
     const fetchFamilyStatus = async () => {
       try {
@@ -188,7 +280,6 @@ const FamilyDetails: React.FC = () => {
     fetchFamilyStatus();
   }, []);
 
-
   useEffect(() => {
     const fetchFamilyValue = async () => {
       try {
@@ -203,8 +294,6 @@ const FamilyDetails: React.FC = () => {
 
     fetchFamilyValue();
   }, []);
-
-
 
   const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
 
@@ -245,21 +334,56 @@ const FamilyDetails: React.FC = () => {
     setValue("marriedSister", value, { shouldValidate: true });
   };
 
-  const onSubmit: SubmitHandler<FamilyDetailsInputs> = data => {
-    console.log("Form data:", data);
 
-    console.log({
-      selectedBrother,
-      selectedMarriedBrother,
-      selectedSister,
-      selectedMarriedSister,
-      selectedFamilyType,
-      selectedFamilyValue,
-      selectedFamilyStatus
-    });
+  const onSubmit: SubmitHandler<FamilyDetailsInputs> = async (data) => {
 
-    navigate("/EduDetails");
+    try {
+      // Format the data as expected by the backend
+      const profileId = sessionStorage.getItem("profile_id_new");
+      if (!profileId) {
+        throw new Error("ProfileId not found in sessionStorage");
+      }
+      const formattedData = {
+        profile_id: profileId, // Replace with actual profile ID
+        father_name: data.fathername,
+        father_occupation: data.fatherOccupation,
+        mother_name: data.mothername,
+        mother_occupation: data.motherOccupation,
+        family_name: data.familyname,
+        about_self: data.aboutmyself,
+        hobbies: data.myhobbies,
+        blood_group: data.bloodGroup,
+        Pysically_changed: physicallyChallengedValue,
+        no_of_brother: data.brother,
+        no_of_sister: data.sister,
+        no_of_sis_married: data.marriedSister || 0,
+        family_type: data.familyType,
+        family_value: data.familyValue,
+        family_status: data.familyStatus,
+        // Include other fields as necessary
+      };
+
+      console.log("Formatted Data:", formattedData);
+
+
+      console.log("Formatted Data:", formattedData);
+
+      setIsSubmitting(true);
+      const response = await axios.post("http://103.214.132.20:8000/auth/Family_registration/", formattedData);
+      setIsSubmitting(false);
+
+      if (response.data.Status === 1) {
+        navigate("/EduDetails");
+      } else {
+        // Handle error or show message to the user
+        console.error("Error: Response status is not 1", response.data);
+      }
+    } catch (error) {
+      console.error("Error submitting form data:", error);
+      setIsSubmitting(false);
+    }
   };
+
 
 
   return (
@@ -381,15 +505,26 @@ const FamilyDetails: React.FC = () => {
             <label>Physically Challenged</label>
             <div style={{ marginTop: '8px' }}>
               <label style={{ marginRight: '16px' }}>
-                <input type="radio" value="yes" {...register("physicallyChallenged")} />
+                <input
+                  type="radio"
+                  value="yes"
+                  {...register("physicallyChallenged", { required: true })}
+                />
                 Yes
               </label>
               <label>
-                <input type="radio" value="no" {...register("physicallyChallenged")} />
+                <input
+                  type="radio"
+                  value="no"
+                  {...register("physicallyChallenged", { required: true })}
+                />
                 No
               </label>
             </div>
+            {errors.physicallyChallenged && <span>This field is required</span>}
           </div>
+
+
 
 
           {physicallyChallengedValue === "yes" && (
@@ -557,7 +692,7 @@ const FamilyDetails: React.FC = () => {
 
           {/* Additional Input Fields */}
           <div>
-            <InputField label="Property Details" {...register("propertyDetails")} />
+            <InputField label="Property Details" {...register("propertyDetails")} title="Enter details about the property here." />
           </div>
 
           <div>
@@ -591,7 +726,7 @@ const FamilyDetails: React.FC = () => {
           </div>
 
           <div>
-            <InputField label="Ancestor Origin" {...register("ancestorOrigin")} />
+            <InputField label="Ancestor Origin" {...register("ancestorOrigin")} title="Enter details about the ancestorOrgin here." />
           </div>
 
           <div>
@@ -616,11 +751,15 @@ const FamilyDetails: React.FC = () => {
               </Link>
             </div>
             <div className="flex space-x-4">
-              <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2">
-                Skip
-              </button>
-              <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
-                Next
+              <Link to="/EduDetails">
+
+                <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2">
+                  Skip
+                </button>
+              </Link>
+
+              <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2" disabled={isSubmitting}>
+                {isSubmitting ? 'Submitting...' : 'Next'}
                 <span>
                   <img src={arrow} alt="next arrow" className="ml-2" />
                 </span>
