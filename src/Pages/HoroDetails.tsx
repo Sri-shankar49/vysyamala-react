@@ -23,7 +23,7 @@ const schema = zod.object({
   birthStar: zod.string().min(1, "Birth star is required"),
   rasi: zod.string().min(1, "Rasi is required"),
   lagnam: zod.string().min(1, "Lagnam is required"),
-  dosham: zod.string().min(1, "Dosham is required"),
+  //dosham: zod.string().min(1, "Dosham is required"),
   naalikai: zod.string().min(1, "Naalikai is required"),
   dasaName: zod.string().min(1, "Dasa name is required"),
   //dasaBalance: zod.string().min(1, "Dasa balance is required"),
@@ -51,6 +51,8 @@ interface HoroDetailsInputs {
   dasaName: string;
   dasaBalance: string;
   horoscopeHints: string;
+  chevvaiDhosam: string;
+  sarpaDhosham: string;
 }
 
 interface HoroDetailsProps { }
@@ -73,22 +75,119 @@ interface Lagnam {
 
 
 const HoroDetails: React.FC<HoroDetailsProps> = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
+
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<HoroDetailsInputs>({
+  const { register, handleSubmit, formState: { errors }, watch,setValue } = useForm<HoroDetailsInputs>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<HoroDetailsInputs> = (data) => {
-    console.log(data);
-    console.log("hiiiii");
-    navigate("/PartnerSettings");
+  const profileId = sessionStorage.getItem('profile_id_new');
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (profileId) {
+        try {
+          const requestData = {
+            profile_id: profileId,
+            page_id: 5
+          };
+
+          const response = await axios.post("http://103.214.132.20:8000/auth/Get_save_details/", requestData, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          console.log("API Response:", response.data); // Log the entire API response
+
+          const profileData = response.data.data; // Access the 'data' object directly
+
+          console.log("Profile Data:", profileData); // Log the profile data
+
+          // Set form values here after fetching data
+          setValue("timeOfBirth", profileData.time_of_birth);
+          setValue("placeOfBirth", profileData.place_of_birth);
+          setValue("birthStar", profileData.birthstar_name);
+          setValue("rasi", profileData.birth_rasi_name);
+          setValue("lagnam", profileData.lagnam_didi);
+          setValue("chevvaiDhosam", profileData.chevvai_dosaham);
+          setValue("sarpaDhosham", profileData.ragu_dosham);
+          setValue("naalikai", profileData.nalikai);
+          setValue("dasaName", profileData.dasa_name);
+          setValue("horoscopeHints", profileData.horoscope_hints);
+          setChevvaiDhosam(profileData.chevvai_dosaham);
+          setSarpaDhosham(profileData.ragu_dosham);
+
+          // Update state for brother and sister data
+  
+
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      } else {
+        console.warn("Profile ID not found in sessionStorage");
+      }
+    };
+
+    fetchProfileData();
+  }, [profileId, setValue]);
+
+
+
+
+
+
+  const onSubmit: SubmitHandler<HoroDetailsInputs> = async (data) => {
+
+
+
+    try {
+      // Format the data as expected by the backend
+      const profileId = sessionStorage.getItem("profile_id_new");
+      if (!profileId) {
+        throw new Error("ProfileId not found in sessionStorage");
+      }
+      const formattedData = {
+        profile_id: profileId,
+        time_of_birth: data.timeOfBirth,
+        place_of_birth: data.placeOfBirth,
+        birthstar_name: data.birthStar,
+        birth_rasi_name: data.rasi,
+        lagnam_didi: data.lagnam,
+        chevvai_dosaham: chevvaiDhosam,
+        ragu_dosham: sarpaDhosham,
+        nalikai: data.naalikai,
+        dasa_name: data.dasaName,
+        // dasa_balance: data.dasaBalance,
+        dasa_balance: 1,
+        horoscope_hints: data.horoscopeHints,
+      };
+
+      console.log("Formatted Data:", formattedData);
+      setIsSubmitting(true);
+      const response = await axios.post("http://103.214.132.20:8000/auth/Horoscope_registration/", formattedData);
+      setIsSubmitting(false);
+
+      if (response.data.Status === 1) {
+        navigate("/PartnerSettings");
+      } else {
+        // Handle error or show message to the user
+        console.error("Error: Response status is not 1", response.data);
+      }
+    } catch (error) {
+      console.error("Error submitting form data:", error);
+      setIsSubmitting(false);
+    }
   };
 
-  const [selectedDosham, setSelectedDosham] = useState<string | null>(null);
   const [birthStar, setBirthStar] = useState<BirthStar[]>([]);
   const [rasi, setRasiOptions] = useState<Rasi[]>([]);
   const [lagnam, setLagnamOptions] = useState<Lagnam[]>([]);
+  const [chevvaiDhosam, setChevvaiDhosam] = useState('');
+  const [sarpaDhosham, setSarpaDhosham] = useState('');
   //const [dasa, setDasaOptions] = useState<DasaBalance[]>([]);
+
   const selectedStar = watch("birthStar");
 
   sessionStorage.setItem('selectedstar', selectedStar);
@@ -135,25 +234,23 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     fetchLagnam();
   }, []);
 
-  // useEffect(() => {
-  //   const fetchDasa = async () => {
-  //     try {
-  //       const response = await axios.post("http://103.214.132.20:8000/auth/Get_Dasa_Balance/");
-  //       const options = Object.values(response.data) as DasaBalance[];
-  //       setDasaOptions(options);
-  //     } catch (error) {
-  //       console.error("Error fetching Dasa options:", error);
-  //     }
-  //   };
-  //   fetchDasa();
-  // }, []);
 
-  const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
 
-  const handleDoshamChange = (value: string) => {
-    setSelectedDosham(value);
-    setValue("dosham", value, { shouldValidate: true });
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { id, value } = event.target;
+    if (id === 'chevvaiDhosam') {
+      setChevvaiDhosam(value);
+    } else if (id === 'sarpaDhosham') {
+      setSarpaDhosham(value);
+    }
+
   };
+  // const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
+
+  // const handleDoshamChange = (value: string) => {
+  //   setSelectedDosham(value);
+  //   setValue("dosham", value, { shouldValidate: true });
+  // };
 
 
 
@@ -260,7 +357,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             )}
           </div>
 
-          <div className="mt-3">
+          {/* <div className="mt-3">
             <h1 className="mb-3">Dosham</h1>
 
             <div className="w-full inline-flex rounded">
@@ -278,7 +375,60 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             {errors.dosham && (
               <span className="text-red-500">{errors.dosham.message}</span>
             )}
+          </div> */}
+
+          <div>
+            <label htmlFor="chevvaiDhosam" className="block mb-1">
+              Chevvai Dhosam
+            </label>
+            <select
+              id="chevvaiDhosam"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("chevvaiDhosam")}
+              onChange={handleSelectChange}
+            >
+              <option value="" disabled>
+                -- Select Chevvai Dhosam --
+              </option>
+              {["UnKnown", "Yes", "No"].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            {errors.chevvaiDhosam && (
+              <span className="text-red-500">{errors.chevvaiDhosam.message}</span>
+            )}
+
+            <label htmlFor="sarpaDhosham" className="block mb-1">
+              Sarpa Dhosham
+            </label>
+            <select
+              id="sarpaDhosham"
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              {...register("sarpaDhosham")}
+              onChange={handleSelectChange}
+            >
+              <option value="" disabled>
+                -- Select Sarpa Dhosham --
+              </option>
+              {["UnKnown", "Yes", "No"].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            {errors.sarpaDhosham && (
+              <span className="text-red-500">{errors.sarpaDhosham.message}</span>
+            )}
+
+            {/* Display the selected values for debugging purposes */}
+            <div>
+              {/* <p>Selected Chevvai Dhosam: {chevvaiDhosam}</p>
+        <p>Selected Sarpa Dhosham: {sarpaDhosham}</p> */}
+            </div>
           </div>
+
 
           <div>
             <InputField label={"Naalikai"} {...register("naalikai")} />
@@ -332,7 +482,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                   {...register("year")}
                 >
                   <option value="" selected disabled>Year</option>
-                  {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+                  {/* {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => ( */}
+                  {Array.from({ length: 30 }, (_, i) => i + 1).map((year) => (
+
                     <option key={year} value={year}>{year}</option>
                   ))}
                 </select>
@@ -366,11 +518,11 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             </div>
 
             <div className="flex space-x-4">
-              <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
+              <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2" >
                 Skip
               </button>
-              <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
-                Next
+              <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2" disabled={isSubmitting}>
+                {isSubmitting ? 'Submitting...' : 'Next'}
                 <span>
                   <img src={arrow} alt="next arrow" className="ml-2" />
                 </span>

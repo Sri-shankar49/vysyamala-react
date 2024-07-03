@@ -13,6 +13,7 @@ const schema = zod.object({
 interface LoginPopUpProps {
     onNext: () => void;
     onClose: () => void;
+    onProfileIdLogin:()=>void;
 }
 
 
@@ -20,7 +21,7 @@ interface FormInputs {
     mobile: string;
 }
 
-export const PhoneLoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onClose, }) => {
+export const PhoneLoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onClose, onProfileIdLogin}) => {
 
     // React Hook form
     const { register, handleSubmit, formState: { errors } } = useForm<FormInputs>({
@@ -65,7 +66,7 @@ export const PhoneLoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onClose, })
 
             <p className="text-ash font-semibold text-center my-5">or</p>
 
-            <button className="w-full py-[10px] px-[24px] bg-white text-main font-semibold border-2 rounded-[6px] mt-2" >
+            <button onClick={onProfileIdLogin} className="w-full py-[10px] px-[24px] bg-white text-main font-semibold border-2 rounded-[6px] mt-2" >
                 Login with Profile ID
             </button>
 

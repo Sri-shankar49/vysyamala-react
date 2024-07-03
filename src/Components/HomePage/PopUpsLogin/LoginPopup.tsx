@@ -7,6 +7,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 
+
 // ZOD Schema with updated regex validations
 const schema = zod.object({
     profileID: zod.string().min(1, 'Profile ID is required'),
@@ -20,6 +21,7 @@ interface LoginPopUpProps {
     onPhoneLogin: () => void; // Add this prop to handle phone login
     onClose: () => void;
     onForgetPassword: () => void; // Add this prop to handle forget password
+    registerPopup:() =>void;
 }
 
 interface FormInputs {
@@ -27,7 +29,7 @@ interface FormInputs {
     password: string;
 }
 
-export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, onForgetPassword, onClose }) => {
+export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, onForgetPassword, onClose,registerPopup }) => {
     // Toggle the Password field
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -132,7 +134,7 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, on
                 Don't have an account?{' '}
                 <button
                     type="button"
-                    onClick={onClose}
+                    onClick={registerPopup}
                     className="text-secondary hover:underline"
                 >
                     Register Now

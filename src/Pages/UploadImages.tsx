@@ -15,6 +15,7 @@ interface UploadImagesProps { }
 const UploadImages: React.FC<UploadImagesProps> = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [showPassword, setShowPassword] = useState(false);
+  
 
   const fileInputRefs = {
     images: useRef<HTMLInputElement>(null),
@@ -75,9 +76,9 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
     setSelectedFiles(updatedFiles);
   };
 
-  const clearFileInput = () => {
-    setSelectedFiles([]);
-  };
+  // const clearFileInput = () => {
+  //   setSelectedFiles([]);
+  // };
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
@@ -122,7 +123,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
                 onChange={handleFileUpload}
                 onClick={() => handleButtonClick(fileInputRefs.images)}
                 multiple // Set to true if you want to allow multiple file selection
-                //ref={fileInputRefs.images}
+              //ref={fileInputRefs.images}
               />
             </div>
           </div>
@@ -220,7 +221,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
                 onChange={handleFileUpload}
                 onClick={() => handleButtonClick(fileInputRefs.horoscope)}
                 multiple={true} // Set to true if you want to allow multiple file selection
-                //ref={fileInputRefs.horoscope}
+              //ref={fileInputRefs.horoscope}
               />
             </div>
           </div>
@@ -270,14 +271,14 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
                 onChange={handleFileUpload}
                 onClick={() => handleButtonClick(fileInputRefs.idProof)}
                 multiple={true} // Set to true if you want to allow multiple file selection
-                //ref={fileInputRefs.idProof}
+              //ref={fileInputRefs.idProof}
               />
             </div>
           </div>
 
           <div className="mt-7 flex justify-between">
             <div className="">
-              <Link to={"/ThankYou/ContactDetails"}>
+              <Link to={"/ContactDetails"}>
                 <button className="py-[10px] px-14 bg-white text-main font-semibold border-2 rounded-[6px] mt-2">
                   Back
                 </button>
@@ -285,9 +286,11 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </div>
 
             <div className="flex space-x-4">
-              <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2" onClick={clearFileInput}>
-                Skip
-              </button>
+              <Link to="/FamilyDetails">
+                <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2">
+                  Skip
+                </button>
+              </Link>
               <Link to="/FamilyDetails">
                 <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
                   Next
