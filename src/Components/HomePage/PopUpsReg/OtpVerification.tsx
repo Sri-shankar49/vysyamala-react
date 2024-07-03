@@ -15,6 +15,8 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
     const totalInputs = 6;
     const inputRefs = useRef<(HTMLInputElement | null)[]>(Array(totalInputs).fill(null));
     const [profileId, setProfileId] = useState<string>(''); // State to store profile ID
+    const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
+
 
     useEffect(() => {
         // Retrieve profile_id from session storage
@@ -51,6 +53,8 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
+        setIsSubmitting(true); // Set isSubmitting to true when form submission starts
+
         e.preventDefault();
 
         const isValid = otpValues.every((value) => value !== "");
@@ -68,16 +72,22 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
                 if (response.data.message === "OTP verified successfully.") {
                     onNext(); // Proceed to the next step upon successful OTP verification
                 } else {
+                    setIsSubmitting(false);
+
                     setError(true);
                     setErrorMessage("Invalid OTP. Please try again.");
                 }
             } catch (error) {
+                setIsSubmitting(false);
+
                 console.error('Error verifying OTP:', error);
                 // Handle error (show error message, etc.)
                 setError(true);
                 setErrorMessage("Error verifying OTP. Please try again later.");
             }
         } else {
+            setIsSubmitting(false);
+
             setError(true);
             setErrorMessage("Please enter OTP.");
         }
@@ -132,10 +142,12 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
 
             <button
                 type="submit"
+                disabled={isSubmitting} // Disable the button when form is submitting
+
                 className="w-full py-[10px] px-[24px] bg-gradient text-white rounded-[6px] mt-2"
             >
-                Verify OTP
-            </button>
+               {isSubmitting ? 'Submitting...' : 'Verify'}
+               </button>
 
             <IoIosCloseCircle
                 onClick={onClose}

@@ -5,20 +5,20 @@ interface CheckboxProps {
     name: string;
     value: string;
     label: string;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ id, name, value, label }) => {
+const Checkbox: React.FC<CheckboxProps> = ({ id, name, value, label, onChange }) => {
     return (
-        <div className=''>
+        <div>
             <input
                 type="checkbox"
                 id={id}
                 name={name}
                 value={value}
+                onChange={onChange}
             />
-            <label htmlFor={id} className="pl-1">
-                {label}
-            </label>
+            <label htmlFor={id}>{label}</label>
         </div>
     );
 };

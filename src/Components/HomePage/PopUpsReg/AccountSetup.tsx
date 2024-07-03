@@ -6,49 +6,69 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import axios from 'axios';
 
+
 // ZOD Schema with updated regex validations
 const schema = zod.object({
     profileFor: zod.string().min(1, 'Profile for is required'),
-    mobile: zod.string().min(10, 'Mobile number must be exactly 10 characters').max(10, 'Mobile number must be exactly 10 characters'),
-    email: zod.string()
+    mobile: zod
+        .string()
+        .min(10, 'Mobile number must be exactly 10 characters')
+        .max(10, 'Mobile number must be exactly 10 characters'),
+    email: zod
+        .string()
         .email('Invalid email address')
         .regex(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Invalid email format'),
-    password: zod.string()
+    password: zod
+        .string()
         .min(8, 'Password must be at least 8 characters')
-        .regex(/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/, 'Password must contain at least one uppercase letter and one special character')
+        .regex(
+            /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/,
+            'Password must contain at least one uppercase letter and one special character'
+        ),
 }).required();
 
 interface AccountSetupProps {
-    onNext: (mobile: string) => void; // Updated onNext to accept mobile number
+    onNext: (mobile: string) => void;
     onClose: () => void;
+    handleLoginClick:() =>void;
 }
 
-// React Hook Form input type props
 interface FormInputs {
     profileFor: string;
     mobile: string;
     email: string;
     password: string;
+    gender: string;
 }
 
-export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) => {
-    // Toggle the Password field
+export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose,handleLoginClick }) => {
     const [showPassword, setShowPassword] = useState(false);
-    const [profileOptions, setProfileOptions] = useState<{ owner_id: number; owner_description: string; }[]>([]);
-    const [gender, setGender] = useState<string>(''); // State for gender selection
+    const [profileOptions, setProfileOptions] = useState<{ owner_id: number; owner_description: string }[]>([]);
+    const [gender, setGender] = useState<string>(''); 
+    const [error, setError] = useState<string>('');
+    const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
 
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
     };
 
-    // Fetch profile options from API
+    // const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
+
+    // const handleLoginClick = () => {
+    //     setIsLoginPopupOpen(true);
+    // };
+
+    // const handleCloseLoginPopup = () => {
+    //     setIsLoginPopupOpen(false);
+    //     console.log("Closing Login PopupModal popup");
+    // };
+
     useEffect(() => {
         const fetchProfileOptions = async () => {
             try {
                 const response = await axios.post('http://103.214.132.20:8000/auth/Get_Profileholder/');
                 const data = response.data;
 
-                // Transform API response into options array for dropdown
                 const options = Object.values(data).map((item: typeof data[0]) => ({
                     owner_id: item.owner_id,
                     owner_description: item.owner_description
@@ -56,55 +76,56 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
                 setProfileOptions(options);
             } catch (error) {
                 console.error('Error fetching profile options:', error);
-                // Handle error fetching data, e.g., show default options
                 setProfileOptions([]);
             }
         };
 
         fetchProfileOptions();
-    }, []); // Empty dependency array ensures this runs only once on component mount
+    }, []);
 
-    // React Hook form
     const { register, handleSubmit, formState: { errors } } = useForm<FormInputs>({
         resolver: zodResolver(schema),
     });
 
-    // Function to handle gender selection
     const handleGenderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setGender(event.target.value);
     };
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
-        // Combine form data with selected gender
+        setIsSubmitting(true); // Set isSubmitting to true when form submission starts
+
         const registrationData = {
             Profile_for: data.profileFor,
-            Gender: gender, // Include gender from state
+            Gender: gender,
             Mobile_no: data.mobile,
             EmailId: data.email,
-            Password: data.password
+            Password: data.password,
         };
 
         try {
             const response = await axios.post('http://103.214.132.20:8000/auth/Registrationstep1/', registrationData, {
                 headers: {
-                    'Content-Type': 'application/json'
-                }
+                    'Content-Type': 'application/json',
+                },
             });
 
-            // Extract profile_id and profile_owner from the response
-            const { profile_id, profile_owner,Gender } = response.data;
+            const { profile_id, profile_owner, Gender } = response.data;
 
-            // Store profile_id and profile_owner in session storage
             sessionStorage.setItem('profile_id', profile_id);
             sessionStorage.setItem('profile_owner', profile_owner);
             sessionStorage.setItem('gender', Gender);
 
-
             console.log('API Response:', response.data);
-            onNext(data.mobile); // Pass mobile number to onNext function
-        } catch (error) {
-            console.error('Error registering user:', error);
-            // Handle error (show error message, etc.)
+            onNext(data.mobile);
+        } catch (error: any) {
+            setIsSubmitting(false); // Reset isSubmitting to false if there's an error
+            if (axios.isAxiosError(error) && error.response && error.response.data && error.response.data.Mobile_no) {
+                console.error('Error registering user:', error);
+                alert(error.response.data.Mobile_no[0]);
+            } else {
+                console.error('Error registering user:', error);
+                setError('An error occurred. Please try again.');
+            }
         }
     };
 
@@ -121,7 +142,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
                     className="text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none"
                     {...register("profileFor", { required: true })}
                 >
-                    <option value="">Select your Matrimony Profile for</option>
+                    <option value="">Matrimony Profile for</option>
                     {profileOptions.map(option => (
                         <option key={option.owner_id} value={option.owner_id}>{option.owner_description}</option>
                     ))}
@@ -134,6 +155,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
                     <input
                         type="radio"
                         id="male"
+                        {...register("gender", { required: true })}
                         name="gender"
                         value="male"
                         checked={gender === 'male'}
@@ -145,6 +167,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
                     <input
                         type="radio"
                         id="female"
+                        {...register("gender", { required: true })}
                         name="gender"
                         value="female"
                         checked={gender === 'female'}
@@ -153,6 +176,8 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
                     <label htmlFor="female" className="text-ash ml-1">Female</label>
                 </div>
             </div>
+
+            {errors.gender && <span className="text-red-500">Gender is required</span>}
 
             <div className="mb-5">
                 <input
@@ -195,20 +220,27 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose }) =
             <button
                 type="submit"
                 className="w-full py-[10px] px-[24px] bg-gradient text-white rounded-[6px] mt-2"
+                disabled={isSubmitting} // Disable the button when form is submitting
             >
-                Register
+                {isSubmitting ? 'Submitting...' : 'Register'}
             </button>
 
             <p className="text-center text-[16px] text-ash mt-5">
                 Existing user?{' '}
                 <button
                     type="button"
-                    onClick={onClose}
+                    onClick={handleLoginClick}
                     className="text-secondary hover:underline"
                 >
                     Login
                 </button>
             </p>
+
+            {/* {isLoginPopupOpen && (
+                <LoginPopupModal onClose={handleCloseLoginPopup} onForgetPassword={function (): void {
+                    throw new Error("Function not implemented.");
+                }} />
+            )} */}
 
             <IoIosCloseCircle onClick={onClose} className="absolute top-[-15px] right-[-15px] text-[30px] text-black bg-white rounded-full flex items-center cursor-pointer hover:text-white hover:bg-black" />
         </form>

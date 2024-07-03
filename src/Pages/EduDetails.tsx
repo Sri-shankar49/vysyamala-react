@@ -84,6 +84,68 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   const [highestEdu, setHighestEdu] = useState<HighesEducation[]>([]);
   const [ugdegree, setUgdegree] = useState<Ugdegree[]>([]);
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
+
+
+
+
+
+  const profileId = sessionStorage.getItem('profile_id_new');
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (profileId) {
+        try {
+          const requestData = {
+            profile_id: profileId,
+            page_id: 4
+          };
+
+          const response = await axios.post("http://103.214.132.20:8000/auth/Get_save_details/", requestData, {
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          console.log("API Response:", response.data); // Log the entire API response
+
+          const profileData = response.data.data; // Access the 'data' object directly
+
+          console.log("Profile Data:", profileData); // Log the profile data
+
+          // Set form values here after fetching data
+          setValue("highestEducationLevel", profileData.highest_education);
+          setValue("ugDegree", profileData.ug_degeree);
+          setValue("aboutYourEducation", profileData.about_edu);
+          setValue("profession", profileData.profession);
+          setValue("annualIncome", profileData.anual_income);
+          setValue("actualIncome", profileData.actual_income);
+          setValue("country", profileData.work_country);
+          setValue("state", profileData.work_state);
+          setValue("pincode", profileData.work_pincode);
+          setValue("careerPlans", profileData.career_plans);
+
+          // Set the initial state for selected profession
+          setSelectedProfession(profileData.profession);
+
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      } else {
+        console.warn("Profile ID not found in sessionStorage");
+      }
+    };
+
+    fetchProfileData();
+  }, [profileId, setValue]);
+
+
+
+
+
+
+
+
 
 
   useEffect(() => {
@@ -173,10 +235,44 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
     setValue("profession", value, { shouldValidate: true });
   };
 
-  const onSubmit: SubmitHandler<EduDetailsInputs> = (data) => {
-    console.log(data);
-    navigate("/HoroDetails");
+  const onSubmit: SubmitHandler<EduDetailsInputs> = async (data) => {
+
+    try {
+      // Format the data as expected by the backend
+      const profileId = sessionStorage.getItem("profile_id_new");
+      if (!profileId) {
+        throw new Error("ProfileId not found in sessionStorage");
+      }
+      const formattedData = {
+        profile_id:profileId,
+        highest_education: data.highestEducationLevel,
+        about_edu: data.aboutYourEducation,
+        profession: data.profession,
+        anual_income: data.annualIncome,
+        actual_income: data.actualIncome,
+        work_country: data.country,
+        work_state: data.state,
+        work_pincode: data.pincode,
+        status: "1" 
+      };
+
+      console.log("Formatted Data:", formattedData);
+      setIsSubmitting(true);
+      const response = await axios.post("http://103.214.132.20:8000/auth/Education_registration/", formattedData);
+      setIsSubmitting(false);
+
+      if (response.data.Status === 1) {
+        navigate("/HoroDetails");
+      } else {
+        // Handle error or show message to the user
+        console.error("Error: Response status is not 1", response.data);
+      }
+    } catch (error) {
+      console.error("Error submitting form data:", error);
+      setIsSubmitting(false);
+    }
   };
+
 
   return (
     <div className="pb-20">
@@ -246,7 +342,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
             <h1 className="mb-3">Profession</h1>
 
             <div className="w-full inline-flex rounded">
-              {["0", "1", "2", "3", "4", "5"].map((type) => (
+              {["Employed", "Business", "Student", "Not Working", "Not Mentioned"].map((type) => (
                 <button
                   key={type}
                   type="button"
@@ -374,8 +470,10 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                   <button
                     type="submit"
                     className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2"
+                    disabled={isSubmitting}
                   >
-                    Next
+                    {isSubmitting ? 'Submitting...' : 'Next'}
+
                     <span>
                       <img src={arrow} alt="next arrow" className="ml-2" />
                     </span>

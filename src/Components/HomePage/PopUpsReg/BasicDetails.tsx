@@ -52,7 +52,7 @@ interface ComplexionOption {
   complexion_description: string;
 }
 
-export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) => {
+export const BasicDetails: React.FC<BasicDetailsProps> = ({onClose }) => {
 
   // Navigate to next page
   const navigate = useNavigate();
@@ -64,12 +64,16 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
   const [maritalStatusOptions, setMaritalStatusOptions] = useState<MaritalStatusOption[]>([]);
   const [complexionOptions, setComplexionOptions] = useState<ComplexionOption[]>([]);
   const [profileowner, setProfileOwner] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
+
 
   // Get the value from sessionStorage
   useEffect(() => {
     const profileowner = sessionStorage.getItem("profile_owner");
     setProfileOwner(profileowner);
   }, []);
+
+  
   
 
 
@@ -150,11 +154,45 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
     document.getElementById("date")!.setAttribute("max", getMinDOB());
   }, []);
 
-  const onSubmit: SubmitHandler<FormInputs> = (data) => {
-    console.log(data);
-    onNext();
-    navigate("/ThankYou");
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+    setIsSubmitting(true); // Set isSubmitting to true when form submission starts
+    
+    try {
+      console.log("Form Data: ", data);
+      const profileId = sessionStorage.getItem("profile_id");
+      if (!profileId) {
+        throw new Error("ProfileId not found in sessionStorage");
+      }
+  
+      const postData = {
+        ProfileId: profileId,
+        Profile_name: data.name,
+        Profile_marital_status: data.maritalStatus,
+        Profile_dob: data.dob,
+        Profile_height: data.height,
+        Profile_complexion: data.complexion,
+      };
+  
+      console.log("Post Data: ", postData);
+  
+      const response = await axios.post("http://103.214.132.20:8000/auth/Registrationstep2/", postData);
+      console.log("Registration successful:", response.data);
+      if (response.data.Status === 1) {
+        const {profile_id} = response.data;
+        sessionStorage.setItem('profile_id_new', profile_id);
+
+
+        navigate('/ThankYou');
+      } else {
+        setIsSubmitting(false); // Set isSubmitting to false when form submission fails
+        console.log("Registration unsuccessful:", response.data);
+      }
+    } catch (error) {
+      setIsSubmitting(false); // Set isSubmitting to false when there is an error
+      console.error("Error submitting contact details:", error);
+    }
   };
+  
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -181,7 +219,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
             className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
             {...register("maritalStatus")}
           >
-            <option value="" disabled>Select your Marital Status</option>
+            <option value="" selected disabled>Select your Marital Status</option>
             {maritalStatusOptions.map((option) => (
               <option key={option.marital_sts_id} value={option.marital_sts_id}>
                 {option.marital_sts_name}
@@ -219,7 +257,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
             className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
             {...register("complexion")}
           >
-            <option value="" disabled>Select your complexion</option>
+            <option value="" selected disabled>Select your complexion</option>
             {complexionOptions.map((option) => (
               <option key={option.complexion_id} value={option.complexion_id}>
                 {option.complexion_description}
@@ -234,9 +272,11 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onNext, onClose, }) 
       <button
         type="submit"
         className="w-full py-[10px] px-[24px] bg-gradient text-white rounded-[6px] mt-2"
+        disabled={isSubmitting} // Disable the button when form is submitting
+
       >
-        Save Details
-      </button>
+                {isSubmitting ? 'Submitting...' : 'Save Details'}
+                </button>
 
       <IoIosCloseCircle
         onClick={onClose}
