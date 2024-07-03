@@ -17,6 +17,7 @@ export const LoginHeader: React.FC = () => {
           </div>
 
           <nav className="flex items-center space-x-10">
+
             <ul className="flex justify-center items-center text-ash space-x-14">
               <NavLink
                 to="/LoginHome"
@@ -25,6 +26,7 @@ export const LoginHeader: React.FC = () => {
               >
                 <li className="text-[16px] cursor-pointer font-medium">Home</li>
               </NavLink>
+
               <NavLink to="/Search" aria-current="page" className="active-nav">
                 <li className="text-[16px] cursor-pointer font-medium">
                   Search
@@ -40,6 +42,7 @@ export const LoginHeader: React.FC = () => {
                   Dashboard
                 </li>
               </NavLink>
+
               <NavLink
                 to={"/Wishlist"}
                 aria-current="page"
@@ -49,15 +52,19 @@ export const LoginHeader: React.FC = () => {
                   Wishlist
                 </li>
               </NavLink>
+
               <li className="text-[16px] cursor-pointer font-medium">
                 <MdMessage className="text-[22px]" />
               </li>
+
               <li className="text-[16px] cursor-pointer font-medium">
                 <FaBell className="text-[22px]" />
               </li>
+
               <li className="bg-gradientLight rounded-[6px] py-[8px] px-[24px] text-white text-[16px] font-semibold cursor-pointer">
                 Upgrade
               </li>
+
             </ul>
 
             <div className="border-l-2 border-l-ashSecondary pl-8">

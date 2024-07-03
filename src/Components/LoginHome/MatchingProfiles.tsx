@@ -152,7 +152,7 @@ export const MatchingProfiles = () => {
 
           {/* Sort my date */}
           <div className="flex justify-start items-center">
-            <BsSortDown className="text-[22px] text-ashSecondary hover:text-secondary mr-2" />
+            <BsSortDown className="text-[22px] text-ashSecondary cursor-pointer hover:text-secondary mr-2" />
             {/* <BsSortUp /> */}
             <p className="text-vysyamalaBlack font-semibold">Sort by date</p>
           </div>

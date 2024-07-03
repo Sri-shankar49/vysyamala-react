@@ -21,6 +21,7 @@ import { PayNow } from "./Pages/PayNow";
 import { ThankYouReg } from "./Pages/ThankYouReg";
 import { LoginHome } from "./Pages/AfterLogin/LoginHome";
 import Search from "./Pages/AfterLogin/Search";
+import { DashBoard } from "./Pages/AfterLogin/DashBoard";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -69,6 +70,7 @@ function App() {
             <Route path="/ThankYouReg" element={<ThankYouReg />} />
             <Route path="/LoginHome" element={<LoginHome />} />
             <Route path="/Search" element={<Search />} />
+            <Route path="/DashBoard" element={<DashBoard />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
@@ -7,7 +8,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import MatchingStars from "../Components/PartnerPreference/MatchingStars";
-import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 // Define validation schema with zod
