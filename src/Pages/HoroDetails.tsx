@@ -196,7 +196,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   useEffect(() => {
     const fetchBirthStar = async () => {
       try {
-        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Birth_Star/");
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Birth_Star/",{state_id:" "});
         const options = Object.values(response.data) as BirthStar[];
         setBirthStar(options);
       } catch (error) {
