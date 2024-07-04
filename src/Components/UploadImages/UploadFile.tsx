@@ -1,6 +1,6 @@
 import React from "react";
 import uploadImg from "../../assets/icons/upload.png";
-import { RefObject } from "react";
+// import { RefObject } from "react";
 
 interface UploadFileProps {
   heading: string;
@@ -16,7 +16,7 @@ const UploadFile: React.FC<UploadFileProps> = ({
   desc,
   name,
   onChange,
-  onClick,
+  // onClick,
   multiple, // Include multiple in props
 }) => {
   // Function to trigger file input click

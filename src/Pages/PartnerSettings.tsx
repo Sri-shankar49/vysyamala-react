@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
@@ -10,17 +11,14 @@ import * as zod from "zod";
 import MatchingStars from "../Components/PartnerPreference/MatchingStars";
 import axios from "axios";
 
-// API CALL
 const PARTNER_API_URL = 'http://103.214.132.20:8000/auth/Partner_pref_registration/'
 
-
-// Define validation schema with zod
 const schema = zod.object({
   age: zod.string().nonempty("Age is required"),
   heightFrom: zod.string().min(1, "Height From is required"),
   heightTo: zod.string().min(1, "Height To is required"),
-  education: zod.array(zod.string()).min(1, "Education is required"),
-  annualIncome: zod.array(zod.string()).min(1, "Annual Income is required"),
+  // education: zod.array(zod.string()).min(1, "Education is required"),
+  // annualIncome: zod.array(zod.string()).min(1, "Annual Income is required"),
   chevvai: zod.string().min(1, "Chevvai option is required"),
   rehu: zod.string().min(1, "Rehu/Kethu option is required"),
 }).required();
@@ -35,7 +33,7 @@ interface PartnerSettingsInputs {
   rehu: string;
   profession: string[];
   maritalStatus: string[];
-  foreignInterest: string[];
+  foreignInterest: string;
   nativeState?: string[];
   profilePhoto?: boolean;
   ageFrom?: string;
@@ -57,10 +55,10 @@ interface AnnualIncome {
   income_description: string;
 }
 
-interface BirthStar {
-  birth_id: number;
-  birth_star: string;
-}
+// interface BirthStar {
+//   birth_id: number;
+//   birth_star: string;
+// }
 
 interface MatchingStar {
   dest_rasi_id: number;
@@ -79,55 +77,135 @@ const PartnerSettings: React.FC = () => {
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
   const [matchStars, setMatchStars] = useState<MatchingStar[][]>([]);
   const [maritalStatuses, setMaritalStatuses] = useState<MaritalStatus[]>([]);
+  const [selectedStarIds, setSelectedStarIds] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<PartnerSettingsInputs>({
+  const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<string[]>([]);
+  const [selectedProfessions, setSelectedProfessions] = useState<string[]>([]);
+  const [selectedEducations, setSelectedEducations] = useState<string[]>([]);
+  const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>([]);
+  const [selectedBusiness, setSelectedBusiness] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(false);
+  const [selectedNotWorking, setSelectedNotWorking] = useState(false);
+  const [selectedNotMentioned, setSelectedNotMentioned] = useState(false);
+
+  const { register, handleSubmit, setValue, formState: { errors }, watch } = useForm<PartnerSettingsInputs>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      foreignInterest: 'both' // Set default value here
+    }
   });
 
+  const [foreignInterestValue, setForeignInterestValue] = useState('both');
+  const foreignInterest = watch("foreignInterest");
+
+  useEffect(() => {
+    setForeignInterestValue(foreignInterest);
+  }, [foreignInterest]);
+
   const navigate = useNavigate();
-  // const onSubmit: SubmitHandler<PartnerSettingsInputs> = async (data) => {
-  //   setIsSubmitting(true);
-  //   console.log(data);
-  //   try {
-  //     const profileId = sessionStorage.getItem("profile_id_new");
-  //     if (!profileId) {
-  //       throw new Error("ProfileId not found in sessionStorage");
-  //     }
 
-  //     console.log("Form Data: ", data);
 
-  //     const postData = {
-  //       ProfileId: profileId,
-  //       pref_age_differences: data.age,
-  //       pref_height_from: data.heightFrom,
-  //       pref_height_to: data.heightTo,
-  //       education: data.education,
-  //       annualIncome: data.annualIncome,
-  //       chevvai: data.chevvai,
-  //       rehu: data.rehu,
-  //       profession: data.profession,
-  //       maritalStatus: data.maritalStatus,
-  //       foreignInterest: data.foreignInterest,
-  //       nativeState: data.nativeState,
-  //       profilePhoto: data.profilePhoto,
-  //       status: 1
-  //     };
 
-  //     console.log("Post Data: ", postData);
 
-  //     const response = await axios.post('http://103.214.132.20:8000/auth/Partner_pref_registration/', postData);
-  //     console.log("Registration successful:", response.data);
-  //     if (response.data.Status === 1) {
-  //       navigate('/UploadImages');
-  //     } else {
-  //       setIsSubmitting(false);
-  //       console.log("Registration unsuccessful:", response.data);
-  //     }
-  //   } catch (error) {
-  //     setIsSubmitting(false);
-  //     console.error("Error submitting contact details:", error);
-  //   }
-  // };
+  const handleMaritalStatusChange = (id: string, checked: boolean) => {
+    const updatedStatuses = checked
+      ? [...selectedMaritalStatuses, id]
+      : selectedMaritalStatuses.filter(statusId => statusId !== id);
+
+    setSelectedMaritalStatuses(updatedStatuses);
+  };
+
+
+
+  const handleEducationChange = (value: string, checked: boolean) => {
+    const updatedEducations = checked
+      ? [...selectedEducations, value]
+      : selectedEducations.filter(education => education !== value);
+
+    setSelectedEducations(updatedEducations);
+  };
+
+  const handleAnnualIncomeChange = (id: string, checked: boolean) => {
+    const updatedIncomes = checked
+      ? [...selectedAnnualIncomes, id]
+      : selectedAnnualIncomes.filter(incomeId => incomeId !== id);
+
+    setSelectedAnnualIncomes(updatedIncomes);
+  };
+
+  const handleProfessionChange = (value: string, checked: boolean) => {
+    setSelectedProfessions(prevProfessions => {
+      if (checked && !prevProfessions.includes(value)) {
+        return [...prevProfessions, value];
+      } else {
+        return prevProfessions.filter(profession => profession !== value);
+      }
+    });
+
+    // Handle other checkboxes as needed
+    if (value === "business") {
+      setSelectedBusiness(checked);
+    } else if (value === "student") {
+      setSelectedStudent(checked);
+    } else if (value === "notWorking") {
+      setSelectedNotWorking(checked);
+    } else if (value === "notMentioned") {
+      setSelectedNotMentioned(checked);
+    }
+  };
+
+  const onSubmit: SubmitHandler<PartnerSettingsInputs> = async (data) => {
+    setIsSubmitting(true);
+    console.log('Form data:', data);
+
+    try {
+      const profileId = sessionStorage.getItem("profile_id_new");
+      if (!profileId) {
+        throw new Error("ProfileId not found in sessionStorage");
+      }
+
+      const postData = {
+        profile_id: profileId,
+        pref_age_differences: data.age,
+        pref_height_from: data.heightFrom,
+        pref_height_to: data.heightTo,
+        pref_marital_status1: selectedMaritalStatuses,
+        pref_profession1: [
+          ...(selectedProfessions.includes("employed") ? ["employed"] : []),
+          ...(selectedBusiness ? ["business"] : []),
+          ...(selectedStudent ? ["student"] : []),
+          ...(selectedNotWorking ? ["notWorking"] : []),
+          ...(selectedNotMentioned ? ["notMentioned"] : []),
+        ],
+        pref_education1: selectedEducations,
+        pref_anual_income1: selectedAnnualIncomes,
+        pref_chevvai: data.chevvai,
+        pref_ragukethu: data.rehu,
+        pref_foreign_intrest: foreignInterestValue,
+        status: "1"
+      };
+
+      console.log("Post Data:", postData);
+
+      const response = await axios.post(PARTNER_API_URL, postData);
+      console.log("Registration response:", response.data);
+
+      if (response.data.Status === 1) {
+        navigate('/MembershipPlan');
+      } else {
+        setIsSubmitting(false);
+        console.log("Registration unsuccessful:", response.data);
+      }
+    } catch (error) {
+      setIsSubmitting(false);
+      console.error("Error submitting contact details:", error);
+    }
+  };
+
+
+
+
+
 
 
   const profileId = sessionStorage.getItem('profile_id_new');
@@ -147,11 +225,11 @@ const PartnerSettings: React.FC = () => {
             }
           });
 
-          console.log("API Response:", response.data); // Log the entire API response
+          console.log("API Response:", response.data);
 
-          const profileData = response.data.data; // Access the 'data' object directly
+          const profileData = response.data.data;
 
-          console.log("Profile Data:", profileData); // Log the profile data
+          console.log("Profile Data:", profileData);
 
           // Set form values here after fetching data
           setValue("age", profileData.pref_age_differences);
@@ -165,7 +243,6 @@ const PartnerSettings: React.FC = () => {
           setValue("rehu", profileData.pref_ragukethu);
           setValue("foreignInterest", profileData.pref_foreign_intrest);
 
-
         } catch (error) {
           console.error("Error fetching profile data:", error);
         }
@@ -176,59 +253,6 @@ const PartnerSettings: React.FC = () => {
 
     fetchProfileData();
   }, [profileId, setValue]);
-
-
-
-
-
-
-
-  const onSubmit: SubmitHandler<PartnerSettingsInputs> = async (data) => {
-    setIsSubmitting(true);
-    console.log('Form data:', data);
-
-    try {
-      const profileId = sessionStorage.getItem("profile_id_new");
-      if (!profileId) {
-        throw new Error("ProfileId not found in sessionStorage");
-      }
-
-      const postData = {
-        profile_id: profileId,
-        pref_age_differences: data.age,
-        pref_height_from: data.heightFrom,
-        pref_height_to: data.heightTo,
-        // education: data.education,
-        // annualIncome: data.annualIncome,
-        // chevvai: data.chevvai,
-        // rehu: data.rehu,
-        // profession: data.profession,
-        // maritalStatus: data.maritalStatus,
-        // foreignInterest: data.foreignInterest,
-        // nativeState: data.nativeState,
-        // profilePhoto: data.profilePhoto,
-        status:"1"
-      };
-
-      console.log("Post Data:", postData);
-
-      const response = await axios.post(PARTNER_API_URL, postData);
-      console.log("Registration response:", response.data);
-
-      if (response.data.Status === 1) {
-        navigate('/MembershipPlan');
-      } else {
-        setIsSubmitting(false);
-        console.log("Registration unsuccessful:", response.data);
-        // Handle other status codes or error conditions if needed
-      }
-    } catch (error) {
-      setIsSubmitting(false);
-      console.error("Error submitting contact details:", error);
-      // Handle specific errors or display user-friendly messages
-    }
-  };
-
 
   useEffect(() => {
     const fetchMaritalStatuses = async () => {
@@ -249,7 +273,7 @@ const PartnerSettings: React.FC = () => {
       try {
         const response = await axios.post('http://103.214.132.20:8000/auth/Get_Edu_Pref/');
         const options = Object.values(response.data) as EduPref[];
-        console.log(options)
+        console.log(options);
         setEduPref(options);
       } catch (error) {
         console.error('Error fetching Edu Pref options:', error);
@@ -281,7 +305,7 @@ const PartnerSettings: React.FC = () => {
     if (storedBirthStar && storedGender) {
       const fetchMatchingStars = async () => {
         try {
-          const response = await axios.post('http://103.214.132.20:8000/auth/Partner_pref_registration/', {
+          const response = await axios.post('http://103.214.132.20:8000/auth/Get_Matchstr_Pref/', {
             birth_star_id: storedBirthStar,
             gender: storedGender,
           });
@@ -308,32 +332,20 @@ const PartnerSettings: React.FC = () => {
       }
     }
   }, [setValue]);
-  // useEffect(() => {
-  //   const storedHeight = sessionStorage.getItem("userHeight");
-  //  // const storedAge = sessionStorage.getItem("userAge");
 
-  //   if (storedHeight) {
-  //     setHeight(storedHeight);
-  //     if (storedGender === 'male') {
-  //       setValue("heightFrom", storedHeight);
-  //     } else {
-  //       setValue("heightTo", storedHeight);
-  //     }
-  //   }
-  //   if (storedGender) {
-  //     setGender(storedGender);
-  //   }
-  //   // if (storedAge) {
-  //   //   if (storedGender === 'male') {
-  //   //     setValue("ageFrom", storedAge);
-  //   //   } else {
-  //   //     setValue("ageTo", storedAge);
-  //   //   }
-  //   // }
-  // }, [setValue]);
+  const handleCheckboxChange = (updatedIds: string[]) => {
+    setSelectedStarIds(updatedIds);
+  };
+
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
+    window.scrollTo(0, 0);
+  }, []);
+  // console.log(selectedStarIds);
+  // console.log(selectedMaritalStatuses);
+  // console.log(selectedProfessions);
+  // console.log(selectedEducations);
+  // console.log(selectedAnnualIncomes);
+
 
   return (
     <div className="pb-20">
@@ -419,6 +431,7 @@ const PartnerSettings: React.FC = () => {
           </div>
 
           {/* Marital Status */}
+          {/* Marital Status */}
           <div>
             <h5 className="text-[18px] text-primary font-semibold mb-2">Marital Status</h5>
             <div className="flex justify-between items-center">
@@ -427,8 +440,9 @@ const PartnerSettings: React.FC = () => {
                   <input
                     type="checkbox"
                     id={`maritalStatus-${status.marital_sts_id}`}
-                    value={status.marital_sts_id}
-                    {...register("maritalStatus")}
+                    value={status.marital_sts_id.toString()}
+                    checked={selectedMaritalStatuses.includes(status.marital_sts_id.toString())}
+                    onChange={(e) => handleMaritalStatusChange(status.marital_sts_id.toString(), e.target.checked)}
                   />
                   <label htmlFor={`maritalStatus-${status.marital_sts_id}`}>{status.marital_sts_name}</label>
                 </div>
@@ -436,22 +450,20 @@ const PartnerSettings: React.FC = () => {
             </div>
           </div>
 
+          {/* Profession */}
+          {/* Profession */}
           <div>
-            <h5 className="text-[18px] text-primary font-semibold mb-2">
-              Profession
-            </h5>
-
+            <h5 className="text-[18px] text-primary font-semibold mb-2">Profession</h5>
             <div className="flex justify-between items-center">
               <div>
                 <input
                   type="checkbox"
                   id="employed"
                   value="employed"
-                  {...register("profession")}
+                  checked={selectedProfessions.includes("employed")}
+                  onChange={(e) => handleProfessionChange("employed", e.target.checked)}
                 />
-                <label htmlFor="employed" className="pl-1">
-                  Employed
-                </label>
+                <label htmlFor="employed" className="pl-1">Employed</label>
               </div>
 
               <div>
@@ -459,11 +471,10 @@ const PartnerSettings: React.FC = () => {
                   type="checkbox"
                   id="business"
                   value="business"
-                  {...register("profession")}
+                  checked={selectedProfessions.includes("business")}
+                  onChange={(e) => handleProfessionChange("business", e.target.checked)}
                 />
-                <label htmlFor="business" className="pl-1">
-                  Business
-                </label>
+                <label htmlFor="business" className="pl-1">Business</label>
               </div>
 
               <div>
@@ -471,11 +482,10 @@ const PartnerSettings: React.FC = () => {
                   type="checkbox"
                   id="student"
                   value="student"
-                  {...register("profession")}
+                  checked={selectedProfessions.includes("student")}
+                  onChange={(e) => handleProfessionChange("student", e.target.checked)}
                 />
-                <label htmlFor="student" className="pl-1">
-                  Student
-                </label>
+                <label htmlFor="student" className="pl-1">Student</label>
               </div>
 
               <div>
@@ -483,11 +493,10 @@ const PartnerSettings: React.FC = () => {
                   type="checkbox"
                   id="notWorking"
                   value="notWorking"
-                  {...register("profession")}
+                  checked={selectedProfessions.includes("notWorking")}
+                  onChange={(e) => handleProfessionChange("notWorking", e.target.checked)}
                 />
-                <label htmlFor="notWorking" className="pl-1">
-                  Not Working
-                </label>
+                <label htmlFor="notWorking" className="pl-1">Not Working</label>
               </div>
 
               <div>
@@ -495,11 +504,10 @@ const PartnerSettings: React.FC = () => {
                   type="checkbox"
                   id="notMentioned"
                   value="notMentioned"
-                  {...register("profession")}
+                  checked={selectedProfessions.includes("notMentioned")}
+                  onChange={(e) => handleProfessionChange("notMentioned", e.target.checked)}
                 />
-                <label htmlFor="notMentioned" className="pl-1">
-                  Not Mentioned
-                </label>
+                <label htmlFor="notMentioned" className="pl-1">Not Mentioned</label>
               </div>
             </div>
             {errors.profession && (
@@ -508,26 +516,8 @@ const PartnerSettings: React.FC = () => {
           </div>
 
 
-          {/* <InputField label={"Education"} name={"education"} /> */}
-          {/* <div>
-            <label className="text-[18px] text-primary font-semibold mb-2">Education</label>
-            <div className="flex justify-between items-center">
-              {eduPref.map((option) => (
-                <div key={option.Edu_Pref_id}>
-                  <input
-                    type="checkbox"
-                    id={`education-${option.Edu_Pref_id}`}
-                    value={option.Edu_Pref_id}
-                    {...register("education")}
-                  />
-                  <label htmlFor={`education-${option.Edu_Pref_id}`} className="pl-1">
-                    {option.Edu_name}
-                  </label>
-                </div>
-              ))}
-            </div>
-            {errors.education && <span className="text-red-500">{errors.education.message}</span>}
-          </div> */}
+
+          {/* Education */}
           <div>
             <label className="text-[18px] text-primary font-semibold mb-2">Education</label>
             <div className="flex flex-wrap gap-4">
@@ -537,7 +527,8 @@ const PartnerSettings: React.FC = () => {
                     type="checkbox"
                     id={`education-${option.Edu_Pref_id}`}
                     value={option.Edu_name}
-                    {...register("education", { setValueAs: v => (v ? [...v] : []) })}
+                    checked={selectedEducations.includes(option.Edu_name)}
+                    onChange={(e) => handleEducationChange(option.Edu_name, e.target.checked)}
                   />
                   <label htmlFor={`education-${option.Edu_Pref_id}`} className="pl-1">
                     {option.Edu_name}
@@ -545,10 +536,8 @@ const PartnerSettings: React.FC = () => {
                 </div>
               ))}
             </div>
-            {errors.education && <span className="text-red-500">{errors.education.message}</span>}
           </div>
 
-          {/* <InputField label={"Income"} name={"income"} /> */}
           {/* Annual Income */}
           <div>
             <label className="text-[18px] text-primary font-semibold mb-2">Annual Income</label>
@@ -558,8 +547,9 @@ const PartnerSettings: React.FC = () => {
                   <input
                     type="checkbox"
                     id={`annualIncome-${option.income_id}`}
-                    value={option.income_id}
-                    {...register("annualIncome", { setValueAs: v => (v ? [...v] : []) })}
+                    value={option.income_id.toString()}
+                    checked={selectedAnnualIncomes.includes(option.income_id.toString())}
+                    onChange={(e) => handleAnnualIncomeChange(option.income_id.toString(), e.target.checked)}
                   />
                   <label htmlFor={`annualIncome-${option.income_id}`} className="pl-1">
                     {option.income_description}
@@ -567,10 +557,8 @@ const PartnerSettings: React.FC = () => {
                 </div>
               ))}
             </div>
-            {errors.annualIncome && (
-              <span className="text-red-500">{errors.annualIncome.message}</span>
-            )}
           </div>
+
 
           {/* Dhosam */}
           {/* <div>
@@ -636,12 +624,11 @@ const PartnerSettings: React.FC = () => {
             <select
               id="foreignInterest"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("foreignInterest")}
-              defaultValue="both" // Set default value to "both"
+              {...register("foreignInterest", { required: "Foreign interest selection is required" })}
             >
               <option value="yes">Yes</option>
               <option value="no">No</option>
-              <option value="both" selected>Both</option>
+              <option value="both">Both</option>
             </select>
             {errors.foreignInterest && <span className="text-red-500">{errors.foreignInterest.message}</span>}
           </div>
@@ -691,24 +678,36 @@ const PartnerSettings: React.FC = () => {
 
 
 
-          <div className="justify-start items-center gap-x-5">
-            {matchStars.sort((a, b) => b[0].match_count - a[0].match_count).map((matchCountArray, index) => {
-              const starAndRasi = matchCountArray.map(star => ({
-                star: star.matching_starname,
-                rasi: star.matching_rasiname,
-              }));
+          <div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              {/* Other input fields */}
+              <div className="justify-start items-center gap-x-5">
+                {matchStars
+                  .sort((a, b) => b[0].match_count - a[0].match_count)
+                  .map((matchCountArray, index) => {
+                    const starAndRasi = matchCountArray.map(star => ({
+                      id: star.id.toString(),
+                      star: star.matching_starname,
+                      rasi: star.matching_rasiname,
+                    }));
 
-              // Assuming matchCountArray has the structure [{ matchCount: number, otherProperties: ... }]
-              const matchCountValue = matchCountArray[0].match_count; // Adjust according to the structure
+                    const matchCountValue = matchCountArray[0].match_count;
 
-              return (
-                <MatchingStars
-                  key={index}
-                  initialPoruthas={`No of porutham ${matchCountValue}`}
-                  starAndRasi={starAndRasi}
-                />
-              );
-            })}
+                    return (
+                      <MatchingStars
+                        key={index}
+                        initialPoruthas={`No of porutham ${matchCountValue}`}
+                        starAndRasi={starAndRasi}
+                        selectedStarIds={selectedStarIds} // Pass selectedStarIds state
+                        onCheckboxChange={handleCheckboxChange} // Pass the callback function
+                      />
+                    );
+                  })}
+              </div>
+              {/* <button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? 'Submitting...' : 'Submit'}
+              </button> */}
+            </form>
           </div>
 
 
