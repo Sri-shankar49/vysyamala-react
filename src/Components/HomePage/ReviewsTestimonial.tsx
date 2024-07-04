@@ -36,8 +36,12 @@ const ReviewsTestimonial = () => {
     cssEase: "linear",
     pauseOnHover: true,
     rtl: true,
-    nextArrow: <SlickNextArrow />,
-    prevArrow: <SlickPrevArrow />,
+    nextArrow: <SlickNextArrow onClick={function (): void {
+      throw new Error("Function not implemented.");
+    }} />,
+    prevArrow: <SlickPrevArrow onClick={function (): void {
+      throw new Error("Function not implemented.");
+    }} />,
 
     responsive: [
       {

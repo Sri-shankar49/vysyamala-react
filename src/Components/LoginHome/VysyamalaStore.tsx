@@ -1,4 +1,3 @@
-import React from "react";
 import VysyamalaAd from "../../assets/images/VysyamalaAd.png";
 import VysyamalaBazaar from "../../assets/images/VysyamalaBazaar.png";
 

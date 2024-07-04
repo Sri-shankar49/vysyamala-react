@@ -4,6 +4,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { SuggestedCard } from "./SuggestedProfiles/SuggestedCard";
+import GridProfileImg from "../../assets/images/GridProfileImg.png";
 import "./SuggestedProfiles/SuggestedStyle.css";
 
 const settings = {
@@ -67,14 +68,14 @@ export const SuggestedProfiles = () => {
         {/* Suggested Profile Slick */}
         <div className="slider-container suggestedStyle">
           <Slider {...settings}>
-            <SuggestedCard profileId={"VM32787"} age={"28"} />
-            <SuggestedCard profileId={"VM32787"} age={"28"} />
-            <SuggestedCard profileId={"VM32787"} age={"28"} />
-            <SuggestedCard profileId={"VM32787"} age={"28"} />
-            <SuggestedCard profileId={"VM32787"} age={"28"} />
-            <SuggestedCard profileId={"VM32787"} age={"28"} />
-            <SuggestedCard profileId={"VM32787"} age={"28"} />
-            <SuggestedCard profileId={"VM32787"} age={"28"} />
+            <SuggestedCard profileImg={GridProfileImg} profileId={"VM32787"} age={"28"} height={"5ft 10in (177 cms)"} />
+            <SuggestedCard profileImg={GridProfileImg} profileId={"VM32787"} age={"28"} height={"5ft 10in (177 cms)"} />
+            <SuggestedCard profileImg={GridProfileImg} profileId={"VM32787"} age={"28"} height={"5ft 10in (177 cms)"} />
+            <SuggestedCard profileImg={GridProfileImg} profileId={"VM32787"} age={"28"} height={"5ft 10in (177 cms)"} />
+            <SuggestedCard profileImg={GridProfileImg} profileId={"VM32787"} age={"28"} height={"5ft 10in (177 cms)"} />
+            <SuggestedCard profileImg={GridProfileImg} profileId={"VM32787"} age={"28"} height={"5ft 10in (177 cms)"} />
+            <SuggestedCard profileImg={GridProfileImg} profileId={"VM32787"} age={"28"} height={"5ft 10in (177 cms)"} />
+            <SuggestedCard profileImg={GridProfileImg} profileId={"VM32787"} age={"28"} height={"5ft 10in (177 cms)"} />
           </Slider>
         </div>
       </div>

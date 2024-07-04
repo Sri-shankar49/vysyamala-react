@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FiFilter } from "react-icons/fi";
 import { HiOutlineSearch } from "react-icons/hi";
 import { FaSuitcase } from "react-icons/fa";
@@ -113,11 +113,10 @@ export const MatchingProfiles = () => {
             >
               <HiMiniViewColumns
                 className={`text-[22px] 
-                    ${
-                      currentView === "gridlist"
-                        ? "text-secondary"
-                        : "text-ashSecondary"
-                    } hover:text-secondary}`}
+                    ${currentView === "gridlist"
+                    ? "text-secondary"
+                    : "text-ashSecondary"
+                  } hover:text-secondary}`}
               />
             </div>
             <div
@@ -127,11 +126,10 @@ export const MatchingProfiles = () => {
               onClick={() => setCurrentView("list")}
             >
               <ImMenu
-                className={`text-[22px] ${
-                  currentView === "list"
+                className={`text-[22px] ${currentView === "list"
                     ? "text-secondary"
                     : "text-ashSecondary"
-                } hover:text-secondary}`}
+                  } hover:text-secondary}`}
               />
             </div>
             <div
@@ -141,11 +139,10 @@ export const MatchingProfiles = () => {
               onClick={() => setCurrentView("grid")}
             >
               <BsFillGrid3X3GapFill
-                className={`text-[22px] ${
-                  currentView === "grid"
+                className={`text-[22px] ${currentView === "grid"
                     ? "text-secondary"
                     : "text-ashSecondary"
-                } hover:text-secondary}`}
+                  } hover:text-secondary}`}
               />
             </div>
           </div>
@@ -218,7 +215,7 @@ export const MatchingProfiles = () => {
                 >
                   2
                 </a>
-     
+
                 <a
                   href="#"
                   className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"

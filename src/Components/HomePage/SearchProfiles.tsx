@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 
 const SearchProfiles = () => {
   const [clickedButton, setClickedButton] = useState("Occupation");
 
-  const handleClick = (buttonName) => {
+  const handleClick = (buttonName: SetStateAction<string>) => {
     setClickedButton(buttonName);
   };
 
@@ -20,33 +20,29 @@ const SearchProfiles = () => {
         <div className="mt-10 space-y-8">
           <div className="flex justify-center space-x-5">
             <button
-              className={`px-5 py-2 font-semibold rounded ${
-                clickedButton === "Occupation" ? "bg-[#D4D5D9]" : ""
-              }`}
+              className={`px-5 py-2 font-semibold rounded ${clickedButton === "Occupation" ? "bg-[#D4D5D9]" : ""
+                }`}
               onClick={() => handleClick("Occupation")}
             >
               Occupation
             </button>
             <button
-              className={`px-5 py-2 font-semibold rounded ${
-                clickedButton === "Profession" ? "bg-[#D4D5D9]" : ""
-              }`}
+              className={`px-5 py-2 font-semibold rounded ${clickedButton === "Profession" ? "bg-[#D4D5D9]" : ""
+                }`}
               onClick={() => handleClick("Profession")}
             >
               Profession
             </button>
             <button
-              className={`px-5 py-2 font-semibold rounded ${
-                clickedButton === "City" ? "bg-[#D4D5D9]" : ""
-              }`}
+              className={`px-5 py-2 font-semibold rounded ${clickedButton === "City" ? "bg-[#D4D5D9]" : ""
+                }`}
               onClick={() => handleClick("City")}
             >
               City
             </button>
             <button
-              className={`px-5 py-2 font-semibold rounded ${
-                clickedButton === "State" ? "bg-[#D4D5D9]" : ""
-              }`}
+              className={`px-5 py-2 font-semibold rounded ${clickedButton === "State" ? "bg-[#D4D5D9]" : ""
+                }`}
               onClick={() => handleClick("State")}
             >
               State

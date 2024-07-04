@@ -67,14 +67,14 @@ export const FeaturedProfiles = () => {
         {/* Featured Profile Slick */}
         <div className="slider-container featuredProfileStyle">
           <Slider {...settings}>
-            <FeaturedProfileCard profileId={"VM32787"} age={"28"} />
-            <FeaturedProfileCard profileId={"VM32787"} age={"28"} />
-            <FeaturedProfileCard profileId={"VM32787"} age={"28"} />
-            <FeaturedProfileCard profileId={"VM32787"} age={"28"} />
-            <FeaturedProfileCard profileId={"VM32787"} age={"28"} />
-            <FeaturedProfileCard profileId={"VM32787"} age={"28"} />
-            <FeaturedProfileCard profileId={"VM32787"} age={"28"} />
-            <FeaturedProfileCard profileId={"VM32787"} age={"28"} />
+            <FeaturedProfileCard profileName="Harini" profileId={"VM32787"} age={"28"} height={"5ft 10inches"} />
+            <FeaturedProfileCard profileName="Harini" profileId={"VM32787"} age={"28"} height={"5ft 10inches"} />
+            <FeaturedProfileCard profileName="Harini" profileId={"VM32787"} age={"28"} height={"5ft 10inches"} />
+            <FeaturedProfileCard profileName="Harini" profileId={"VM32787"} age={"28"} height={"5ft 10inches"} />
+            <FeaturedProfileCard profileName="Harini" profileId={"VM32787"} age={"28"} height={"5ft 10inches"} />
+            <FeaturedProfileCard profileName="Harini" profileId={"VM32787"} age={"28"} height={"5ft 10inches"} />
+            <FeaturedProfileCard profileName="Harini" profileId={"VM32787"} age={"28"} height={"5ft 10inches"} />
+            <FeaturedProfileCard profileName="Harini" profileId={"VM32787"} age={"28"} height={"5ft 10inches"} />
           </Slider>
         </div>
       </div>

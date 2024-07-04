@@ -3,10 +3,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import MarriedSlick from "./HappyStories/MarriedSlick";
 
-import Couple from "../../assets/images/Couple.png";
+// import Couple from "../../assets/images/Couple.png";
 import { FaArrowRightLong } from "react-icons/fa6";
-import { FaCirclePlay } from "react-icons/fa6";
-import { useState } from "react";
+// import { FaCirclePlay } from "react-icons/fa6";
+// import { useState } from "react";
 
 const HappyStories = () => {
   // const [videoUrl, setVideoUrl] = useState("insertvideourlhere");

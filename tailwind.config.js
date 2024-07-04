@@ -28,6 +28,7 @@ export default {
         vysyamalaYellow: "#EFAC47",
         checkGreen: "#53C840",
         checkRed: "#cd3040",
+        closeRed: "#FF3333",
         gray: "#E9EAEC",
         grayBg: "#fafafa",
         ash: "#4F515D",

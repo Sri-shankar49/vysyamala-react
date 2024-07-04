@@ -1,4 +1,3 @@
-import React from "react";
 import VysyaBazaarImg from "../../assets/images/VysyaBazaar.png";
 export const VysyaBazaar = () => {
   return (

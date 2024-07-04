@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { AdvancedSearch } from "../../Components/LoginSearch/AdvancedSearch";
 import { SearchResults } from "../../Components/LoginSearch/SearchResults";
 

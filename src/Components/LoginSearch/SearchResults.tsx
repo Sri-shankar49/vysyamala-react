@@ -4,7 +4,7 @@ import { HiOutlineSearch } from "react-icons/hi";
 import { HiMiniViewColumns } from "react-icons/hi2";
 import { BsFillGrid3X3GapFill } from "react-icons/bs";
 import { ImMenu } from "react-icons/im";
-import { BsSortDown } from "react-icons/bs";
+// import { BsSortDown } from "react-icons/bs";
 // import { BsSortUp } from "react-icons/bs";
 import { HiAdjustmentsVertical } from "react-icons/hi2";
 import { GridView } from '../LoginHome/MatchingProfiles/GridView';
