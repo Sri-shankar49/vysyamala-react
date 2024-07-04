@@ -1,57 +1,29 @@
 import arrowRed from "../assets/icons/arrowred.png";
 import { PlanCard } from "../Components/MembershipPlan/PlanCard";
-
-// PlanCard Component 
-const plans = [
-    {
-        price: 4900,
-        period: "year",
-        planName: "Gold",
-        features: [
-            "Online Access to Matching Profiles 25/day",
-            "Personalised Express Interest",
-            "Private Notes",
-            "Matching Albums",
-            "Advanced Search Option",
-            "App Notifications and SMS/E-mail Alerts",
-            "Automated 10 Porutham Report",
-            "Online chat"
-        ]
-    },
-
-    {
-        price: 6900,
-        period: "year",
-        planName: "Platinum",
-        features: [
-            "+ All Features of Gold +",
-            "Online Access to Matching profiles 50/day",
-            "Profile Spotlight for 3 Months",
-            "Vysyamala Suggested profiles through Mail - Monthly",
-            "Priority Circulation for your matching profiles",
-            "Profile Booster for 3 Months",
-        ]
-    },
-
-    {
-        price: 9900,
-        period: "year",
-        planName: "Platinum Private",
-        features: [
-            "Online Access to Matching Profiles 50/day",
-            "Private online access to Matching Profiles",
-            "Dedicated Relationship Manager - Monthly Recommendations",
-            "Choose your Profile Visibilty",
-            "Vys Assist for 5 Members",
-            "App Notifications and SMS/E-mail Alerts",
-            "Automated 10 Porutham Report",
-        ]
-    },
-];
-
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 export const MembershipPlan: React.FC = () => {
-    // const plans = [goldPlan, platinumPlan, platinumPrivatePlan];
+    const [plans, setPlans] = useState<any[]>([]); // State to hold plans data
+
+    useEffect(() => {
+        // Fetch plans data from API
+        axios.post("http://103.214.132.20:8000/auth/Get_palns/")
+            .then(response => {
+                const { data } = response.data;
+                const updatedPlans = Object.keys(data).map(planName => ({
+                    id: data[planName][0].plan_id, // Assuming plan_id is available in the response
+                    price: parseFloat(data[planName][0].plan_price), // Assuming the price is a float number
+                    period: data[planName][0].plan_renewal_cycle,
+                    planName: planName,
+                    features: data[planName].map((feature: any) => feature.feature_name)
+                }));
+                setPlans(updatedPlans);
+            })
+            .catch(error => {
+                console.error("Error fetching plans:", error);
+            });
+    }, []);
 
     return (
         <div className="container mx-auto">
@@ -66,13 +38,14 @@ export const MembershipPlan: React.FC = () => {
             </div>
 
             <div>
-                <p className="font-normal text-ashSecondary">Upgrade your plan as per your customized requirements, with a paid membership,you can seamlessly connect with your prospects and get more responses. Here are some key benefits</p>
+                <p className="font-normal text-ashSecondary">Upgrade your plan as per your customized requirements, with a paid membership, you can seamlessly connect with your prospects and get more responses. Here are some key benefits</p>
             </div>
 
             <div className="flex justify-center w-fit mx-auto my-24 rounded-3xl shadow-2xl relative">
                 {plans.map((plan, index) => (
                     <PlanCard
                         key={index}
+                        id={plan.id} // Pass the id to PlanCard component
                         price={plan.price}
                         period={plan.period}
                         planName={plan.planName}

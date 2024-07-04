@@ -45,7 +45,8 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose,hand
     const [showPassword, setShowPassword] = useState(false);
     const [profileOptions, setProfileOptions] = useState<{ owner_id: number; owner_description: string }[]>([]);
     const [gender, setGender] = useState<string>(''); 
-    const [error, setError] = useState<string>('');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    // const [error, setError] = useState<string>('');
     const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
 
     const handleShowPassword = () => {
@@ -117,14 +118,14 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose,hand
 
             console.log('API Response:', response.data);
             onNext(data.mobile);
-        } catch (error: any) {
+        } catch (error: unknown) {
             setIsSubmitting(false); // Reset isSubmitting to false if there's an error
             if (axios.isAxiosError(error) && error.response && error.response.data && error.response.data.Mobile_no) {
                 console.error('Error registering user:', error);
                 alert(error.response.data.Mobile_no[0]);
             } else {
                 console.error('Error registering user:', error);
-                setError('An error occurred. Please try again.');
+                // setError('An error occurred. Please try again.');
             }
         }
     };

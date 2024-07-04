@@ -3,6 +3,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 
 interface PlanCardProps {
+    id: number; // New prop for ID
     price: number;
     period: string;
     planName: string;
@@ -16,7 +17,7 @@ interface PlanCardProps {
     children?: React.ReactNode; // To include additional elements
 }
 
-export const PlanCard: React.FC<PlanCardProps> = ({ price, period, planName, features, className, customStyles, customStylesOne, customStylesTwo, customStylesThree, isCenterCard, children }) => {
+export const PlanCard: React.FC<PlanCardProps> = ({ id, price, period, planName, features, className, customStyles, customStylesOne, customStylesTwo, customStylesThree, isCenterCard, children }) => {
     return (
         <div className="w-[26%]">
             <div className={`flex flex-col justify-evenly h-full w-full bg-white rounded-3xl p-16 ${className}`}>
@@ -39,7 +40,7 @@ export const PlanCard: React.FC<PlanCardProps> = ({ price, period, planName, fea
                         ))}
                     </ul>
                 </div>
-                <Link to="/PayNow">
+                <Link to={`/PayNow?id=${id}`}> {/* Pass the id as a query parameter to PayNow route */}
                     <button className={`${customStylesThree} w-full rounded-full py-[8px] text-main text-[16px] font-semibold mt-10 cursor-pointer`}>Choose Plan</button>
                 </Link>
             </div>
