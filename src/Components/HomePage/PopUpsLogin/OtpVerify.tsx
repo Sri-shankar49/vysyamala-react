@@ -1,5 +1,7 @@
 import React, { useState, useRef } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
+// import config from '../../../API'; // Import the configuration file
+
 
 
 interface OtpVerifyProps {

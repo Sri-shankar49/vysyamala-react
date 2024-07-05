@@ -8,6 +8,8 @@ import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
+import config from '../API'; // Import the configuration file
+
 
 // Define validation schema with zod
 const schema = zod.object({
@@ -138,7 +140,7 @@ const FamilyDetails: React.FC = () => {
           };
 
           const response = await axios.post(
-            'http://103.214.132.20:8000/auth/Get_save_details/',
+            `${config.apiUrl}/auth/Get_save_details/`,
             requestData,
             {
               headers: {
@@ -227,7 +229,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchOccupations = async () => {
       try {
-        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Parent_Occupation/");
+        const response = await axios.post(`${config.apiUrl}/auth/Get_Parent_Occupation/`);
         const options = Object.values(response.data) as Occupation[];
         setOccupations(options);
       } catch (error) {
@@ -240,7 +242,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchPropertyworth = async () => {
       try {
-        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Property_Worth/");
+        const response = await axios.post(`${config.apiUrl}/auth/Get_Property_Worth/`);
         const options = Object.values(response.data) as PropertyWorth[];
         setPropertyworth(options);
       } catch (error) {
@@ -253,7 +255,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchFamilyTypes = async () => {
       try {
-        const response = await axios.post("http://103.214.132.20:8000/auth/Get_FamilyType/");
+        const response = await axios.post(`${config.apiUrl}/auth/Get_FamilyType/`);
         const data = response.data;
         const familyTypesArray = Object.values(data) as FamilyType[];
         setFamilyTypes(familyTypesArray);
@@ -268,7 +270,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchFamilyStatus = async () => {
       try {
-        const response = await axios.post("http://103.214.132.20:8000/auth/Get_FamilyStatus/");
+        const response = await axios.post(`${config.apiUrl}/auth/Get_FamilyStatus/`);
         const data = response.data;
         const familyTypesArray = Object.values(data) as FamilyStatus[];
         setFamilyStatus(familyTypesArray);
@@ -283,7 +285,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchFamilyValue = async () => {
       try {
-        const response = await axios.post("http://103.214.132.20:8000/auth/Get_FamilyValue/");
+        const response = await axios.post(`${config.apiUrl}/auth/Get_FamilyValue/`);
         const data = response.data;
         const familyTypesArray = Object.values(data) as FamilyValue[];
         setFamilyValue(familyTypesArray);
@@ -369,7 +371,7 @@ const FamilyDetails: React.FC = () => {
       console.log("Formatted Data:", formattedData);
 
       setIsSubmitting(true);
-      const response = await axios.post("http://103.214.132.20:8000/auth/Family_registration/", formattedData);
+      const response = await axios.post(`${config.apiUrl}/auth/Family_registration/`, formattedData);
       setIsSubmitting(false);
 
       if (response.data.Status === 1) {

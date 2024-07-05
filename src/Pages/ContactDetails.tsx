@@ -8,12 +8,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import config from '../API'; // Import the configuration file
+
 
 // API call URLs
-const COUNTRY_API_URL = "http://103.214.132.20:8000/auth/Get_Country/";
-const STATE_API_URL = "http://103.214.132.20:8000/auth/Get_State/";
-const CONTACT_REGISTRATION_API_URL = "http://103.214.132.20:8000/auth/Contact_registration/";
-const COUNTRY_DATA_API_URL = "http://103.214.132.20:8000/auth/Get_save_details/";
+const COUNTRY_API_URL = `${config.apiUrl}/auth/Get_Country/`;
+const STATE_API_URL = `${config.apiUrl}/auth/Get_State/`;
+const CONTACT_REGISTRATION_API_URL = `${config.apiUrl}/auth/Contact_registration/`;
+const COUNTRY_DATA_API_URL = `${config.apiUrl}/auth/Get_save_details/`;
 
 // ZOD Schema
 const schema = zod.object({

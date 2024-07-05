@@ -94,6 +94,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import axios from "axios";
+import config from '../../../API'; // Import the configuration file
+
 
 // ZOD Schema with updated regex validations
 const schema = zod.object({
@@ -142,7 +144,7 @@ export const PhoneLoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onClose, on
     // };
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
-            const response = await axios.post<SendOtpResponse>("http://103.214.132.20:8000/auth/Login_with_mobileno/", {
+            const response = await axios.post<SendOtpResponse>(`${config.apiUrl}/auth/Login_with_mobileno/`, {
                 Mobile_no: data.mobile,
             });
 

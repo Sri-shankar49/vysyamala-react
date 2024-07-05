@@ -10,8 +10,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import MatchingStars from "../Components/PartnerPreference/MatchingStars";
 import axios from "axios";
+import config from '../API'; // Import the configuration file
 
-const PARTNER_API_URL = 'http://103.214.132.20:8000/auth/Partner_pref_registration/'
+
+const PARTNER_API_URL = `${config.apiUrl}/auth/Partner_pref_registration/`
 
 const schema = zod.object({
   age: zod.string().nonempty("Age is required"),
@@ -219,7 +221,7 @@ const PartnerSettings: React.FC = () => {
             page_id: 6
           };
 
-          const response = await axios.post("http://103.214.132.20:8000/auth/Get_save_details/", requestData, {
+          const response = await axios.post(`${config.apiUrl}/auth/Get_save_details/`, requestData, {
             headers: {
               'Content-Type': 'application/json'
             }
@@ -257,7 +259,7 @@ const PartnerSettings: React.FC = () => {
   useEffect(() => {
     const fetchMaritalStatuses = async () => {
       try {
-        const response = await axios.post<{ [key: string]: MaritalStatus }>('http://103.214.132.20:8000/auth/Get_Marital_Status/');
+        const response = await axios.post<{ [key: string]: MaritalStatus }>(`${config.apiUrl}/auth/Get_Marital_Status/`);
         const options = Object.values(response.data);
         setMaritalStatuses(options);
       } catch (error) {
@@ -271,7 +273,7 @@ const PartnerSettings: React.FC = () => {
   useEffect(() => {
     const fetchEduPref = async () => {
       try {
-        const response = await axios.post('http://103.214.132.20:8000/auth/Get_Edu_Pref/');
+        const response = await axios.post(`${config.apiUrl}/auth/Get_Edu_Pref/`);
         const options = Object.values(response.data) as EduPref[];
         console.log(options);
         setEduPref(options);
@@ -285,7 +287,7 @@ const PartnerSettings: React.FC = () => {
   useEffect(() => {
     const fetchAnnualIncome = async () => {
       try {
-        const response = await axios.post('http://103.214.132.20:8000/auth/Get_Annual_Income/');
+        const response = await axios.post(`${config.apiUrl}/auth/Get_Annual_Income/`);
         const options = Object.values(response.data) as AnnualIncome[];
         setAnnualIncome(options);
       } catch (error) {
@@ -305,7 +307,7 @@ const PartnerSettings: React.FC = () => {
     if (storedBirthStar && storedGender) {
       const fetchMatchingStars = async () => {
         try {
-          const response = await axios.post('http://103.214.132.20:8000/auth/Get_Matchstr_Pref/', {
+          const response = await axios.post(`${config.apiUrl}/auth/Get_Matchstr_Pref/`, {
             birth_star_id: storedBirthStar,
             gender: storedGender,
           });

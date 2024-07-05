@@ -5,10 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import config from '../../../API'; // Import the configuration file
+
 
 // API URL
-const MARITAL_STATUS_API_URL = "http://103.214.132.20:8000/auth/Get_Marital_Status/";
-const COMPLEXION_STATUS_API_URL = "http://103.214.132.20:8000/auth/Get_Complexion/";
+const MARITAL_STATUS_API_URL = `${config.apiUrl}/auth/Get_Marital_Status/`;
+const COMPLEXION_STATUS_API_URL = `${config.apiUrl}/auth/Get_Complexion/`;
 
 // Calculate the minimum date of birth for age 18
 const getMinDOB = () => {
@@ -52,7 +54,7 @@ interface ComplexionOption {
   complexion_description: string;
 }
 
-export const BasicDetails: React.FC<BasicDetailsProps> = ({onClose }) => {
+export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
 
   // Navigate to next page
   const navigate = useNavigate();
@@ -73,8 +75,8 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({onClose }) => {
     setProfileOwner(profileowner);
   }, []);
 
-  
-  
+
+
 
 
   // React Hook form
@@ -144,9 +146,9 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({onClose }) => {
     }
   }, [height]);
 
- 
 
- 
+
+
 
 
   // Date Validation
@@ -156,14 +158,14 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({onClose }) => {
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     setIsSubmitting(true); // Set isSubmitting to true when form submission starts
-    
+
     try {
       console.log("Form Data: ", data);
       const profileId = sessionStorage.getItem("profile_id");
       if (!profileId) {
         throw new Error("ProfileId not found in sessionStorage");
       }
-  
+
       const postData = {
         ProfileId: profileId,
         Profile_name: data.name,
@@ -172,13 +174,13 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({onClose }) => {
         Profile_height: data.height,
         Profile_complexion: data.complexion,
       };
-  
+
       console.log("Post Data: ", postData);
-  
-      const response = await axios.post("http://103.214.132.20:8000/auth/Registrationstep2/", postData);
+
+      const response = await axios.post(`${config.apiUrl}/auth/Registrationstep2/`, postData);
       console.log("Registration successful:", response.data);
       if (response.data.Status === 1) {
-        const {profile_id} = response.data;
+        const { profile_id } = response.data;
         sessionStorage.setItem('profile_id_new', profile_id);
 
 
@@ -192,7 +194,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({onClose }) => {
       console.error("Error submitting contact details:", error);
     }
   };
-  
+
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -206,7 +208,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({onClose }) => {
           <input
             type="text"
             id="name"
-            placeholder={`${profileowner} name`} 
+            placeholder={`${profileowner} name`}
             className={`outline-none px-3 py-2 w-full text-primary border border-footer-text-gray rounded`}
             {...register("name")}
           />
@@ -275,8 +277,8 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({onClose }) => {
         disabled={isSubmitting} // Disable the button when form is submitting
 
       >
-                {isSubmitting ? 'Submitting...' : 'Save Details'}
-                </button>
+        {isSubmitting ? 'Submitting...' : 'Save Details'}
+      </button>
 
       <IoIosCloseCircle
         onClick={onClose}

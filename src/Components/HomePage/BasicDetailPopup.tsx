@@ -5,10 +5,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
+import config from '../../API'; // Import the configuration file
+
 
 // API URL
-const MARITAL_STATUS_API_URL = "http://103.214.132.20:8000/auth/Get_Marital_Status/";
-const COMPLEXION_STATUS_API_URL = "http://103.214.132.20:8000/auth/Get_Complexion/";
+const MARITAL_STATUS_API_URL = `${config.apiUrl}/auth/Get_Marital_Status/`;
+const COMPLEXION_STATUS_API_URL = `${config.apiUrl}/auth/Get_Complexion/`;
 
 // Calculate the minimum date of birth for age 18
 const getMinDOB = () => {

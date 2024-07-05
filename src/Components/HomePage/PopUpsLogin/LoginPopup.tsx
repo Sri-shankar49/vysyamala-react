@@ -6,6 +6,8 @@ import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
+import config from '../../../API'; // Import the configuration file
+
 
 
 // ZOD Schema with updated regex validations
@@ -46,7 +48,7 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, on
     // Handle form submission
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
-            const response = await axios.post('http://103.214.132.20:8000/auth/login/', {
+            const response = await axios.post(`${config.apiUrl}/auth/login/`, {
                 username: data.profileID,
                 password: data.password
             });
