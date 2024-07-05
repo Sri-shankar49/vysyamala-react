@@ -5,6 +5,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import axios from 'axios';
+import config from '../../../API'; // Import the configuration file
+
 
 
 // ZOD Schema with updated regex validations
@@ -67,7 +69,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose,hand
     useEffect(() => {
         const fetchProfileOptions = async () => {
             try {
-                const response = await axios.post('http://103.214.132.20:8000/auth/Get_Profileholder/');
+                const response = await axios.post(`${config.apiUrl}/auth/Get_Profileholder/`);
                 const data = response.data;
 
                 const options = Object.values(data).map((item: typeof data[0]) => ({
@@ -104,7 +106,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose,hand
         };
 
         try {
-            const response = await axios.post('http://103.214.132.20:8000/auth/Registrationstep1/', registrationData, {
+            const response = await axios.post(`${config.apiUrl}/auth/Registrationstep1/`, registrationData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

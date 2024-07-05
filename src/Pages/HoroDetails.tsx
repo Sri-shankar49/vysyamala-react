@@ -11,6 +11,8 @@ import * as zod from "zod";
 import axios from "axios";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import config from '../API'; // Import the configuration file
+
 
 
 // Define validation schema with zod
@@ -93,7 +95,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             page_id: 5
           };
 
-          const response = await axios.post("http://103.214.132.20:8000/auth/Get_save_details/", requestData, {
+          const response = await axios.post(`${config.apiUrl}/auth/Get_save_details/`, requestData, {
             headers: {
               'Content-Type': 'application/json'
             }
@@ -166,7 +168,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
       console.log("Formatted Data:", formattedData);
       setIsSubmitting(true);
-      const response = await axios.post("http://103.214.132.20:8000/auth/Horoscope_registration/", formattedData);
+      const response = await axios.post(`${config.apiUrl}/auth/Horoscope_registration/`, formattedData);
       setIsSubmitting(false);
 
       if (response.data.Status === 1) {
@@ -196,7 +198,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   useEffect(() => {
     const fetchBirthStar = async () => {
       try {
-        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Birth_Star/",{state_id:" "});
+        const response = await axios.post(`${config.apiUrl}/auth/Get_Birth_Star/`,{state_id:" "});
         const options = Object.values(response.data) as BirthStar[];
         setBirthStar(options);
       } catch (error) {
@@ -210,7 +212,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     if (selectedStar) {
       const fetchStateStatus = async () => {
         try {
-          const response = await axios.post("http://103.214.132.20:8000/auth/Get_Rasi/", { birth_id: selectedStar });
+          const response = await axios.post(`${config.apiUrl}/auth/Get_Rasi/`, { birth_id: selectedStar });
           const options = Object.values(response.data) as Rasi[];
           setRasiOptions(options);
         } catch (error) {
@@ -224,7 +226,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   useEffect(() => {
     const fetchLagnam = async () => {
       try {
-        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Lagnam_Didi/");
+        const response = await axios.post(`${config.apiUrl}/auth/Get_Lagnam_Didi/`);
         const options = Object.values(response.data) as Lagnam[];
         setLagnamOptions(options);
       } catch (error) {

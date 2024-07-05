@@ -61,7 +61,7 @@
 //         if (isValid) {
 //             try {
 //                 const otp = otpValues.join(''); // Concatenate OTP values
-//                 const response = await axios.post('http://103.214.132.20:8000/auth/Otp_verify/', {
+//                 const response = await axios.post(`${config.apiUrl}/auth/Otp_verify/`, {
 //                     Otp: otp,
 //                     ProfileId: profileId
 //                 });
@@ -161,6 +161,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
 import axios from 'axios';
+import config from '../../../API'; // Import the configuration file
+
 
 interface OtpVerificationProps {
     onNext: () => void;
@@ -183,7 +185,7 @@ interface ResendOtpResponse {
 const resendOtp = async (profileId: string): Promise<ResendOtpResponse> => {
     try {
         console.log(profileId);
-        const response = await axios.post<ResendOtpResponse>('http://103.214.132.20:8000/auth/Get_resend_otp/', {
+        const response = await axios.post<ResendOtpResponse>(`${config.apiUrl}/auth/Get_resend_otp/`, {
             ProfileId: profileId,
         });
         console.log(response.data)
@@ -250,7 +252,7 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
         if (isValid) {
             try {
                 const otp = otpValues.join(''); // Concatenate OTP values
-                const response = await axios.post('http://103.214.132.20:8000/auth/Otp_verify/', {
+                const response = await axios.post(`${config.apiUrl}/auth/Otp_verify/`, {
                     Otp: otp,
                     ProfileId: profileId
                 });

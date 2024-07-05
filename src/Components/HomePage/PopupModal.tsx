@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
 import axios from 'axios';
 import { BasicDetails } from "./PopUpsReg/BasicDetails"; // Adjust import path as per your file structure
+import config from '../../API'; // Import the configuration file
 
 interface PopupModalProps {
   mobileNumber: string;
@@ -64,7 +65,7 @@ export const PopupModal: React.FC<PopupModalProps> = ({ onClose, mobileNumber })
         };
         console.log('Payload to be sent:', payload);
 
-        const response = await axios.post('http://103.214.132.20:8000/auth/Otp_verify/', payload);
+        const response = await axios.post(`${config.apiUrl}/auth/Otp_verify/`, payload);
 
         console.log('OTP Verification Response:', response.data);
 
