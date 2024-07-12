@@ -1,35 +1,28 @@
-import { HeroSlider } from "../../Components/LoginHome/HeroSlider";
-import { MatchingProfiles } from "../../Components/LoginHome/MatchingProfiles";
-import { SuggestedProfiles } from "../../Components/LoginHome/SuggestedProfiles";
-import { VysyamalaStore } from "../../Components/LoginHome/VysyamalaStore";
-import { FeaturedProfiles } from "../../Components/LoginHome/FeaturedProfiles";
-import { VysyaBazaar } from "../../Components/LoginHome/VysyaBazaar";
+import { useState } from "react";
+import { ProfileDetailsExpressInterest } from "../../Components/DashBoard/ProfileDetails/ProfileDetailsExpressInterest";
+import { HandleLogin } from "../../Components/LoginHome/HandleLogin";
+import { GridListCard } from "../../Components/LoginHome/MatchingProfiles/ProfileCard/GridListCard";
+
 
 export const LoginHome = () => {
-  // Retrieve token from sessionStorage
-  const token = sessionStorage.getItem("token");
 
-  // Function to handle logout
-  const handleLogout = () => {
-    // Clear token from sessionStorage
-    sessionStorage.removeItem("token");
-    window.location.href = "/";
+  // State Declaration to show ProfileDetailsExpressInterest
+  const [showExpressInterest, setShowExpressInterest] = useState(false);
+
+
+  // Function to toggle the state
+  const toggleExpressInterest = () => {
+    setShowExpressInterest(true); // Ensure that ProfileDetailsExpressInterest is shown
   };
+
 
   return (
     <div>
-      <div>
-        <h2>LoginHome</h2>
-        <p>Token: {token}</p>
-        <button onClick={handleLogout}>Logout</button>
-      </div>
-
-      <HeroSlider />
-      <MatchingProfiles />
-      <SuggestedProfiles />
-      <VysyamalaStore />
-      <FeaturedProfiles />
-      <VysyaBazaar />
+      {showExpressInterest ? (
+        <ProfileDetailsExpressInterest />
+      ) : (
+        <><HandleLogin /><GridListCard onExpressInterest={toggleExpressInterest} /></>
+      )}
     </div>
   );
 };

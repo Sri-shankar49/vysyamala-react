@@ -1,18 +1,15 @@
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { IoEye, IoEyeOff } from "react-icons/io5";
-
-import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
-import SideContent from "../Components/RegistrationForm/SideContent";
-import UploadFile from "../Components/UploadImages/UploadFile";
-import uploadfile from "../assets/icons/uploadfile.png";
-import closebtn from "../assets/icons/closebtn.png";
-import arrow from "../assets/icons/arrow.png";
+import UploadFile from "../../../Components/UploadImages/UploadFile";
+import uploadfile from "../../../assets/icons/uploadfile.png";
+import closebtn from "../../../assets/icons/closebtn.png";
+import arrow from "../../../assets/icons/arrow.png";
 
 
-interface UploadImagesProps { }
+interface PhotoSettingsProps { }
 
-const UploadImages: React.FC<UploadImagesProps> = () => {
+export const PhotoSettings: React.FC<PhotoSettingsProps> = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -95,17 +92,14 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
   };
 
   return (
-    <div className="pb-20">
-      <ContentBlackCard
-        heading="Upload Images"
-        desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis "
-      />
+    <div className="">
+    
 
-      <div className="container mt-8 flex justify-between space-x-24 space-y-7">
+      <div className="container flex justify-between space-x-24 space-y-7">
         <div className="w-full">
           <div>
             <h1 className="font-semibold text-primary text-xl mb-4">
-              Upload daughter Images/ family images
+              Upload Your Images
             </h1>
 
             <div
@@ -184,12 +178,12 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             <label htmlFor="password" className="block text-lg mb-2">
               Enter Password
             </label>
-            <div className="relative">
+            <div className="w-fit relative">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 id="password"
-                className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                className="outline-none w-full px-5 py-1.5 border border-ashSecondary rounded"
               />
 
               <div
@@ -201,7 +195,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </div>
           </div>
 
-          <div className="mt-7">
+          {/* <div className="mt-7">
             <h1 className="font-semibold text-primary text-xl mb-4">
               Upload daughter horoscope image
             </h1>
@@ -224,7 +218,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
               //ref={fileInputRefs.horoscope}
               />
             </div>
-          </div>
+          </div> */}
 
           <div className="mt-7">
             <h1 className="font-semibold text-primary text-xl mb-4">
@@ -276,37 +270,10 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </div>
           </div>
 
-          <div className="mt-7 flex justify-between">
-            <div className="">
-              <Link to={"/ContactDetails"}>
-                <button className="py-[10px] px-14 bg-white text-main font-semibold border-2 rounded-[6px] mt-2">
-                  Back
-                </button>
-              </Link>
-            </div>
-
-            <div className="flex space-x-4">
-              <Link to="/FamilyDetails">
-                <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2">
-                  Skip
-                </button>
-              </Link>
-              <Link to="/FamilyDetails">
-                <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
-                  Next
-                  <span>
-                    <img src={arrow} alt="next arrow" className="ml-2" />
-                  </span>
-                </button>
-              </Link>
-            </div>
-          </div>
+         
         </div>
 
-        <SideContent />
       </div>
     </div>
   );
 };
-
-export default UploadImages;

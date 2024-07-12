@@ -23,6 +23,7 @@ import { LoginHome } from "./Pages/AfterLogin/LoginHome";
 import Search from "./Pages/AfterLogin/Search";
 import { DashBoard } from "./Pages/AfterLogin/DashBoard";
 import { Wishlist } from "./Pages/AfterLogin/Wishlist";
+import { MyProfile } from "./Pages/AfterLogin/MyProfile";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -73,6 +74,7 @@ function App() {
             <Route path="/Search" element={<Search />} />
             <Route path="/DashBoard" element={<DashBoard />} />
             <Route path="/Wishlist" element={<Wishlist />} />
+            <Route path="/MyProfile" element={<MyProfile />} />
           </Route>
         </Routes>
       </BrowserRouter>

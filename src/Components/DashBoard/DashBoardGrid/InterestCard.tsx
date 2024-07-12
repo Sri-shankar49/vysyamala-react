@@ -1,4 +1,4 @@
-import InterestprofileImg from "../../assets/images/InterestProfileImg.png";
+import InterestprofileImg from "../../../assets/images/InterestProfileImg.png";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 

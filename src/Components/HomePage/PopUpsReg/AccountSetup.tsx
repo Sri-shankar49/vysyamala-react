@@ -32,7 +32,7 @@ const schema = zod.object({
 interface AccountSetupProps {
     onNext: (mobile: string) => void;
     onClose: () => void;
-    handleLoginClick:() =>void;
+    handleLoginClick: () => void;
 }
 
 interface FormInputs {
@@ -43,12 +43,13 @@ interface FormInputs {
     gender: string;
 }
 
-export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose,handleLoginClick }) => {
+export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose, handleLoginClick }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [profileOptions, setProfileOptions] = useState<{ owner_id: number; owner_description: string }[]>([]);
-    const [gender, setGender] = useState<string>(''); 
+    const [gender, setGender] = useState<string>('');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     // const [error, setError] = useState<string>('');
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
 
     const handleShowPassword = () => {
@@ -124,10 +125,12 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose,hand
             setIsSubmitting(false); // Reset isSubmitting to false if there's an error
             if (axios.isAxiosError(error) && error.response && error.response.data && error.response.data.Mobile_no) {
                 console.error('Error registering user:', error);
-                alert(error.response.data.Mobile_no[0]);
+                // alert(error.response.data.Mobile_no[0]);
+                setErrorMessage(error.response.data.Mobile_no[0]);
             } else {
                 console.error('Error registering user:', error);
                 // setError('An error occurred. Please try again.');
+                setErrorMessage('An error occurred. Please try again.');
             }
         }
     };
@@ -191,6 +194,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose,hand
                     {...register("mobile", { required: true })}
                 />
                 {errors.mobile && <span className="text-red-500">{errors.mobile.message}</span>}
+                {errorMessage && <span className="text-red-500">{errorMessage}</span>}
             </div>
 
             <div className="mb-5">
@@ -249,3 +253,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose,hand
         </form>
     );
 };
+// function setErrorMessage(arg0: any) {
+//     throw new Error('Function not implemented.');
+// }
+
