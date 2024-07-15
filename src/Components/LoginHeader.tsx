@@ -40,7 +40,7 @@ export const LoginHeader: React.FC = () => {
       <header className="transition-all duration-300 z-[1]">
         <div className="container mx-auto flex justify-between items-center py-5 bg-transparent">
           <div>
-            <Link to="/">
+            <Link to="/LoginHome">
               <img src={VysyamalaLogo} alt="Vysyamala-Logo" className="w-36" />
             </Link>
           </div>

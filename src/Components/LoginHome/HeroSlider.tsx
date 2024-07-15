@@ -46,7 +46,7 @@ const settings = {
 
 export const HeroSlider = () => {
     return (
-        <section className="bg-heroSliderBgImg bg-repeat bg-cover w-full h-full ">
+        <section className="bg-heroSliderBgImg bg-no-repeat bg-cover w-full">
 
             <div className="container mx-auto heroSlickStyle">
                 <div className="slider-container">
