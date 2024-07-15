@@ -10,6 +10,7 @@ import config from '../../../API'; // Import the configuration file
 
 // API URL
 const MARITAL_STATUS_API_URL = `${config.apiUrl}/auth/Get_Marital_Status/`;
+const HEIGHT_API_URL = `${config.apiUrl}/auth/Get_Height/`;
 const COMPLEXION_STATUS_API_URL = `${config.apiUrl}/auth/Get_Complexion/`;
 
 // Calculate the minimum date of birth for age 18
@@ -26,7 +27,7 @@ const schema = zod.object({
   dob: zod.string().min(1, "Date of Birth is required").refine((val) => new Date(val) <= new Date(getMinDOB()), {
     message: "You must be at least 18 years old",
   }),
-  height: zod.string().min(2, 'Height is required'),
+  height: zod.string().min(1, 'Height is required'),
   complexion: zod.string().min(1, 'Complexion is required'),
 }).required();
 
@@ -42,6 +43,11 @@ interface FormInputs {
   dob: string;
   height: string;
   complexion: string;
+}
+
+interface HeightOption {
+  height_id: number;
+  height_description: string;
 }
 
 interface MaritalStatusOption {
@@ -64,6 +70,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
 
   // Marital Status Options
   const [maritalStatusOptions, setMaritalStatusOptions] = useState<MaritalStatusOption[]>([]);
+  const [heightOptions, setHeightOptions] = useState<HeightOption[]>([]);
   const [complexionOptions, setComplexionOptions] = useState<ComplexionOption[]>([]);
   const [profileowner, setProfileOwner] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
@@ -95,6 +102,21 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
     };
     fetchMaritalStatus();
   }, []);
+
+
+  useEffect(() => {
+    const fetchHeight = async () => {
+      try {
+        const response = await axios.post(HEIGHT_API_URL);
+        const options = Object.values(response.data) as HeightOption[];
+        setHeightOptions(options);
+      } catch (error) {
+        console.error("Error fetching height options:", error);
+      }
+    };
+    fetchHeight();
+  }, []);
+
 
   // Fetch complexion options
   useEffect(() => {
@@ -145,8 +167,6 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
       sessionStorage.setItem("userHeight", height);
     }
   }, [height]);
-
-
 
 
 
@@ -243,13 +263,30 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
           {errors.dob && <span className="text-red-500">{errors.dob.message}</span>}
         </div>
 
-        <div>
+        {/* <div>
           <input
             type="text"
             placeholder="Height in cms"
             className={`outline-none px-3 py-2 w-full text-primary border border-footer-text-gray rounded`}
             {...register("height")}
           />
+          {errors.height && <span className="text-red-500">{errors.height.message}</span>}
+        </div> */}
+
+
+        <div>
+          <select
+            id="height"
+            className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+            {...register("height")}
+          >
+            <option value="" selected disabled>Select your Height</option>
+            {heightOptions.map((option) => (
+              <option key={option.height_id} value={option.height_id}>
+                {option.height_description}
+              </option>
+            ))}
+          </select>
           {errors.height && <span className="text-red-500">{errors.height.message}</span>}
         </div>
 

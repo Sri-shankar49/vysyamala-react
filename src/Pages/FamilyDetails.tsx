@@ -169,19 +169,22 @@ const FamilyDetails: React.FC = () => {
           setValue('physicallyChallenged', profileData.Pysically_changed === 'yes' ? 'yes' : 'no');
 
           // Set brother and sister values based on the fetched data
-      
+
 
           const numberOfBrothers = parseInt(profileData.no_of_brother);
           const numberOfSisters = parseInt(profileData.no_of_sister);
           const numberOfMarriedSisters = parseInt(profileData.no_of_sis_married);
+          const numberOfMarriedBrother = parseInt(profileData.no_of_bro_married);
 
           setValue('brother', numberOfBrothers);
           setValue('sister', numberOfSisters);
           setValue('marriedSister', numberOfMarriedSisters);
+          setValue('marriedBrother', numberOfMarriedBrother);
 
           setSelectedBrother(numberOfBrothers);
           setSelectedSister(numberOfSisters);
           setSelectedMarriedSister(numberOfMarriedSisters);
+          setSelectedMarriedBrother(numberOfMarriedBrother);
 
 
 
@@ -357,6 +360,7 @@ const FamilyDetails: React.FC = () => {
         blood_group: data.bloodGroup,
         Pysically_changed: physicallyChallengedValue,
         no_of_brother: data.brother,
+        no_of_bro_married: data.marriedBrother || 0,
         no_of_sister: data.sister,
         no_of_sis_married: data.marriedSister || 0,
         family_type: data.familyType,
@@ -464,17 +468,28 @@ const FamilyDetails: React.FC = () => {
           </div>
 
           <div>
-            <InputField label="About Myself" required {...register("aboutmyself")} />
+            <label htmlFor="aboutmyself">About Myself</label>
+            <textarea
+              id="aboutmyself"
+              className="outline-none px-3 py-2 w-full text-primary border border-footer-text-gray rounded"
+              {...register("aboutmyself")}
+            />
             {errors.aboutmyself && <span className="text-red-500">{errors.aboutmyself.message}</span>}
           </div>
 
           <div>
-            <InputField label="My Hobbies" required {...register("myhobbies")} />
+            <label htmlFor="myhobbies">My Hobbies</label>
+            <textarea
+              id="myhobbies"
+              className="outline-none px-3 py-2 w-full text-primary border border-footer-text-gray rounded"
+              {...register("myhobbies")}
+            />
             {errors.myhobbies && <span className="text-red-500">{errors.myhobbies.message}</span>}
           </div>
 
+
           <div>
-            <InputField label="Blod Group" required {...register("bloodGroup")} />
+            <InputField label="Blood Group" required {...register("bloodGroup")} />
             {errors.bloodGroup && <span className="text-red-500">{errors.bloodGroup.message}</span>}
           </div>
 

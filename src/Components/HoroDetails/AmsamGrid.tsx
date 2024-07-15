@@ -2,11 +2,11 @@
 // import { RiDraggable } from "react-icons/ri";
 // import { AiOutlineClose } from "react-icons/ai";
 
-// interface RasiGridProps {
+// interface AmsamGridProps {
 //   centerLabel: string;
 // }
 
-// const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
+// const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
 //   const initialLabels = [
 //     "Raghu/Rahu",
 //     "Mars/Chevai",
@@ -24,7 +24,7 @@
 //   const [labels, setLabels] = useState(initialLabels);
 
 //   // State to manage contents of each rasi-box
-//   const [rasiContents, setRasiContents] = useState(Array(12).fill([]));
+//   const [amsamContents, setAmsamContents] = useState(Array(12).fill([]));
 
 //   // Drag start handler
 //   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, label: string) => {
@@ -32,7 +32,7 @@
 //   };
 
 //   // Drag over handler
-//   const handleDragOver = (e: { preventDefault: () => void }) => {
+//   const handleDragOverr = (e: { preventDefault: () => void }) => {
 //     e.preventDefault();
 //   };
 
@@ -42,10 +42,10 @@
 //     const draggedLabel = e.dataTransfer.getData("text");
 
 //     // Check if the dragged label is not already in the box and the box is not full
-//     if (!rasiContents[index].includes(draggedLabel) && rasiContents[index].length < 6) {
-//       const newContents = [...rasiContents];
+//     if (!amsamContents[index].includes(draggedLabel) && amsamContents[index].length < 6) {
+//       const newContents = [...amsamContents];
 //       newContents[index] = [...newContents[index], draggedLabel];
-//       setRasiContents(newContents);
+//       setAmsamContents(newContents);
 
 //       // Remove the dragged label from the labels array
 //       setLabels((prevLabels) => prevLabels.filter((label) => label !== draggedLabel));
@@ -54,10 +54,10 @@
 
 //   // Remove label from rasi-box
 //   const handleRemoveLabel = (index: number, labelIndex: number) => {
-//     const newContents = [...rasiContents];
+//     const newContents = [...amsamContents];
 //     const removedLabel = newContents[index][labelIndex];
 //     newContents[index].splice(labelIndex, 1);
-//     setRasiContents(newContents);
+//     setAmsamContents(newContents);
 
 //     // Add the removed label back to the labels array
 //     setLabels((prevLabels) => [...prevLabels, removedLabel]);
@@ -89,10 +89,10 @@
 //             <div
 //               key={index}
 //               onDrop={(e) => handleDropRasiBox(e, index)}
-//               onDragOver={handleDragOver}
+//               onDragOver={handleDragOverr}
 //               className="w-48 h-48 rasi-box rounded border border-footer-text-gray flex flex-col items-start justify-center gap-2"
 //             >
-//               {rasiContents[index].map(
+//               {amsamContents[index].map(
 //                 (label: string, labelIndex: number) => (
 //                   <div
 //                     key={labelIndex}
@@ -118,15 +118,14 @@
 //   );
 // };
 
-// export default RasiGrid;
-
+// export default AmsamGrid;
 
 
 import React, { useState, useEffect } from "react";
 import { RiDraggable } from "react-icons/ri";
 import { AiOutlineClose } from "react-icons/ai";
 
-interface RasiGridProps {
+interface AmsamGridProps {
   centerLabel: string;
 }
 
@@ -135,7 +134,7 @@ interface Label {
   name: string;
 }
 
-const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
+const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
   const initialLabels: Label[] = [
     { id: 1, name: "Raghu/Rahu" },
     { id: 2, name: "Mars/Chevai" },
@@ -149,61 +148,63 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
     { id: 10, name: "Kethu/Ketu" },
   ];
 
-  // State to store labels
   const [labels, setLabels] = useState<Label[]>(initialLabels);
+  const [amsamContents, setAmsamContents] = useState<string[][]>(Array(12).fill([]));
 
-  // State to manage contents of each rasi-box
-  const [rasiContents, setRasiContents] = useState<string[][]>(Array(12).fill([]));
-
-  // Drag start handler
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, label: Label) => {
     e.dataTransfer.setData("labelId", label.id.toString());
-    e.dataTransfer.setData("source", "rasi");
+    e.dataTransfer.setData("source", "amsam");
   };
 
-  // Drag over handler
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
 
-  // Drop handler for "rasi-box"
   const handleDropRasiBox = (e: React.DragEvent<HTMLDivElement>, index: number) => {
     e.preventDefault();
     const draggedLabelId = e.dataTransfer.getData("labelId");
     const source = e.dataTransfer.getData("source");
 
-    if (source === "rasi" && draggedLabelId) {
-      const draggedLabel = labels.find((label) => label.id === parseInt(draggedLabelId, 10));
-      if (draggedLabel && !rasiContents[index].includes(draggedLabel.name) && rasiContents[index].length < 6) {
-        const newContents = [...rasiContents];
+    if (source === "amsam" && draggedLabelId) {
+      const draggedLabel = labels.find((label) => label.id === parseInt(draggedLabelId));
+      if (draggedLabel && !amsamContents[index].includes(draggedLabel.name) && amsamContents[index].length < 6) {
+        const newContents = [...amsamContents];
         newContents[index] = [...newContents[index], draggedLabel.name];
-        setRasiContents(newContents);
+        setAmsamContents(newContents);
 
-        // Remove the dragged label from the labels array
         setLabels((prevLabels) => prevLabels.filter((label) => label.id !== draggedLabel.id));
       }
     }
   };
 
-  // Remove label from rasi-box
   const handleRemoveLabel = (index: number, labelIndex: number) => {
-    const newContents = [...rasiContents];
+    const newContents = [...amsamContents];
     const removedLabel = newContents[index][labelIndex];
     newContents[index].splice(labelIndex, 1);
-    setRasiContents(newContents);
+    setAmsamContents(newContents);
 
-    // Find the removed label object from initialLabels
     const removedLabelObj = initialLabels.find((label) => label.name === removedLabel);
     if (removedLabelObj) {
-      // Add the removed label back to the labels array
       setLabels((prevLabels) => [...prevLabels, removedLabelObj]);
     }
   };
 
-  // Logging grid contents to console
+  // useEffect(() => {
+  //   console.log("Amsam Contents:");
+  //   amsamContents.forEach((contents, index) => {
+  //     if (contents.length === 0) {
+  //       console.log(`Grid ${index + 1}: Empty`);
+  //     } else if (contents.length === 1) {
+  //       console.log(`Grid ${index + 1}: ${contents[0]}`);
+  //     } else {
+  //       console.log(`Grid ${index + 1}: [${contents.join(", ")}]`);
+  //     }
+  //   });
+  // }, [amsamContents]);
+
   useEffect(() => {
     console.log("Amsam Contents:");
-    rasiContents.forEach((contents, index) => {
+    amsamContents.forEach((contents, index) => {
       if (contents.length === 0) {
         console.log(`Grid ${index + 1}: Empty`);
       } else if (contents.length === 1) {
@@ -217,74 +218,54 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
         console.log(`Grid ${index + 1}: [${ids.join(", ")}]`);
       }
     });
-  }, [rasiContents]);
+  }, [amsamContents]);
   
 
   return (
-    // <div className="flex justify-start items-start bg-gray-200 space-x-16">
-    //   {/* Labels */}
-    //   <div className="flex flex-col space-y-2">
-    //     <ul>
-    //       {labels.map((label, index) => (
-    //         <li
-    //           key={index}
-    //           draggable
-    //           onDragStart={(e) => handleDragStart(e, label)}
-    //           className="flex items-center bg-yellow-200 text-sm px-2 py-3 rounded text-center hover:cursor-grab"
-    //         >
-    //           <RiDraggable className="mr-2" />
-    //           {label.name}
-    //         </li>
-    //       ))}
-    //     </ul>
-    //   </div>
-
     <div className="flex justify-start items-start bg-gray-200 space-x-16">
-    {/* Labels */}
-    <div className="flex flex-col space-y-2">
-      {labels.map((label, index) => (
-        <div
-          key={index}
-          draggable
-          onDragStart={(e) => handleDragStart(e, label)}
-          className="flex items-center bg-yellow-200 text-sm px-2 py-3 rounded text-center hover:cursor-grab"
-        >
-          <RiDraggable className="mr-2" />
-          {label.name}
-        </div>
-      ))}
-    </div>
+      {/* Labels */}
+      <div className="flex flex-col space-y-2">
+        {labels.map((label, index) => (
+          <div
+            key={index}
+            draggable
+            onDragStart={(e) => handleDragStart(e, label)}
+            className="flex items-center bg-yellow-200 text-sm px-2 py-3 rounded text-center hover:cursor-grab"
+          >
+            <RiDraggable className="mr-2" />
+            {label.name}
+          </div>
+        ))}
+      </div>
 
-      {/* Rasi Grid */}
+      {/* Amsam Grid */}
       <div className="">
         {/* Top Row */}
         <div className="col-span-3 grid grid-cols-4 gap-2">
-          {/* Render rasi-box with drag and drop functionality */}
+          {/* Render amsam-box with drag and drop functionality */}
           {Array.from({ length: 12 }).map((_, index) => (
             <div
               key={index}
               onDrop={(e) => handleDropRasiBox(e, index)}
               onDragOver={handleDragOver}
-              className="w-48 h-48 rasi-box rounded border border-footer-text-gray flex flex-col items-start justify-center gap-2"
+              className="w-48 h-48 amsam-box rounded border border-footer-text-gray flex flex-col items-start justify-center gap-2"
             >
-              {rasiContents[index].map(
-                (label: string, labelIndex: number) => (
-                  <div
-                    key={labelIndex}
-                    className="w-32 h-auto mx-auto relative bg-yellow-200 text-xs px-2 py-1 rounded text-center flex items-center justify-between"
-                  >
-                    {label}
-                    <AiOutlineClose
-                      className="cursor-pointer ml-2"
-                      onClick={() => handleRemoveLabel(index, labelIndex)}
-                    />
-                  </div>
-                )
-              )}
+              {amsamContents[index].map((label, labelIndex) => (
+                <div
+                  key={labelIndex}
+                  className="w-32 h-auto mx-auto relative bg-yellow-200 text-xs px-2 py-1 rounded text-center flex items-center justify-between"
+                >
+                  {label}
+                  <AiOutlineClose
+                    className="cursor-pointer ml-2"
+                    onClick={() => handleRemoveLabel(index, labelIndex)}
+                  />
+                </div>
+              ))}
             </div>
           ))}
 
-          <div className="row-start-2 ras-center-box col-start-2 col-end-4 row-end-4 rounded font-semibold border border-gray bg-gray flex justify-center items-center">
+          <div className="row-start-2 amsam-center-box col-start-2 col-end-4 row-end-4 rounded font-semibold border border-gray bg-gray flex justify-center items-center">
             {centerLabel}
           </div>
         </div>
@@ -293,4 +274,4 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
   );
 };
 
-export default RasiGrid;
+export default AmsamGrid;

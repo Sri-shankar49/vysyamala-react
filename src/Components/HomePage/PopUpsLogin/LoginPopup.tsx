@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { IoIosCloseCircle } from "react-icons/io";
 import { FaArrowRightLong } from "react-icons/fa6";
@@ -7,8 +7,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import config from '../../../API'; // Import the configuration file
-
-
 
 // ZOD Schema with updated regex validations
 const schema = zod.object({
@@ -23,7 +21,7 @@ interface LoginPopUpProps {
     onPhoneLogin: () => void; // Add this prop to handle phone login
     onClose: () => void;
     onForgetPassword: () => void; // Add this prop to handle forget password
-    registerPopup:() =>void;
+    registerPopup: () => void;
 }
 
 interface FormInputs {
@@ -31,19 +29,33 @@ interface FormInputs {
     password: string;
 }
 
-export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, onForgetPassword, onClose,registerPopup }) => {
+export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, onForgetPassword, onClose, registerPopup }) => {
     // Toggle the Password field
     const [showPassword, setShowPassword] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [rememberMe, setRememberMe] = useState(false);
 
     const handleShowPassword = () => {
         setShowPassword(!showPassword);
     };
 
     // React Hook form
-    const { register, handleSubmit, formState: { errors } } = useForm<FormInputs>({
+    const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormInputs>({
         resolver: zodResolver(schema),
     });
+
+    // Load profileID and password from local storage if remember me was checked
+    useEffect(() => {
+        const savedProfileID = localStorage.getItem('rememberMeProfileID');
+        const savedPassword = localStorage.getItem('password');
+        if (savedProfileID) {
+            setValue('profileID', savedProfileID);
+            setRememberMe(true);
+        }
+        if (savedPassword) {
+            setValue('password', savedPassword);
+        }
+    }, [setValue]);
 
     // Handle form submission
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
@@ -57,6 +69,13 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, on
             sessionStorage.setItem('token', response.data.token);
             if (response.data.status === 1) {
                 setErrorMessage(null); // Clear error message on success
+                if (rememberMe) {
+                    localStorage.setItem('rememberMeProfileID', data.profileID);
+                    localStorage.setItem('password', data.password); // Store password in localStorage
+                } else {
+                    localStorage.removeItem('rememberMeProfileID');
+                    localStorage.removeItem('password'); // Remove password from localStorage
+                }
                 onNext(); // Proceed to the next step upon successful login
             } else {
                 setErrorMessage('Please Enter the Correct Username and Password.');
@@ -103,7 +122,13 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, on
 
             <div className="flex justify-between items-center mb-5">
                 <div>
-                    <input type="checkbox" name="rememberMe" id="rememberMe" />
+                    <input 
+                        type="checkbox" 
+                        name="rememberMe" 
+                        id="rememberMe" 
+                        checked={rememberMe} 
+                        onChange={(e) => setRememberMe(e.target.checked)} 
+                    />
                     <label htmlFor="rememberMe" className="text-ash ml-2">Remember Me</label>
                 </div>
 

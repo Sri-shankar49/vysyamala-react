@@ -248,6 +248,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
       const formattedData = {
         profile_id:profileId,
         highest_education: data.highestEducationLevel,
+        ug_degeree:data.ugDegree,
         about_edu: data.aboutYourEducation,
         profession: data.profession,
         anual_income: data.annualIncome,
@@ -255,6 +256,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
         work_country: data.country,
         work_state: data.state,
         work_pincode: data.pincode,
+        career_plans:data.careerPlans,
         status: "1" 
       };
 
@@ -446,10 +448,10 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                 <textarea
                   id="careerPlans"
                   rows={5}
+                  placeholder=" Enter your message here..."
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                   {...register("careerPlans")}
                 >
-                  Enter your message here...
                 </textarea>
                 {errors.careerPlans && (
                   <span className="text-red-500">{errors.careerPlans.message}</span>
@@ -458,7 +460,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
 
               <div className="mt-7 flex justify-between">
                 <div className="">
-                  <Link to={"/ThankYou/ContactDetails"}>
+                  <Link to={"/FamilyDetails"}>
                     <button className="py-[10px] px-14 bg-white text-main font-semibold border-2 rounded-[6px] mt-2">
                       Back
                     </button>

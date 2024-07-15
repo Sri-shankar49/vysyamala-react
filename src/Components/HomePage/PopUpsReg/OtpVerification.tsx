@@ -163,7 +163,6 @@ import { IoIosCloseCircle } from "react-icons/io";
 import axios from 'axios';
 import config from '../../../API'; // Import the configuration file
 
-
 interface OtpVerificationProps {
     onNext: () => void;
     onClose: () => void;
@@ -197,7 +196,6 @@ const resendOtp = async (profileId: string): Promise<ResendOtpResponse> => {
     }
 };
 
-
 export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClose, mobileNumber }) => {
     const [otpValues, setOtpValues] = useState<string[]>(Array(6).fill(""));
     const [error, setError] = useState<boolean>(false); // State to track validation error
@@ -208,6 +206,7 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
     const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
     const [loading, setLoading] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
+    const [countdown, setCountdown] = useState<number>(60); // State for countdown timer
 
     useEffect(() => {
         // Retrieve profile_id from session storage
@@ -216,6 +215,21 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
             setProfileId(storedProfileId);
         }
     }, []);
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (countdown > 0) {
+            timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+        }
+        return () => clearTimeout(timer);
+    }, [countdown]);
+
+    useEffect(() => {
+        if (message) {
+            const timer = setTimeout(() => setMessage(''), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
 
     const handleChange = (index: number, value: string) => {
         if (/^\d$/.test(value) || value === "") {
@@ -293,6 +307,7 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
             if (profileId) {
                 const result = await resendOtp(profileId);
                 setMessage(result.response_data.message);
+                setCountdown(60); // Reset countdown timer after resending OTP
             } else {
                 setMessage('Profile ID not found');
             }
@@ -302,6 +317,7 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
             setLoading(false);
         }
     };
+
     return (
         <form onSubmit={handleSubmit}>
             <div className="mb-5">
@@ -342,12 +358,12 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
 
             <div className="text-center mb-4">
                 <p className="text-primary">
-                    Didn&apos;t receive OTP?{" "}
+                    Didn't receive OTP?{" "}
                     <span
-                        className="text-main font-semibold hover:cursor-pointer"
-                        onClick={handleResendOtp}
+                        className={`text-main font-semibold ${countdown > 0 ? 'cursor-not-allowed text-gray-400' : 'hover:cursor-pointer'}`}
+                        onClick={countdown === 0 ? handleResendOtp : undefined}
                     >
-                        {loading ? 'Resending...' : 'Resend OTP'}
+                        {loading ? 'Resending...' : countdown > 0 ? `Resend OTP in ${countdown}s` : 'Resend OTP'}
                     </span>
                 </p>
                 {message && <p className="text-red-500">{message}</p>}
@@ -356,7 +372,6 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
             <button
                 type="submit"
                 disabled={isSubmitting} // Disable the button when form is submitting
-
                 className="w-full py-[10px] px-[24px] bg-gradient text-white rounded-[6px] mt-2"
             >
                 {isSubmitting ? 'Submitting...' : 'Verify'}
@@ -369,3 +384,5 @@ export const OtpVerification: React.FC<OtpVerificationProps> = ({ onNext, onClos
         </form>
     );
 };
+
+
