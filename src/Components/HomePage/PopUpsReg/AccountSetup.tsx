@@ -314,9 +314,9 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose, han
     }, []);
 
     useEffect(() => {
-        if (selectedProfile==="2") {
+        if (selectedProfile === "2") {
             setGender("male");
-        } else if (selectedProfile==="1") {
+        } else if (selectedProfile === "1") {
             setGender("female");
         }
     }, [selectedProfile]);
@@ -364,9 +364,11 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose, han
             setIsSubmitting(false); // Reset isSubmitting to false if there's an error
             if (axios.isAxiosError(error) && error.response && error.response.data && error.response.data.Mobile_no) {
                 console.error('Error registering user:', error);
+                // alert(error.response.data.Mobile_no[0]);
                 setErrorMessage(error.response.data.Mobile_no[0]);
             } else {
                 console.error('Error registering user:', error);
+                // setError('An error occurred. Please try again.');
                 setErrorMessage('An error occurred. Please try again.');
             }
         }

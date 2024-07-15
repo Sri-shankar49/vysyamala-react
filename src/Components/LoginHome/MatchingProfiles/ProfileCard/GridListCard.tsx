@@ -1,23 +1,26 @@
 import { useState } from "react";
 import ProfileListImg from "../../../../assets/images/./ProfileListImg.png";
 import { MdVerifiedUser } from "react-icons/md";
-// import { IoCalendar } from "react-icons/io5";
-// import { FaPersonArrowUpFromLine } from "react-icons/fa6";
-// import { MdStars } from "react-icons/md";
-// import { IoSchool } from "react-icons/io5";
-// import { FaSuitcase } from "react-icons/fa";
-// import { FaLocationDot } from "react-icons/fa6";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 
-export const GridListCard = () => {
+interface GridListCardProps {
+  onExpressInterest: () => void;
+}
+
+export const GridListCard: React.FC<GridListCardProps> = ({ onExpressInterest }) => {
   // State to track if the card is bookmarked or not
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
   };
+
+  const handleCardClick = () => {
+    onExpressInterest();
+  };
+
   return (
-    <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5">
+    <div onClick={handleCardClick} className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5 cursor-pointer">
       <div className="w-full flex justify-between items-center">
         <div className="flex justify-between items-center space-x-5">
           {/* Profile Image */}

@@ -9,7 +9,7 @@ import uploadfile from "../assets/icons/uploadfile.png";
 import closebtn from "../assets/icons/closebtn.png";
 import arrow from "../assets/icons/arrow.png";
 
-interface UploadImagesProps {}
+interface UploadImagesProps { }
 
 const UploadImages: React.FC<UploadImagesProps> = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
