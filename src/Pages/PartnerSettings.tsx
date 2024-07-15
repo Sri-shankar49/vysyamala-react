@@ -328,9 +328,9 @@ const PartnerSettings: React.FC = () => {
 
     if (storedHeight) {
       if (storedGender === 'male') {
-        setValue("heightFrom", storedHeight);
-      } else {
         setValue("heightTo", storedHeight);
+      } else {
+        setValue("heightFrom", storedHeight);
       }
     }
   }, [setValue]);

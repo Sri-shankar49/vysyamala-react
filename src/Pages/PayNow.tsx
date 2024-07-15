@@ -12,8 +12,9 @@ export const PayNow: React.FC = () => {
                     <div className="flex justify-between items-center">
                         <div>
                             <h4 className="text-[24px] text-footer-gray font-bold mb-2">Platinum</h4>
-                            <p className="text-main underline font-normal">Change Plan</p>
-                        </div>
+                            <Link to="/MembershipPlan">
+                                <p className="text-main underline font-normal">Change Plan</p>
+                            </Link>                        </div>
 
                         <div>
                             <p className="text-ash">&#8377; 6,900.00/-</p>

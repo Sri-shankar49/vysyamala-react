@@ -99,7 +99,7 @@ export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => 
                     <ForgetPassword onBackToLogin={navigateToLogin} onSubmit={handleEmailSent} onClose={onClose} />
                 )}
                 {showPopup === "phoneLoginPopup" && (
-                    <PhoneLoginPopup onNext={handleSendOtp} onClose={onClose} onProfileIdLogin={navigateToProfileIdLogin} />
+                    <PhoneLoginPopup onNext={handleSendOtp} onClose={onClose} onProfileIdLogin={navigateToProfileIdLogin}  />
                 )}
                 {showPopup === "otpVerify" && (
                     <OtpVerify onNext={handleLogin} onClose={onClose} />

@@ -27,7 +27,7 @@ const schema = zod.object({
   alternatemobileNumber: zod.string().min(10, 'Mobile number must be exactly 10 characters').max(10, 'Mobile number must be exactly 10 characters').optional(),
   whatsappNumber: zod.string().min(10, 'Whatsapp number must be exactly 10 characters').max(10, 'Whatsapp number must be exactly 10 characters').optional(),
   daughterMobileNumber: zod.string().optional(),
-  daughterEmail: zod.string().email().optional(),
+  daughterEmail: zod.string().optional(),
 }).required();
 
 interface FormInputs {
@@ -57,29 +57,17 @@ interface StateOption {
   state_name: string;
 }
 
-// interface CountryData {
-//   ProfileId: string;
-//   Profile_address: string;
-//   Profile_country: string;
-//   Profile_state: string;
-//   Profile_city: string;
-//   Profile_pincode: string;
-//   Profile_alternate_mobile: string;
-//   Profile_whatsapp: string;
-//   Profile_mobile_no: string;
-// }
-
 const ContactDetails: React.FC<ContactDetailsProps> = () => {
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors }, watch, setValue } = useForm<FormInputs>({ resolver: zodResolver(schema) });
+  const { register, handleSubmit, formState: { errors }, watch, setValue, setError, clearErrors } = useForm<FormInputs>({ resolver: zodResolver(schema) });
 
   const [countryOptions, setCountryOptions] = useState<CountryOption[]>([]);
   const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
-  // const [selectedCountryName, setSelectedCountryName] = useState("");
-  // const [selectedStateName, setSelectedStateName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profileowner, setProfileOwner] = useState<string | null>(null);
 
   const profileId = sessionStorage.getItem("profile_id_new");
+  console.log(profileId);
 
   useEffect(() => {
     const fetchCountryData = async () => {
@@ -112,16 +100,6 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
           setValue("whatsappNumber", profileData.Profile_whatsapp);
           setValue("daughterMobileNumber", profileData.Profile_mobile_no);
 
-          // // Print the values to console after setting them
-          // console.log("Address:", profileData.Profile_address);
-          // console.log("Country:", profileData.Profile_country);
-          // console.log("State:", profileData.Profile_state);
-          // console.log("City:", profileData.Profile_city);
-          // console.log("Pincode:", profileData.Profile_pincode);
-          // console.log("Alternate Mobile Number:", profileData.Profile_alternate_mobile);
-          // console.log("Whatsapp Number:", profileData.Profile_whatsapp);
-          // console.log("Daughter Mobile Number:", profileData.Profile_mobile_no);
-
         } catch (error) {
           console.error("Error fetching country data:", error);
         }
@@ -133,7 +111,10 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
     fetchCountryData();
   }, [profileId, setValue]);
 
-
+  useEffect(() => {
+    const profileowner = sessionStorage.getItem("profile_owner");
+    setProfileOwner(profileowner);
+  }, []);
 
   useEffect(() => {
     const fetchCountryStatus = async () => {
@@ -162,24 +143,32 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
         }
       };
       fetchStateStatus();
-
-      // const country = countryOptions.find(option => option.country_id === Number(selectedCountryId));
-      // if (country) {
-      //   setSelectedCountryName(country.country_name);
-      // }
     }
   }, [selectedCountryId, countryOptions]);
 
-  // const selectedStateId = watch("state");
+  const validateDaughterMobileNumber = (value: string) => {
+    const regex = /^\d{10}$/;
+    if (value && !regex.test(value)) {
+      setError("daughterMobileNumber", {
+        type: "manual",
+        message: "Mobile number must be exactly 10 digits",
+      });
+    } else {
+      clearErrors("daughterMobileNumber");
+    }
+  };
 
-  // useEffect(() => {
-  //   if (selectedStateId) {
-  //     const state = stateOptions.find(option => option.state_id === Number(selectedStateId));
-  //     if (state) {
-  //       setSelectedStateName(state.state_name);
-  //     }
-  //   }
-  // }, [selectedStateId, stateOptions]);
+  const validateDaughterEmail = (value: string) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (value && !regex.test(value)) {
+      setError("daughterEmail", {
+        type: "manual",
+        message: "Invalid email format",
+      });
+    } else {
+      clearErrors("daughterEmail");
+    }
+  };
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     setIsSubmitting(true);
@@ -199,7 +188,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
         Profile_pincode: data.pincode,
         Profile_alternate_mobile: data.alternatemobileNumber,
         Profile_whatsapp: data.whatsappNumber,
-        Profile_mobile_no: data.daughterMobileNumber,
+        Profile_mobile_no: data.whatsappNumber
       };
 
       const response = await axios.post(CONTACT_REGISTRATION_API_URL, postData);
@@ -317,25 +306,33 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               For Admin Verification
             </h1>
 
-            <div className="space-y-5">
-              <div>
-                <InputField
-                  label="Daughter Mobile Number"
-                  type="text"
-                  {...register("daughterMobileNumber")}
-                />
-                {errors.daughterMobileNumber && <span className="text-red-500">{errors.daughterMobileNumber.message}</span>}
-              </div>
-
-              <div>
-                <InputField
-                  label="Daughter Email"
-                  type="email"
-                  {...register("daughterEmail")}
-                />
-                {errors.daughterEmail && <span className="text-red-500">{errors.daughterEmail.message}</span>}
-              </div>
+           
+          <div className="space-y-5">
+            <div>
+              <InputField
+                label={`${profileowner} Mobile Number`}
+                type="text"
+                {...register("daughterMobileNumber")}
+                onChange={(e) => {
+                  validateDaughterMobileNumber(e.target.value);
+                }}
+              />
+              {errors.daughterMobileNumber && <span className="text-red-500">{errors.daughterMobileNumber.message}</span>}
             </div>
+
+            <div>
+              <InputField
+                label={`${profileowner} Daughter Email`}
+                type="email"
+                {...register("daughterEmail")}
+                onChange={(e) => {
+                  validateDaughterEmail(e.target.value);
+                }}
+              />
+              {errors.daughterEmail && <span className="text-red-500">{errors.daughterEmail.message}</span>}
+            </div>
+          </div>
+
 
             <div className="mt-6 flex justify-end space-x-4">
               <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2" disabled={isSubmitting}>
