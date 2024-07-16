@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { showInterest } from "../../../../redux/slices/interestSlice";
 import ProfileListImg from "../../../../assets/images/./ProfileListImg.png";
 import { MdVerifiedUser } from "react-icons/md";
 import { IoCalendar } from "react-icons/io5";
@@ -14,12 +16,20 @@ import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 import MatchingScoreImg from "../../../../assets/images/MatchingScore.png";
 
 export const ListCard = () => {
+  // Redux
+  const dispatch = useDispatch();
+
   // State to track if the card is bookmarked or not
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
   };
+
+  const handleCardClick = () => {
+    dispatch(showInterest());
+  };
+
   return (
     <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5">
       <div className="w-full flex justify-between items-center">
@@ -45,7 +55,7 @@ export const ListCard = () => {
           <div className="">
             {/* Name & Profile ID */}
             <div className="relative mb-2">
-              <h5 className="text-[20px] text-secondary font-semibold">
+              <h5 onClick={handleCardClick} className="text-[20px] text-secondary font-semibold cursor-pointer">
                 Harini{" "}
                 <span className="text-sm text-ashSecondary">(VM32787)</span>
                 <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />

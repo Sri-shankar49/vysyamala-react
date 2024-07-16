@@ -11,7 +11,7 @@ interface IndicatorCardProps {
 export const IndicatorCard: React.FC<IndicatorCardProps> = ({ cardTitle, cardCount, cardIcon }) => {
     return (
         <div>
-            <div className="bg-white shadow-sm rounded-xl p-5 cursor-pointer">
+            <div className="bg-white shadow-md rounded-xl p-5 cursor-pointer">
                 <div className="flex justify-between items-start">
                     <div>
                         <h4 className="text-[20px] text-ash font-semibold">{cardTitle}</h4>

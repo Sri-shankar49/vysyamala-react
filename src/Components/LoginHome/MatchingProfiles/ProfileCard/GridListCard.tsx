@@ -1,13 +1,18 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { showInterest } from "../../../../redux/slices/interestSlice";
 import ProfileListImg from "../../../../assets/images/./ProfileListImg.png";
 import { MdVerifiedUser } from "react-icons/md";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 
 interface GridListCardProps {
-  onExpressInterest: () => void;
+  // onExpressInterest: () => void;
 }
 
-export const GridListCard: React.FC<GridListCardProps> = ({ onExpressInterest }) => {
+export const GridListCard: React.FC<GridListCardProps> = () => {
+  // Redux
+  const dispatch = useDispatch();
+
   // State to track if the card is bookmarked or not
   const [isBookmarked, setIsBookmarked] = useState(false);
 
@@ -16,11 +21,11 @@ export const GridListCard: React.FC<GridListCardProps> = ({ onExpressInterest })
   };
 
   const handleCardClick = () => {
-    onExpressInterest();
+    dispatch(showInterest());
   };
 
   return (
-    <div onClick={handleCardClick} className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5 cursor-pointer">
+    <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5">
       <div className="w-full flex justify-between items-center">
         <div className="flex justify-between items-center space-x-5">
           {/* Profile Image */}
@@ -44,7 +49,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ onExpressInterest })
           <div className="">
             {/* Name & Profile ID */}
             <div className="relative mb-2">
-              <h5 className="text-[20px] text-secondary font-semibold">
+              <h5 onClick={handleCardClick} className="text-[20px] text-secondary font-semibold cursor-pointer">
                 Harini{" "}
                 <span className="text-sm text-ashSecondary">(VM32787)</span>
                 <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />

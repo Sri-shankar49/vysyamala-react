@@ -1,23 +1,33 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { showInterest } from "../../../../redux/slices/interestSlice";
 import GridProfileImg from "../../../../assets/images/GridProfileImg.png";
 import { IoCalendar } from "react-icons/io5";
 import { FaPersonArrowUpFromLine } from "react-icons/fa6";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 
 export const GridCard = () => {
+  // Redux
+  const dispatch = useDispatch();
+
   // State to track if the card is bookmarked or not
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   const handleBookmark = () => {
     setIsBookmarked(!isBookmarked);
   };
+
+  const handleCardClick = () => {
+    dispatch(showInterest());
+  };
+
   return (
     <div className="relative w-11/12 rounded-xl shadow-md px-3 py-3">
       <div className="mb-3">
         <img src={GridProfileImg} alt="" className="w-full" />
       </div>
       <div>
-        <h4 className="text-secondary text-[20px] font-semibold">
+        <h4 onClick={handleCardClick} className="text-secondary text-[20px] font-semibold cursor-pointer">
           Harini{" "}
           <span className="text-vysyamalaBlack text-[12px] font-bold">
             (VM32787)
