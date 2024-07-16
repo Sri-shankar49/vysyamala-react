@@ -204,6 +204,14 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
     }
   };
 
+
+
+  useEffect(()=>{
+    window.scrollTo(0,0)
+  },[])
+
+
+
   return (
     <div className="pb-20">
       <ContentBlackCard
