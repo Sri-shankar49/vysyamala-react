@@ -221,14 +221,6 @@ const FamilyDetails: React.FC = () => {
 
 
 
-
-
-
-
-
-
-
-
   useEffect(() => {
     const fetchOccupations = async () => {
       try {
@@ -389,6 +381,12 @@ const FamilyDetails: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+
+  useEffect(()=>{
+    window.scrollTo(0,0)
+  },[])
+
 
 
 

@@ -9,6 +9,7 @@ import uploadfile from "../assets/icons/uploadfile.png";
 import closebtn from "../assets/icons/closebtn.png";
 import arrow from "../assets/icons/arrow.png";
 
+
 interface UploadImagesProps { }
 
 const UploadImages: React.FC<UploadImagesProps> = () => {
@@ -99,6 +100,12 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
       }
     });
   };
+
+  useEffect(()=>{
+    window.scrollTo(0,0)
+  },[])
+
+
 
   return (
     <div className="pb-20">

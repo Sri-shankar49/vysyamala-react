@@ -600,6 +600,9 @@ interface HoroDetailsInputs {
   horoscopeHints: string;
   chevvaiDhosam: string;
   sarpaDhosham: string;
+  period: "AM" | "PM";
+  hour: string;
+  minute: string;
 }
 
 interface HoroDetailsProps { }
@@ -618,6 +621,8 @@ interface Lagnam {
   didi_id: number;
   didi_description: string;
 }
+
+
 
 
 
@@ -654,7 +659,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           console.log("Profile Data:", profileData); // Log the profile data
 
           // Set other form values here after fetching data
-          setValue("timeOfBirth", profileData.time_of_birth);
+          //setValue("timeOfBirth", profileData.time_of_birth);
           setValue("placeOfBirth", profileData.place_of_birth);
           setValue("birthStar", profileData.birthstar_name);
           setValue("rasi", profileData.birth_rasi_name);
@@ -673,6 +678,13 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           setValue('day', day);
           setValue('month', month);
           setValue('year', year);
+
+          const timeOfBirth = profileData.time_of_birth;
+          const [time, period] = timeOfBirth.split(" ");
+          const [hours, minutes] = time.split(":");
+          setValue('hour', hours);
+          setValue('minute', minutes);
+          setValue('period', period);
 
           // Update state for brother and sister data
 
@@ -702,6 +714,12 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     const dasaBalance = `day:${day},month:${month},year:${year}`;
     console.log(dasaBalance);
 
+    const hour = watch("hour");
+    const minute = watch("minute");
+    const period = watch("period");
+    const combinedTime = `${hour}:${minute} ${period}`;
+    console.log(combinedTime);
+
     try {
       // Format the data as expected by the backend
       const profileId = sessionStorage.getItem("profile_id_new");
@@ -710,7 +728,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       }
       const formattedData = {
         profile_id: profileId,
-        time_of_birth: data.timeOfBirth,
+        time_of_birth: combinedTime,
         place_of_birth: data.placeOfBirth,
         birthstar_name: data.birthStar,
         birth_rasi_name: data.rasi,
@@ -722,6 +740,8 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
         dasa_balance: dasaBalance,
         //dasa_balance: 1,
         horoscope_hints: data.horoscopeHints,
+        // rasi_kattam:rasiContents,
+        // amsa_kattam:amsamContents
       };
 
       console.log("Formatted Data:", formattedData);
@@ -747,6 +767,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   const [lagnam, setLagnamOptions] = useState<Lagnam[]>([]);
   const [chevvaiDhosam, setChevvaiDhosam] = useState('');
   const [sarpaDhosham, setSarpaDhosham] = useState('');
+  // const [timevalue, setTime] = useState('');
+
+//console.log(timevalue)
 
 
   const selectedStar = watch("birthStar");
@@ -814,10 +837,28 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   // };
 
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
 
 
+  const handleTimeChange = () => {
+    const hour = watch("hour");
+    const minute = watch("minute");
+    const period = watch("period");
+    // const combinedTime = `${hour}:${minute} ${period}`;
+    // setTime(combinedTime);
+    let formattedHour = parseInt(hour, 10);
+    if (period === "PM" && formattedHour < 12) {
+      formattedHour += 12;
+    } else if (period === "AM" && formattedHour === 12) {
+      formattedHour = 0;
+    }
 
+    const formattedTime = `${formattedHour.toString().padStart(2, "0")}:${minute}`;
+    setValue("timeOfBirth", formattedTime);
+  };
 
   return (
     <div className="pb-20">
@@ -830,15 +871,45 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5 mb-5">
 
           <div>
-            <InputField
-              label={"Time of Birth"}
-              type="time"
-              {...register("timeOfBirth")}
-            />
+            <label htmlFor="timeOfBirth" className="block mb-1">Time of Birth</label>
+            <div className="flex items-center space-x-2">
+              <select
+                {...register("hour")}
+                onChange={handleTimeChange}
+                className="px-3 py-2 border rounded border-gray-300 focus:outline-none focus:border-blue-500"
+              >
+                {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
+                  <option key={hour} value={hour.toString().padStart(2, "0")}>
+                    {hour}
+                  </option>
+                ))}
+              </select>
+              <span>:</span>
+              <select
+                {...register("minute")}
+                onChange={handleTimeChange}
+                className="px-3 py-2 border rounded border-gray-300 focus:outline-none focus:border-blue-500"
+              >
+                {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
+                  <option key={minute} value={minute.toString().padStart(2, "0")}>
+                    {minute.toString().padStart(2, "0")}
+                  </option>
+                ))}
+              </select>
+              <select
+                {...register("period")}
+                onChange={handleTimeChange}
+                className="px-3 py-2 border rounded border-gray-300 focus:outline-none focus:border-blue-500"
+              >
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
+            </div>
             {errors.timeOfBirth && (
               <span className="text-red-500">{errors.timeOfBirth.message}</span>
             )}
           </div>
+
 
           <div>
             <InputField label={"Place of Birth"} {...register("placeOfBirth")} />
@@ -1086,7 +1157,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               </button> */}
               <Link to={"/PartnerSettings"}>
                 <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
-                  skip 
+                  skip
                 </button>
               </Link>
 
