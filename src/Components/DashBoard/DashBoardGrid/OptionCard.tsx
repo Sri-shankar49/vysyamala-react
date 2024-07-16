@@ -12,7 +12,7 @@ interface OptionCardProps {
 export const OptionCard: React.FC<OptionCardProps> = ({ cardTitle, cardIcon, onClick }) => {
     return (
         <div onClick={onClick}>
-            <div className="w-fit mx-auto bg-white shadow-sm rounded-xl p-5 cursor-pointer">
+            <div className="w-fit mx-auto bg-white shadow-md rounded-xl p-5 cursor-pointer">
                 <div className="text-[48px] text-closeRed mb-5">
                     {cardIcon}
                 </div>

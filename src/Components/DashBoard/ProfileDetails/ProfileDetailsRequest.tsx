@@ -1,5 +1,4 @@
-// import { useState } from "react";
-
+import { useState } from "react";
 import { MdVerifiedUser } from "react-icons/md";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 import { IoDocumentText } from "react-icons/io5";
@@ -25,6 +24,20 @@ interface ProfileDetailsRequestProps {
 }
 
 export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = ({ dashBoardAgain }) => {
+
+    // Declaration for Horoscope State
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
+    const [isHovered, setIsHovered] = useState(false);
+
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const handleSelectLanguage = (language: string) => {
+        setSelectedLanguage(language);
+        setIsOpen(false);
+    };
 
     return (
         <div>
@@ -154,11 +167,43 @@ export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = ({ da
                                     <br /> please contact me.</p>
                             </div>
 
-                            <div>
-                                <p className="flex items-center text-ash cursor-pointer">
-                                    <MdLocalPrintshop className="text-[22px] mr-2" />Print Horoscope
-                                    <MdArrowDropDown className="text-[22px] ml-2" />
-                                </p>
+                            <div className="flex justify-center items-center space-x-10"
+                                onMouseEnter={() => setIsHovered(true)}
+                                onMouseLeave={() => setIsHovered(false)}
+                            >
+                                <div className="relative"
+
+                                >
+                                    <p className="flex items-center text-ash cursor-pointer"
+                                    >
+                                        <MdLocalPrintshop className="text-[22px] mr-2" />Print Horoscope
+                                        <MdArrowDropDown className="text-[22px] ml-2" />
+                                    </p>
+
+                                    {(isHovered || isOpen) && (
+                                        <div
+                                            className="absolute top-4 right-0 mt-2 w-40 bg-white rounded-md shadow-lg"
+                                            onMouseEnter={() => setIsOpen(true)}
+                                            onMouseLeave={() => setIsOpen(false)}
+                                        >
+                                            <ul>
+                                                <li
+                                                    className="block px-4 py-2 text-gray-800 hover:bg-gray cursor-pointer"
+                                                    onClick={() => handleSelectLanguage('Tamil')}
+                                                >
+                                                    Tamil
+                                                </li>
+                                                <li
+                                                    className="block px-4 py-2 text-gray-800 hover:bg-gray cursor-pointer"
+                                                    onClick={() => handleSelectLanguage('English')}
+                                                >
+                                                    English
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                                {selectedLanguage && <p className="ml-4 text-ash">Selected: {selectedLanguage}</p>}
                             </div>
                         </div>
 
@@ -182,7 +227,7 @@ export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = ({ da
 
             </div>
             <ProfileDetailsSettings />
-            
+
         </div>
     )
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { DashBoardGrid } from "../../Components/DashBoard/DashBoardGrid"
-import { ProfileDetailsRequest } from "../../Components/DashBoard/ProfileDetails/ProfileDetailsRequest"
+// import { ProfileDetailsRequest } from "../../Components/DashBoard/ProfileDetails/ProfileDetailsRequest"
+import { DashBoardMyProfile } from "../../Components/DashBoard/DashBoardMyProfile";
 import { OtherSettings } from "../../Components/DashBoard/OtherSettings";
 
 export const DashBoard = () => {
@@ -13,11 +14,12 @@ export const DashBoard = () => {
 
 
     return (
-        <div className="bg-grayBg pt-10">
+        <div>
             <div className="">
 
                 {showProfileDetails ? (
-                    <ProfileDetailsRequest dashBoardAgain={() => setShowProfileDetails(false)} />
+                    // <ProfileDetailsRequest dashBoardAgain={() => setShowProfileDetails(false)} />
+                    <DashBoardMyProfile dashBoardAgain={() => setShowProfileDetails(false)} />
                 ) : showOtherSettings ? (
                     <OtherSettings dashBoardAgain={() => setShowOtherSettings(false)} />
                 ) : (

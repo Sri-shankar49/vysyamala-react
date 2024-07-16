@@ -35,7 +35,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onProfileDetails, 
         <div className="container mx-auto">
             <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold mb-5">Dashboard</h4>
 
-            <div className="space-y-10">
+            <div className="space-y-10 mb-10">
                 <div className="grid grid-rows-1 grid-cols-2 gap-5 items-center">
 
                     {/* 3 Dashboard Cards */}

@@ -1,27 +1,19 @@
-import { useState } from "react";
-import { ProfileDetailsExpressInterest } from "../../Components/DashBoard/ProfileDetails/ProfileDetailsExpressInterest";
-import { HandleLogin } from "../../Components/LoginHome/HandleLogin";
-import { GridListCard } from "../../Components/LoginHome/MatchingProfiles/ProfileCard/GridListCard";
+// src/Components/LoginHome/LoginHome.tsx
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { ProfileDetailsExpressInterest } from '../../Components/DashBoard/ProfileDetails/ProfileDetailsExpressInterest';
+import { HandleLogin } from '../../Components/LoginHome/HandleLogin';
+import { RootState } from '../../redux/store';
 
-
-export const LoginHome = () => {
-
-  // State Declaration to show ProfileDetailsExpressInterest
-  const [showExpressInterest, setShowExpressInterest] = useState(false);
-
-
-  // Function to toggle the state
-  const toggleExpressInterest = () => {
-    setShowExpressInterest(true); // Ensure that ProfileDetailsExpressInterest is shown
-  };
-
+export const LoginHome: React.FC = () => {
+  const showExpressInterest = useSelector((state: RootState) => state.interest.showExpressInterest);
 
   return (
     <div>
       {showExpressInterest ? (
         <ProfileDetailsExpressInterest />
       ) : (
-        <><HandleLogin /><GridListCard onExpressInterest={toggleExpressInterest} /></>
+        <HandleLogin />
       )}
     </div>
   );
