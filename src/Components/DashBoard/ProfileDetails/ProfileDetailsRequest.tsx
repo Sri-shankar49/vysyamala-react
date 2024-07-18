@@ -217,7 +217,7 @@ export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = ({ da
                             <button className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer">
                                 <IoMdCloseCircle className="text-[26px] mr-2" /> Decline</button>
 
-                            {/* Decline button */}
+                            {/* Message button */}
                             <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
                                 <MdMessage className="text-[26px] mr-2" /> Message</button>
 
