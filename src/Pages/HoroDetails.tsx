@@ -565,7 +565,7 @@ const schema = zod.object({
   day: zod.string().min(1, "Day is required"),
   month: zod.string().min(1, "Month is required"),
   year: zod.string().min(1, "Year is required"),
-  timeOfBirth: zod.string().min(1, "Time of birth is required"),
+  //timeOfBirth: zod.string().min(1, "Time of birth is required"),
   placeOfBirth: zod.string().min(3, "Place of birth is required"),
   birthStar: zod.string().min(1, "Birth star is required"),
   rasi: zod.string().min(1, "Rasi is required"),
@@ -658,6 +658,13 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
           console.log("Profile Data:", profileData); // Log the profile data
 
+          // console.log("rasi:",profileData.rasi_kattam);
+          // console.log("amsam:",profileData.amsa_kattam);
+
+          sessionStorage.setItem('formattedDatarasi',profileData.rasi_kattam);
+          sessionStorage.setItem('formattedDatamsam',profileData.amsa_kattam);
+
+
           // Set other form values here after fetching data
           //setValue("timeOfBirth", profileData.time_of_birth);
           setValue("placeOfBirth", profileData.place_of_birth);
@@ -706,29 +713,50 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
 
   const onSubmit: SubmitHandler<HoroDetailsInputs> = async (data) => {
-
+    let storedData = "";
+    let storedData1 = "";
+  
+    // Retrieve 'formattedData' from sessionStorage
+    const storedDataString = sessionStorage.getItem('formattedData');
+    if (storedDataString) {
+      storedData = JSON.parse(storedDataString); // No need to parse as it's already a string
+      console.log("Retrieved formattedData from sessionStorage:", storedData);
+    } else {
+      console.log("No formattedData found in sessionStorage");
+    }
+  
+    // Retrieve 'formattedData1' from sessionStorage
+    const storedDataString1 = sessionStorage.getItem('formattedData1');
+    if (storedDataString1) {
+      storedData1 = JSON.parse(storedDataString1); // No need to parse as it's already a string
+      console.log("Retrieved formattedData1 from sessionStorage:", storedData1);
+    } else {
+      console.log("No formattedData1 found in sessionStorage");
+    }
+  
     const day = watch("day");
     const month = watch("month");
     const year = watch("year");
-
+  
     const dasaBalance = `day:${day},month:${month},year:${year}`;
     console.log(dasaBalance);
-
+  
     const hour = watch("hour");
     const minute = watch("minute");
     const period = watch("period");
     const combinedTime = `${hour}:${minute} ${period}`;
     console.log(combinedTime);
-
+  
     try {
       // Format the data as expected by the backend
       const profileId = sessionStorage.getItem("profile_id_new");
       if (!profileId) {
         throw new Error("ProfileId not found in sessionStorage");
       }
+  
       const formattedData = {
         profile_id: profileId,
-        time_of_birth: combinedTime,
+        time_of_birth:combinedTime ,
         place_of_birth: data.placeOfBirth,
         birthstar_name: data.birthStar,
         birth_rasi_name: data.rasi,
@@ -738,19 +766,18 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
         nalikai: data.naalikai,
         dasa_name: data.dasaName,
         dasa_balance: dasaBalance,
-        //dasa_balance: 1,
         horoscope_hints: data.horoscopeHints,
-        // rasi_kattam:rasiContents,
-        // amsa_kattam:amsamContents
+        rasi_kattam: storedData,
+        amsa_kattam: storedData1
       };
-
+  
       console.log("Formatted Data:", formattedData);
       setIsSubmitting(true);
       const response = await axios.post(`${config.apiUrl}/auth/Horoscope_registration/`, formattedData);
       setIsSubmitting(false);
-
+  
       if (response.data.Status === 1) {
-        navigate("/PartnerSettings");
+       navigate("/PartnerSettings");
       } else {
         // Handle error or show message to the user
         console.error("Error: Response status is not 1", response.data);
@@ -760,6 +787,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       setIsSubmitting(false);
     }
   };
+  
 
 
   const [birthStar, setBirthStar] = useState<BirthStar[]>([]);
@@ -767,9 +795,12 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   const [lagnam, setLagnamOptions] = useState<Lagnam[]>([]);
   const [chevvaiDhosam, setChevvaiDhosam] = useState('');
   const [sarpaDhosham, setSarpaDhosham] = useState('');
-  // const [timevalue, setTime] = useState('');
 
-//console.log(timevalue)
+
+
+  
+
+
 
 
   const selectedStar = watch("birthStar");

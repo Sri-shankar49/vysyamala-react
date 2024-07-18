@@ -358,6 +358,10 @@ const FamilyDetails: React.FC = () => {
         family_type: data.familyType,
         family_value: data.familyValue,
         family_status: data.familyStatus,
+        about_family:data.aboutMyFamily,
+        property_worth:data.propertyWorth,
+        property_details:data.propertyDetails
+        
         // Include other fields as necessary
       };
 

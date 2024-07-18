@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { RiDraggable } from "react-icons/ri";
 import { AiOutlineClose } from "react-icons/ai";
 
@@ -12,7 +13,7 @@ interface Label {
 }
 
 const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
-  const initialLabels: Label[] = [
+  const initialLabels: Label[] = useMemo(() => [
     { id: 1, name: "Raghu/Rahu" },
     { id: 2, name: "Mars/Chevai" },
     { id: 3, name: "Jupiter/Guru" },
@@ -23,10 +24,33 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
     { id: 8, name: "Venus/Sukran" },
     { id: 9, name: "Moon/Chandran" },
     { id: 10, name: "Kethu/Ketu" },
-  ];
+  ], []);
 
   const [labels, setLabels] = useState<Label[]>(initialLabels);
   const [amsamContents, setAmsamContents] = useState<string[][]>(Array(12).fill([]));
+  const location = useLocation();
+
+  useEffect(() => {
+    const formattedDatamsamval = sessionStorage.getItem('formattedDatamsam');
+    if (formattedDatamsamval) {
+      console.log("Retrieved formattedDatamsam from sessionStorage:", formattedDatamsamval);
+
+      // Parse the formatted data
+      const data = formattedDatamsamval.slice(1, -1).split(', ').map((grid) => {
+        const match = grid.match(/Grid \d+: (.+)/);
+        return match ? match[1].split(',').map(id => parseInt(id, 10)) : [];
+      });
+
+      // Map ids to labels and set the amsam contents
+      const newAmsamContents = data.map((ids) => {
+        return ids.map(id => initialLabels.find(label => label.id === id)?.name).filter(Boolean) as string[];
+      });
+
+      setAmsamContents(newAmsamContents);
+    } else {
+      console.log("No formattedDatamsam found in sessionStorage");
+    }
+  }, [location, initialLabels]);
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, label: Label) => {
     e.dataTransfer.setData("labelId", label.id.toString());
@@ -43,7 +67,7 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
     const source = e.dataTransfer.getData("source");
 
     if (source === "amsam" && draggedLabelId) {
-      const draggedLabel = labels.find((label) => label.id === parseInt(draggedLabelId));
+      const draggedLabel = labels.find((label) => label.id === parseInt(draggedLabelId, 10));
       if (draggedLabel && !amsamContents[index].includes(draggedLabel.name) && amsamContents[index].length < 6) {
         const newContents = [...amsamContents];
         newContents[index] = [...newContents[index], draggedLabel.name];
@@ -66,14 +90,22 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
     }
   };
 
-  useEffect(() => {
+  const formatGridData = () => {
     const formattedData = amsamContents.map((contents, index) => {
       const boxNumber = index + 1;
       const ids = contents.map(label => initialLabels.find(l => l.name === label)?.id).filter(id => id !== undefined);
       return `Grid ${boxNumber}: ${ids.length > 0 ? ids.join(",") : "empty"}`;
     }).join(", ");
+    return `{${formattedData}}`;
+  };
+
+  useEffect(() => {
+    const formattedData = formatGridData();
     console.log("Amsam Contents:");
-    console.log(`{${formattedData}}`);
+    console.log(formattedData);
+
+    // Store formattedData in sessionStorage
+    sessionStorage.setItem('formattedData1', JSON.stringify(formattedData));
   }, [amsamContents]);
 
   return (
