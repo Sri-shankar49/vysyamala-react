@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { RiDraggable } from "react-icons/ri";
 import { AiOutlineClose } from "react-icons/ai";
 
@@ -12,7 +13,7 @@ interface Label {
 }
 
 const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
-  const initialLabels: Label[] = [
+  const initialLabels: Label[] = useMemo(() => [
     { id: 1, name: "Raghu/Rahu" },
     { id: 2, name: "Mars/Chevai" },
     { id: 3, name: "Jupiter/Guru" },
@@ -23,10 +24,33 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
     { id: 8, name: "Venus/Sukran" },
     { id: 9, name: "Moon/Chandran" },
     { id: 10, name: "Kethu/Ketu" },
-  ];
+  ], []);
 
   const [labels, setLabels] = useState<Label[]>(initialLabels);
   const [rasiContents, setRasiContents] = useState<string[][]>(Array(12).fill([]));
+  const location = useLocation();
+
+  useEffect(() => {
+    const formattedDatarasival = sessionStorage.getItem('formattedDatarasi');
+    if (formattedDatarasival) {
+      console.log("Retrieved formattedDatarasi from sessionStorage:", formattedDatarasival);
+
+      // Parse the formatted data
+      const data = formattedDatarasival.slice(1, -1).split(', ').map((grid) => {
+        const match = grid.match(/Grid \d+: (.+)/);
+        return match ? match[1].split(',').map(id => parseInt(id, 10)) : [];
+      });
+
+      // Map ids to labels and set the rasi contents
+      const newRasiContents = data.map((ids) => {
+        return ids.map(id => initialLabels.find(label => label.id === id)?.name).filter(Boolean) as string[];
+      });
+
+      setRasiContents(newRasiContents);
+    } else {
+      console.log("No formattedDatarasi found in sessionStorage");
+    }
+  }, [location, initialLabels]);
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, label: Label) => {
     e.dataTransfer.setData("labelId", label.id.toString());
@@ -79,6 +103,9 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
     const formattedData = formatGridData();
     console.log("Rasi Contents:");
     console.log(formattedData);
+
+    // Store formattedData in sessionStorage
+    sessionStorage.setItem('formattedData', JSON.stringify(formattedData));
   }, [rasiContents]);
 
   return (
