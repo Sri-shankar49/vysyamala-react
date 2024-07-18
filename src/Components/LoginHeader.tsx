@@ -82,9 +82,14 @@ export const LoginHeader: React.FC = () => {
                 </li>
               </NavLink>
 
-              <li className="text-[16px] cursor-pointer font-medium">
-                <MdMessage className="text-[22px]" />
-              </li>
+              <NavLink
+                to={"/Messages"}
+                aria-current="page"
+                className="active-nav">
+                <li className="text-[16px] cursor-pointer font-medium">
+                  <MdMessage className="text-[22px]" />
+                </li>
+              </NavLink>
 
               <li className="text-[16px] cursor-pointer font-medium">
                 <FaBell className="text-[22px]" />
@@ -118,7 +123,7 @@ export const LoginHeader: React.FC = () => {
             </div>
           </nav>
         </div>
-      </header>
-    </div>
+      </header >
+    </div >
   );
 };

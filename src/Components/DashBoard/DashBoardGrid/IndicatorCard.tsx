@@ -3,14 +3,15 @@ interface IndicatorCardProps {
     cardTitle: string,
     cardCount: string,
     cardIcon: JSX.Element,
+    onClick: () => void;
     // cardIconColor : string,
     // cardIconSize : number,
     // cardIconBackground : string,
 }
 
-export const IndicatorCard: React.FC<IndicatorCardProps> = ({ cardTitle, cardCount, cardIcon }) => {
+export const IndicatorCard: React.FC<IndicatorCardProps> = ({ cardTitle, cardCount, cardIcon, onClick }) => {
     return (
-        <div>
+        <div onClick={onClick}>
             <div className="bg-white shadow-md rounded-xl p-5 cursor-pointer">
                 <div className="flex justify-between items-start">
                     <div>

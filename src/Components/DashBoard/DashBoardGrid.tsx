@@ -22,11 +22,25 @@ import { RiAlertFill } from "react-icons/ri";
 import { MdManageAccounts } from "react-icons/md";
 
 interface DashBoardGridProps {
+    onDashBoardMatchingProfiles: () => void;
+    onDashBoardMutualInterest: () => void;
+    onDashBoardWishlist: () => void;
+
+    // Profile Card
     onProfileDetails: () => void;
+
+    // Indicator Cards
+    onInterestSent: () => void;
+    onViewedProfiles: () => void;
+    onMyVisitors: () => void;
+
+    // Optional Cards
+    onPersonalNotes: () => void;
     onOtherSettings: () => void;
+
 }
 
-export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onProfileDetails, onOtherSettings }) => {
+export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchingProfiles, onDashBoardMutualInterest, onDashBoardWishlist, onProfileDetails, onInterestSent, onViewedProfiles, onMyVisitors, onPersonalNotes, onOtherSettings }) => {
 
     // Circular Progress bar value
     const percentage = 85;
@@ -42,7 +56,8 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onProfileDetails, 
                     <div>
                         <div className="grid grid-rows-2 grid-cols-2 gap-5 items-center">
                             {/* Matching Profiles */}
-                            <div className="relative row-span-2 w-full h-full bg-vysyamalaPink shadow-lg rounded-xl p-5 cursor-pointer">
+                            <div onClick={onDashBoardMatchingProfiles}
+                                className="relative row-span-2 w-full h-full bg-vysyamalaPink shadow-lg rounded-xl p-5 cursor-pointer">
                                 <div className="absolute top-0 bottom-0 right-0">
                                     <img src={PinkLayer} alt="" className="w-full h-full" />
                                 </div>
@@ -57,7 +72,8 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onProfileDetails, 
                             </div>
 
                             {/* Mutual Interest */}
-                            <div className="relative w-full h-full bg-vysyamalaViolet rounded-xl shadow-lg p-5 cursor-pointer">
+                            <div onClick={onDashBoardMutualInterest}
+                                className="relative w-full h-full bg-vysyamalaViolet rounded-xl shadow-lg p-5 cursor-pointer">
                                 <div className="absolute top-0 bottom-0 right-0">
                                     <img src={VioletLayer} alt="" className="w-full h-full" />
                                 </div>
@@ -74,7 +90,8 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onProfileDetails, 
                             </div>
 
                             {/* Wishlist */}
-                            <div className="relative w-full bg-vysyamalaYellow rounded-xl shadow-lg p-5 cursor-pointer">
+                            <div onClick={onDashBoardWishlist}
+                                className="relative w-full bg-vysyamalaYellow rounded-xl shadow-lg p-5 cursor-pointer">
                                 <div className="absolute top-0 bottom-0 right-0">
                                     <img src={YellowLayer} alt="" className="w-full h-full" />
                                 </div>
@@ -142,7 +159,9 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onProfileDetails, 
 
                     {/* Received Interest */}
                     <div>
-                        <h4 className="text-[21px] text-primary font-semibold mb-5">Received Interest <span className="text-sm">(05)</span></h4>
+                        <h4 className="text-[21px] text-primary font-semibold mb-5">Received Interest
+                            <span className="text-sm">(05)</span>
+                        </h4>
 
                         <p className="text-sm text-ashSecondary font-semibold mb-3">Today</p>
 
@@ -157,16 +176,16 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onProfileDetails, 
                     {/* My Options */}
                     <div>
                         <div className="grid grid-rows-2 grid-cols-2 gap-5">
-                            <IndicatorCard cardTitle="Interest Sent" cardCount={"05"} cardIcon={<PiTrayArrowUpFill />} />
-                            <IndicatorCard cardTitle="Viewed Profiles" cardCount={"05"} cardIcon={<MdPreview />} />
-                            <IndicatorCard cardTitle="My Visitors" cardCount={"05"} cardIcon={<FaUsers />} />
+                            <IndicatorCard onClick={onInterestSent} cardTitle="Interest Sent" cardCount={"05"} cardIcon={<PiTrayArrowUpFill />} />
+                            <IndicatorCard onClick={onViewedProfiles} cardTitle="Viewed Profiles" cardCount={"05"} cardIcon={<MdPreview />} />
+                            <IndicatorCard onClick={onMyVisitors} cardTitle="My Visitors" cardCount={"05"} cardIcon={<FaUsers />} />
                             <IndicatorCard cardTitle="Gallery" cardCount={"05"} cardIcon={<FaImages />} />
                         </div>
 
                         {/* Other options */}
                         <div className="mt-5">
                             <div className="flex justify-between items-center gap-5">
-                                <OptionCard cardTitle="Personal Notes" cardIcon={<IoDocumentText />} />
+                                <OptionCard onClick={onPersonalNotes} cardTitle="Personal Notes" cardIcon={<IoDocumentText />} />
                                 <OptionCard cardTitle="Vys Assist" cardIcon={<BiSolidUserVoice />} />
                                 <OptionCard cardTitle="Spot on Error" cardIcon={<RiAlertFill />} />
                                 <OptionCard onClick={onOtherSettings} cardTitle="Other Settings" cardIcon={<MdManageAccounts />} />
