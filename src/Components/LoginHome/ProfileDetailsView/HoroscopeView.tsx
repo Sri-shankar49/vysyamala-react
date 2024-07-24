@@ -1,13 +1,13 @@
 import React from 'react'
-import { MdModeEdit } from "react-icons/md";
+// import { MdModeEdit } from "react-icons/md";
 import RasiGrid from '../../HoroDetails/RasiGrid';
 import AmsamGrid from '../../HoroDetails/AmsamGrid';
 
-export const Horoscope = () => {
+export const HoroscopeView = () => {
     return (
         <div>
             <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5">Horoscope Details
-                <MdModeEdit className="text-2xl text-main ml-2 cursor-pointer" />
+                {/* <MdModeEdit className="text-2xl text-main ml-2 cursor-pointer" /> */}
             </h2>
 
             <div>

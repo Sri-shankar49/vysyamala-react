@@ -31,7 +31,8 @@ export const MatchingProfiles = () => {
       <div className="container mx-auto my-10">
         <div>
           <h4 className="text-[24px] text-vysyamalaBlack font-bold">
-            Matching Profiles <span className="text-sm text-primary font-bold">(234)</span>
+            Matching Profiles
+            <span className="text-sm text-primary font-bold"> (234)</span>
           </h4>
         </div>
 
@@ -51,10 +52,10 @@ export const MatchingProfiles = () => {
               id=""
               className="w-full bg-white pl-10 py-3 cursor-pointer focus-visible:outline-0"
             >
-              <option value="">Profession</option>
-              <option value="two">two</option>
-              <option value="three">three</option>
-              <option value="four">four</option>
+              <option value="" selected disabled>Profession</option>
+              <option value="doctor">Doctor</option>
+              <option value="engineer">Engineer</option>
+              <option value="it">IT Professional</option>
             </select>
             <FaSuitcase className="absolute top-3 text-[22px] text-ashSecondary" />
           </div>
@@ -65,10 +66,10 @@ export const MatchingProfiles = () => {
               id=""
               className="w-full bg-white pl-10 py-3 cursor-pointer focus-visible:outline-0"
             >
-              <option value="">Age</option>
-              <option value="two">two</option>
-              <option value="three">three</option>
-              <option value="four">four</option>
+              <option value="" selected disabled>Age</option>
+              <option value="two">Twenty Five</option>
+              <option value="three">Twenty Six</option>
+              <option value="four">Twenty Six</option>
             </select>
             <IoCalendar className="absolute top-3 text-[22px] text-ashSecondary" />
             <div className="absolute top-0 left-[-12px]  w-0.5 h-full bg-gray"></div>
@@ -81,10 +82,12 @@ export const MatchingProfiles = () => {
               id=""
               className="w-full bg-white pl-10 py-3 cursor-pointer focus-visible:outline-0"
             >
-              <option value="">Location</option>
-              <option value="two">two</option>
-              <option value="three">three</option>
-              <option value="four">four</option>
+              <option value="" selected disabled>Location</option>
+              <option value="two">Andhra Pradesh</option>
+              <option value="three">Telangana</option>
+              <option value="four">Karnataka</option>
+              <option value="five">Pondicherry</option>
+              <option value="six">TamilNadu</option>
             </select>
             <FaLocationDot className="absolute top-3 text-[22px] text-ashSecondary" />
             <div className="absolute top-0 right-[-12px]  w-0.5 h-full bg-gray"></div>
@@ -127,8 +130,8 @@ export const MatchingProfiles = () => {
             >
               <ImMenu
                 className={`text-[22px] ${currentView === "list"
-                    ? "text-secondary"
-                    : "text-ashSecondary"
+                  ? "text-secondary"
+                  : "text-ashSecondary"
                   } hover:text-secondary}`}
               />
             </div>
@@ -140,8 +143,8 @@ export const MatchingProfiles = () => {
             >
               <BsFillGrid3X3GapFill
                 className={`text-[22px] ${currentView === "grid"
-                    ? "text-secondary"
-                    : "text-ashSecondary"
+                  ? "text-secondary"
+                  : "text-ashSecondary"
                   } hover:text-secondary}`}
               />
             </div>

@@ -14,11 +14,13 @@ import { FaUser } from "react-icons/fa6";
 import { IoEye } from "react-icons/io5";
 import { FaHeart } from "react-icons/fa6";
 import { FaTableList } from "react-icons/fa6";
-import { ProfileSlick } from "./ProfileSlick";
+// import { ProfileSlick } from "./ProfileSlick";
+import { ProfileSlickView } from "../../LoginHome/ProfileDetailsView/ProfileSlickView";
 import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import { MdLocalPrintshop } from "react-icons/md";
 import { MdArrowDropDown } from "react-icons/md";
-import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
+// import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
+import { ProfileDetailsSettingsView } from "../../LoginHome/ProfileDetailsView/ProfileDetailsSettingsView";
 import { FeaturedProfiles } from "../../LoginHome/FeaturedProfiles";
 import { VysyaBazaar } from "../../LoginHome/VysyaBazaar";
 import { SuggestedProfiles } from "../../LoginHome/SuggestedProfiles";
@@ -32,6 +34,13 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
 
     const handleBackClick = () => {
         dispatch(hideInterest());
+    };
+
+    // Declaration for Bookmarking Profile
+    const [isBookmarked, setIsBookmarked] = useState(false);
+
+    const handleBookmark = () => {
+        setIsBookmarked(!isBookmarked);
     };
 
     // Declaration for Heart State
@@ -63,14 +72,14 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                     <div className="flex items-center mb-5">
                         <IoArrowBackOutline onClick={handleBackClick} className="text-[24px] mr-2 cursor-pointer" />
                         <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold"> Profile Details
-                            <span className="text-sm text-primary"> (234)</span>
+                            {/* <span className="text-sm text-primary"> (234)</span> */}
                         </h4>
                     </div>
 
                     <div className="grid grid-rows-1 grid-cols-3 justify-start items-center space-x-10 my-5">
 
                         <div className="">
-                            <ProfileSlick />
+                            <ProfileSlickView />
                         </div>
 
 
@@ -88,7 +97,20 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                         <IoShareSocialSharp title="Share Profile" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
                                     </div>
                                     <div>
-                                        <MdBookmark title="Bookmark Profile" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
+                                        {/* <MdBookmarkBorder title="Bookmark Profile" className="text-[22px] text-vysyamalaBlack cursor-pointer" /> */}
+                                        {isBookmarked ? (
+                                            <MdBookmark
+                                                title="Wishlist this Profile"
+                                                onClick={handleBookmark}
+                                                className="text-[22px] text-vysyamalaBlack cursor-pointer"
+                                            />
+                                        ) : (
+                                            <MdBookmarkBorder
+                                                title="Wishlist this Profile"
+                                                onClick={handleBookmark}
+                                                className="text-[22px] text-vysyamalaBlack cursor-pointer"
+                                            />
+                                        )}
                                     </div>
                                     <div>
                                         <IoDocumentText title="Personal Notes" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
@@ -242,7 +264,7 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
 
                 </div>
             </div>
-            <ProfileDetailsSettings />
+            <ProfileDetailsSettingsView />
             <FeaturedProfiles />
             <VysyaBazaar />
             <SuggestedProfiles />
