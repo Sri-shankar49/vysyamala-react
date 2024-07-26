@@ -1,20 +1,20 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { showInterest } from "../../../redux/slices/interestSlice";
+// import { useDispatch } from "react-redux";
+// import { showInterest } from "../../../redux/slices/interestSlice";
 import HeartMsg from "../../../assets/icons/HeartMsg.png";
 import ProfileImgSlider from "../../../assets/images/ProfileImgSlider.png";
 import { IoCalendar } from "react-icons/io5";
 import { FaPersonArrowUpFromLine } from "react-icons/fa6";
-
+import { Link } from "react-router-dom";
 
 export const HeroSliderContent = () => {
 
   // Redux
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  const handleCardClick = () => {
-    dispatch(showInterest());
-  };
+  // const handleCardClick = () => {
+  //   dispatch(showInterest());
+  // };
 
   return (
     <div>
@@ -60,9 +60,15 @@ export const HeroSliderContent = () => {
               </h5>
 
               <div className="space-x-5">
-                <button onClick={handleCardClick} className="bg-gradient text-white rounded-[6px] font-semibold px-8 py-3">
-                  View Profile
-                </button>
+
+                <Link to="/ProfileDetails" target="_blank">
+                  <button
+                    // onClick={handleCardClick} 
+                    className="bg-gradient text-white rounded-[6px] font-semibold px-8 py-3">
+                    View Profile
+                  </button>
+                </Link>
+
                 <button className="bg-white text-main rounded-[6px] border-2 border-main font-semibold px-8 py-2.5">
                   Message
                 </button>

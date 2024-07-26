@@ -13,17 +13,25 @@ import { IoEye } from "react-icons/io5";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import { MdMessage } from "react-icons/md";
-import { ProfileSlick } from "./ProfileSlick";
+// import { ProfileSlick } from "./ProfileSlick";
+import { ProfileSlickView } from "../../LoginHome/ProfileDetailsView/ProfileSlickView";
 import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import { MdLocalPrintshop } from "react-icons/md";
 import { MdArrowDropDown } from "react-icons/md";
-import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
+// import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
 
 interface ProfileDetailsRequestProps {
-    dashBoardAgain: () => void;
+    // dashBoardAgain: () => void;
 }
 
-export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = ({ dashBoardAgain }) => {
+export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = () => {
+
+    // Wishlist Bookmark
+    const [isBookmarked, setIsBookmarked] = useState(false);
+
+    const handleBookmark = () => {
+        setIsBookmarked(!isBookmarked);
+    };
 
     // Declaration for Horoscope State
     const [isOpen, setIsOpen] = useState(false);
@@ -40,10 +48,10 @@ export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = ({ da
     };
 
     return (
-        <div>
+        <div className="bg-grayBg pt-10">
             <div className="container mx-auto">
                 <div className="flex items-center mb-5">
-                    <IoArrowBackOutline onClick={dashBoardAgain} className="text-[24px] mr-2 cursor-pointer" />
+                    {/* <IoArrowBackOutline onClick={dashBoardAgain} className="text-[24px] mr-2 cursor-pointer" /> */}
                     <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold"> Profile Details
                         {/* <span className="text-sm text-primary"> (234)</span> */}
                     </h4>
@@ -52,7 +60,7 @@ export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = ({ da
                 <div className="grid grid-rows-1 grid-cols-3 justify-start items-start space-x-10 mb-5">
 
                     <div className="">
-                        <ProfileSlick />
+                        <ProfileSlickView />
                     </div>
 
 
@@ -70,7 +78,20 @@ export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = ({ da
                                     <IoShareSocialSharp title="Share Profile" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
                                 </div>
                                 <div>
-                                    <MdBookmark title="Bookmark Profile" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
+                                    {/* <MdBookmark title="Bookmark Profile" className="text-[22px] text-vysyamalaBlack cursor-pointer" /> */}
+                                    {isBookmarked ? (
+                                        <MdBookmark
+                                            title="Wishlist this Profile"
+                                            onClick={handleBookmark}
+                                            className="text-[22px] text-vysyamalaBlack cursor-pointer"
+                                        />
+                                    ) : (
+                                        <MdBookmarkBorder
+                                            title="Wishlist this Profile"
+                                            onClick={handleBookmark}
+                                            className="text-[22px] text-vysyamalaBlack cursor-pointer"
+                                        />
+                                    )}
                                 </div>
                                 <div>
                                     <IoDocumentText title="Personal Notes" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
@@ -226,7 +247,7 @@ export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = ({ da
                 </div>
 
             </div>
-            <ProfileDetailsSettings />
+            {/* <ProfileDetailsSettings /> */}
 
         </div>
     )

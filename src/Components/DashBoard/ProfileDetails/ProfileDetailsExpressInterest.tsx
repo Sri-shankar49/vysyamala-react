@@ -1,6 +1,6 @@
 import { useState, MouseEvent } from "react";
-import { useDispatch } from "react-redux";
-import { hideInterest } from "../../../redux/slices/interestSlice";
+// import { useDispatch } from "react-redux";
+// import { hideInterest } from "../../../redux/slices/interestSlice";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { MdVerifiedUser } from "react-icons/md";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
@@ -30,11 +30,11 @@ interface ProfileDetailsExpressInterestProps { }
 export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressInterestProps> = () => {
 
     // Redux 
-    const dispatch = useDispatch();
+    // const dispatch = useDispatch();
 
-    const handleBackClick = () => {
-        dispatch(hideInterest());
-    };
+    // const handleBackClick = () => {
+    //     dispatch(hideInterest());
+    // };
 
     // Declaration for Bookmarking Profile
     const [isBookmarked, setIsBookmarked] = useState(false);
@@ -70,7 +70,7 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
             <div className="bg-grayBg pt-10">
                 <div className="container mx-auto">
                     <div className="flex items-center mb-5">
-                        <IoArrowBackOutline onClick={handleBackClick} className="text-[24px] mr-2 cursor-pointer" />
+                        {/* <IoArrowBackOutline onClick={handleBackClick} className="text-[24px] mr-2 cursor-pointer" /> */}
                         <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold"> Profile Details
                             {/* <span className="text-sm text-primary"> (234)</span> */}
                         </h4>
@@ -264,10 +264,11 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
 
                 </div>
             </div>
-            <ProfileDetailsSettingsView />
+
+            {/* <ProfileDetailsSettingsView />
             <FeaturedProfiles />
             <VysyaBazaar />
-            <SuggestedProfiles />
+            <SuggestedProfiles /> */}
 
         </div>
     )

@@ -25,6 +25,7 @@ import { DashBoard } from "./Pages/AfterLogin/DashBoard";
 import { Wishlist } from "./Pages/AfterLogin/Wishlist";
 import { Messages } from "./Pages/AfterLogin/Messages";
 import { MyProfile } from "./Pages/AfterLogin/MyProfile";
+import { ProfileDetails } from "./Pages/AfterLogin/ProfileDetails";
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -77,6 +78,7 @@ function App() {
             <Route path="/Wishlist" element={<Wishlist />} />
             <Route path="/Messages" element={<Messages />} />
             <Route path="/MyProfile" element={<MyProfile />} />
+            <Route path="/ProfileDetails" element={<ProfileDetails />} />
           </Route>
         </Routes>
       </BrowserRouter>

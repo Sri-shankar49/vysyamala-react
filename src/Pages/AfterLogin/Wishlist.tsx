@@ -1,5 +1,6 @@
-import { ListCard } from '../../Components/LoginHome/MatchingProfiles/ProfileCard/ListCard'
+// import { ListCard } from '../../Components/LoginHome/MatchingProfiles/ProfileCard/ListCard'
 import { SuggestedProfiles } from '../../Components/LoginHome/SuggestedProfiles'
+import { WishlistCard } from '../../Components/Wishlist/WishlistCard'
 
 export const Wishlist = () => {
     return (
@@ -9,13 +10,11 @@ export const Wishlist = () => {
                     <span className="text-sm text-primary"> (05)</span>
                 </h4>
 
-                {/* ListCard */}
+                {/* WishlistCard */}
                 <div>
-                    <ListCard />
-                    <ListCard />
-                    <ListCard />
-                    <ListCard />
-                    <ListCard />
+                    <WishlistCard />
+                    <WishlistCard />
+                    <WishlistCard />
                 </div>
             </div>
             {/* Suggested Profiles */}
