@@ -14,9 +14,13 @@ import { BsSortDown } from "react-icons/bs";
 // import { ListView } from "./MatchingProfiles/ListView";
 // import { GridListView } from "./MatchingProfiles/GridListView";
 // import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
-import { IoChevronBackOutline } from "react-icons/io5";
-import { IoChevronForwardOutline } from "react-icons/io5";
+// import { IoChevronBackOutline } from "react-icons/io5";
+// import { IoChevronForwardOutline } from "react-icons/io5";
 import { MatchingProfiles } from "../../Components/LoginHome/MatchingProfiles";
+import { GridListView } from "../LoginHome/MatchingProfiles/GridListView";
+import { ListView } from "../LoginHome/MatchingProfiles/ListView";
+import { GridView } from "../LoginHome/MatchingProfiles/GridView";
+import { AdvancedSearchPopup } from "../LoginHome/MatchingProfiles/FilterPopup/AdvancedSearchPopup";
 
 
 // const items = [
@@ -32,6 +36,17 @@ interface DashBoardMatchingProfilesProps {
 export const DashBoardMatchingProfiles: React.FC<DashBoardMatchingProfilesProps> = ({ dashBoardAgain }) => {
     // View state changed
     const [currentView, setCurrentView] = useState("gridlist");
+
+    // Advanced Search Popup
+    const [showAdvancedSearchPopup, setShowAdvancedSearchPopup] = useState(false);
+
+    const handleAdvancedSearchPopup = () => {
+        setShowAdvancedSearchPopup(!showAdvancedSearchPopup);
+    };
+
+    const closeAdvancedSearchPopup = () => {
+        setShowAdvancedSearchPopup(false);
+    };
 
     return (
         <div className="">
@@ -101,8 +116,13 @@ export const DashBoardMatchingProfiles: React.FC<DashBoardMatchingProfilesProps>
                             <div className="absolute top-0 right-[-12px]  w-0.5 h-full bg-gray"></div>
                         </div>
 
-                        <div className="w-fit">
+                        <div onClick={handleAdvancedSearchPopup} className="w-fit">
                             <FiFilter className="text-[22px] text-secondary mx-5 my-3 cursor-pointer" />
+                            {showAdvancedSearchPopup && (
+                                <div onClick={(e) => e.stopPropagation()} className="relative">
+                                    <AdvancedSearchPopup closePopup={closeAdvancedSearchPopup} />
+                                </div>
+                            )}
                         </div>
 
                         <div className="w-full">
@@ -171,11 +191,12 @@ export const DashBoardMatchingProfiles: React.FC<DashBoardMatchingProfilesProps>
                         {currentView === "gridlist" && <GridListView />}
                         {currentView === "list" && <ListView />}
                         {currentView === "grid" && <GridView />}
+
                     </div>
 
                 </div>
             </div>
-            <MatchingProfiles />
+            {/* <MatchingProfiles /> */}
         </div>
     );
 };

@@ -1,9 +1,21 @@
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { showInterest } from "../../../redux/slices/interestSlice";
 import HeartMsg from "../../../assets/icons/HeartMsg.png";
 import ProfileImgSlider from "../../../assets/images/ProfileImgSlider.png";
 import { IoCalendar } from "react-icons/io5";
 import { FaPersonArrowUpFromLine } from "react-icons/fa6";
 
+
 export const HeroSliderContent = () => {
+
+  // Redux
+  const dispatch = useDispatch();
+
+  const handleCardClick = () => {
+    dispatch(showInterest());
+  };
+
   return (
     <div>
       <div className="w-9/12 mx-auto flex justify-between items-center py-36">
@@ -48,7 +60,7 @@ export const HeroSliderContent = () => {
               </h5>
 
               <div className="space-x-5">
-                <button className="bg-gradient text-white rounded-[6px] font-semibold px-8 py-3">
+                <button onClick={handleCardClick} className="bg-gradient text-white rounded-[6px] font-semibold px-8 py-3">
                   View Profile
                 </button>
                 <button className="bg-white text-main rounded-[6px] border-2 border-main font-semibold px-8 py-2.5">

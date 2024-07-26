@@ -1,3 +1,6 @@
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { showInterest } from "../../../redux/slices/interestSlice";
 import FeaturedProfileImg from "../../../assets/images/FeaturedProfileImg.png";
 import { IoCalendar } from "react-icons/io5";
 import { FaPersonArrowUpFromLine } from "react-icons/fa6";
@@ -10,9 +13,17 @@ interface FeaturedProfileCardProps {
 }
 
 export const FeaturedProfileCard: React.FC<FeaturedProfileCardProps> = ({ profileName, profileId, age, height }) => {
+
+  // Redux
+  const dispatch = useDispatch();
+
+  const handleCardClick = () => {
+    dispatch(showInterest());
+  };
+
   return (
     <div>
-      <div className="w-10/12 relative fade-bottom mx-auto my-5 cursor-grab">
+      <div onClick={handleCardClick} className="w-10/12 relative fade-bottom mx-auto my-5 cursor-pointer">
         <img src={FeaturedProfileImg} alt="" className="w-full" />
 
         <div className="w-full absolute bottom-0 px-2 py-3 z-10">

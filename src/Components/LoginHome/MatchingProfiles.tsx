@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import { FiFilter } from "react-icons/fi";
 import { HiOutlineSearch } from "react-icons/hi";
 import { FaSuitcase } from "react-icons/fa";
@@ -15,6 +15,7 @@ import { GridListView } from "./MatchingProfiles/GridListView";
 // import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 import { IoChevronBackOutline } from "react-icons/io5";
 import { IoChevronForwardOutline } from "react-icons/io5";
+import { AdvancedSearchPopup } from "./MatchingProfiles/FilterPopup/AdvancedSearchPopup";
 
 // const items = [
 //     { id: 1, title: 'Back End Developer', department: 'Engineering', type: 'Full-time', location: 'Remote' },
@@ -23,8 +24,40 @@ import { IoChevronForwardOutline } from "react-icons/io5";
 //   ];
 
 export const MatchingProfiles = () => {
+
   // View state changed
   const [currentView, setCurrentView] = useState("gridlist");
+
+  // Advanced Popup Show
+  const [showAdvancedSearchPopup, setShowAdvancedSearchPopup] = useState(false);
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  const handleAdvancedSearchPopup = () => {
+    setShowAdvancedSearchPopup(!showAdvancedSearchPopup);
+  }
+
+  const closeAdvancedSearchPopup = () => {
+    setShowAdvancedSearchPopup(false);
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+      closeAdvancedSearchPopup();
+    }
+  };
+
+
+  useEffect(() => {
+    if (showAdvancedSearchPopup) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showAdvancedSearchPopup]);
 
   return (
     <div className="">
@@ -93,8 +126,13 @@ export const MatchingProfiles = () => {
             <div className="absolute top-0 right-[-12px]  w-0.5 h-full bg-gray"></div>
           </div>
 
-          <div className="w-fit">
+          <div onClick={handleAdvancedSearchPopup} className="w-fit">
             <FiFilter className="text-[22px] text-secondary mx-5 my-3 cursor-pointer" />
+            {showAdvancedSearchPopup && (
+              <div ref={popupRef} onClick={(e) => e.stopPropagation()} className="relative">
+                <AdvancedSearchPopup closePopup={closeAdvancedSearchPopup} />
+              </div>
+            )}
           </div>
 
           <div className="w-full">

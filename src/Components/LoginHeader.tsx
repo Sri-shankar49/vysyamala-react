@@ -208,9 +208,13 @@ export const LoginHeader: React.FC = () => {
               </li>
 
               {/* Upgrade Button */}
-              <li className="bg-gradientLight rounded-[6px] py-[8px] px-[24px] text-white text-[16px] font-semibold cursor-pointer">
-                Upgrade
-              </li>
+              <NavLink to={"/MembershipPlan"}
+                aria-current="page"
+                className="active-nav">
+                <li className="bg-gradientLight rounded-[6px] py-[8px] px-[24px] text-white text-[16px] font-semibold cursor-pointer">
+                  Upgrade
+                </li>
+              </NavLink>
 
             </ul>
 

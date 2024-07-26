@@ -15,3 +15,9 @@
   color: white !important;
   font-size: 16px !important;
 }
+
+.heroSlickStyle .fade-bottom::after {
+  left: 0.30rem;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
