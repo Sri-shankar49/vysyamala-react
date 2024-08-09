@@ -44,6 +44,14 @@ interface ProfileData {
     basic_details: BasicDetails;
     personal_details: PersonalDetails;
 }
+import { MdLocalPrintshop } from "react-icons/md";
+import { MdArrowDropDown } from "react-icons/md";
+// import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
+import { ProfileDetailsSettingsView } from "../../LoginHome/ProfileDetailsView/ProfileDetailsSettingsView";
+import { FeaturedProfiles } from "../../LoginHome/FeaturedProfiles";
+import { VysyaBazaar } from "../../LoginHome/VysyaBazaar";
+import { SuggestedProfiles } from "../../LoginHome/SuggestedProfiles";
+import MatchingScore from "./MatchingScore";
 
 interface ProfileDetailsExpressInterestProps { }
 
@@ -200,6 +208,75 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                         </p>
                                         <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
                                             <IoEye className="mr-2" /> {profileData?.basic_details.user_profile_views} views
+                                        {/* Horoscope Available */}
+                                        <div>
+                                            <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                                                <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
+                                            </p>
+                                        </div>
+
+                                        {/*  Active User */}
+                                        <div>
+                                            <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                                                <FaUser className="mr-2" /> Active user
+                                            </p>
+                                        </div>
+
+                                        {/* Last Visit */}
+                                        <div>
+                                            <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                                                <IoCalendar className="mr-2" /> Last visit on June 30, 2024
+                                            </p>
+                                        </div>
+
+                                        {/* views */}
+                                        <div>
+                                            <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                                                <IoEye className="mr-2" /> 31 views
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Matching Meter */}
+                                <div>
+                                    <img
+                                        src={MatchingScoreImg}
+                                        alt="Matching Score"
+                                        className="w-full"
+                                    />
+                                    <MatchingScore />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-between items-center mt-10 mb-3">
+                                <div>
+                                    {/* Buttons */}
+                                    <div className="flex justify-start items-center space-x-5">
+                                        {/* Accept button */}
+                                        <button
+                                            onClick={handleHeartMark}
+                                            className="bg-gradient text-white flex items-center rounded-md px-5 py-3 cursor-pointer">
+                                            <FaHeart className={`text-[22px] mr-2
+                                             ${isHeartMarked ? 'text-white' : 'text-red-500'}`} /> Express Interest</button>
+
+                                        {/* Decline button */}
+                                        <button className="bg-white text-main flex items-center rounded-md border-2 px-5 py-2.5 cursor-pointer">
+                                            <FaTableList className="text-[22px] mr-2" /> Horoscope</button>
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-center items-center space-x-10"
+                                    onMouseEnter={() => setIsHovered(true)}
+                                    onMouseLeave={() => setIsHovered(false)}
+                                >
+                                    <div className="relative"
+
+                                    >
+                                        <p className="flex items-center text-ash cursor-pointer"
+                                        >
+                                            <MdLocalPrintshop className="text-[22px] mr-2" />Print Horoscope
+                                            <MdArrowDropDown className="text-[22px] ml-2" />
                                         </p>
                                     </div>
 
