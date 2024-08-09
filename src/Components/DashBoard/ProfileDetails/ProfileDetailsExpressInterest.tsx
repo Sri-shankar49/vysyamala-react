@@ -24,6 +24,7 @@ import { ProfileDetailsSettingsView } from "../../LoginHome/ProfileDetailsView/P
 import { FeaturedProfiles } from "../../LoginHome/FeaturedProfiles";
 import { VysyaBazaar } from "../../LoginHome/VysyaBazaar";
 import { SuggestedProfiles } from "../../LoginHome/SuggestedProfiles";
+import MatchingScore from "./MatchingScore";
 
 interface ProfileDetailsExpressInterestProps { }
 
@@ -198,6 +199,7 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                         alt="Matching Score"
                                         className="w-full"
                                     />
+                                    <MatchingScore />
                                 </div>
                             </div>
 
