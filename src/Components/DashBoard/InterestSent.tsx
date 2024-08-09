@@ -43,7 +43,7 @@ export const InterestSent: React.FC<InterestSentProps> = ({ dashBoardAgain }) =>
                     <p className="text-ashSecondary font-semibold">Today</p>
 
                     <InterestSentCard />
-                    <InterestSentCard />
+                    {/* <InterestSentCard /> */}
                 </div>
             </div>
         </div>

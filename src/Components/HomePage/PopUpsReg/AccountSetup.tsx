@@ -55,7 +55,7 @@
 //     useEffect(() => {
 //         const fetchProfileOptions = async () => {
 //             try {
-//                 const response = await axios.post(`${config.apiUrl}/auth/Get_Profileholder/`);
+//                 const response =  await apiClient.post(`/auth/Get_Profileholder/`);
 //                 const data = response.data;
 
 //                 const options = Object.values(data).map((item: typeof data[0]) => ({
@@ -97,7 +97,7 @@
 //         };
 
 //         try {
-//             const response = await axios.post(`${config.apiUrl}/auth/Registrationstep1/`, registrationData, {
+//             const response =  await apiClient.post(`/auth/Registrationstep1/`, registrationData, {
 //                 headers: {
 //                     'Content-Type': 'application/json',
 //                 },
@@ -246,6 +246,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import axios from 'axios';
 import config from '../../../API'; // Import the configuration file
+import apiClient from '../../../API';
 
 // ZOD Schema with updated regex validations
 const schema = zod.object({
@@ -296,7 +297,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose, han
     useEffect(() => {
         const fetchProfileOptions = async () => {
             try {
-                const response = await axios.post(`${config.apiUrl}/auth/Get_Profileholder/`);
+                const response =  await apiClient.post(`/auth/Get_Profileholder/`);
                 const data = response.data;
 
                 const options = Object.values(data).map((item: typeof data[0]) => ({
@@ -346,7 +347,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({ onNext, onClose, han
         };
 
         try {
-            const response = await axios.post(`${config.apiUrl}/auth/Registrationstep1/`, registrationData, {
+            const response =  await apiClient.post(`/auth/Registrationstep1/`, registrationData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

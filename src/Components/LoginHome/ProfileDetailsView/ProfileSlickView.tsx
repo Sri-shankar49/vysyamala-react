@@ -1,24 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import Slider from "react-slick";
-import ProfileDetailsImg from "../../../assets/images/ProfileDetailsImg.png";
+import { fetchProfilesDetails } from '../../../commonapicall'; // Adjust the path as needed
 import "./ProfileSlickStyleView.css";
 
-const images = [
-    ProfileDetailsImg,
-    'https://swiperjs.com/demos/images/nature-1.jpg',
-    'https://swiperjs.com/demos/images/nature-2.jpg',
-    'https://swiperjs.com/demos/images/nature-3.jpg',
-    'https://swiperjs.com/demos/images/nature-4.jpg',
-    'https://swiperjs.com/demos/images/nature-5.jpg',
-    'https://swiperjs.com/demos/images/nature-6.jpg',
-    'https://swiperjs.com/demos/images/nature-7.jpg',
-    'https://swiperjs.com/demos/images/nature-8.jpg',
-    'https://swiperjs.com/demos/images/nature-9.jpg',
-    'https://swiperjs.com/demos/images/nature-10.jpg',
-];
+// Define the types for your user images and profiles if known
+interface UserImages {
+  [key: string]: string; // Adjust based on actual structure
+}
+
 
 
 export const ProfileSlickView = () => {
+    const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id') || ''; // Ensure non-null value
+    const [userImages, setUserImages] = useState<UserImages>({});
+    //const [additionalProfiles, setAdditionalProfiles] = useState<Profile[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
 
     // React Slick Settings
     const [nav1, setNav1] = useState<Slider | null>(null);
@@ -27,9 +24,9 @@ export const ProfileSlickView = () => {
     const sliderRef2 = useRef<Slider | null>(null);
 
     // Image Zoom Effect
-    const [zoomImage, setZoomImage] = useState(null);
+    const [zoomImage, setZoomImage] = useState<string | null>(null);
 
-    const handleMouseEnter = (image) => {
+    const handleMouseEnter = (image: string) => {
         setZoomImage(image);
     };
 
@@ -38,17 +35,44 @@ export const ProfileSlickView = () => {
     };
 
     useEffect(() => {
+        const fetchProfileData = async () => {
+            setLoading(true);
+            try {
+                const data = await fetchProfilesDetails(loginuser_profileId);
+                const { user_images} = data;
+                setUserImages(user_images);
+                //setAdditionalProfiles(Object.values(basic_details)); // Adjust based on actual structure
+                setError(null);
+            } catch (error: any) {
+                setError('Error fetching profiles');
+                console.error('Error fetching profiles:', error.response ? error.response.data : error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (loginuser_profileId) {
+            fetchProfileData();
+        }
+    }, [loginuser_profileId]);
+
+    useEffect(() => {
         setNav1(sliderRef1.current);
         setNav2(sliderRef2.current);
     }, []);
+
+    const images = Object.values(userImages);
+
     return (
         <div>
+            {loading && <div>Loading...</div>}
+            {error && <div className="error-message">{error}</div>}
             {/* Image Carousel */}
             <div className="slider-container profileSliderStyle">
                 <Slider
                     customPaging={(i: number) => (
                         <a>
-                            <img src={images[i]} alt={`Thumbnail ${i + 1}`} className="rounded-lg" />
+                            <img src={images[i] || ''} alt={`Thumbnail ${i + 1}`} className="rounded-lg" />
                         </a>
                     )}
                     dots={false}
@@ -58,7 +82,7 @@ export const ProfileSlickView = () => {
                     speed={500}
                     slidesToShow={1}
                     slidesToScroll={1}
-                    asNavFor={nav2 as any}
+                    asNavFor={nav2 as Slider}
                     ref={slider => (sliderRef1.current = slider)}
                 >
                     {images.map((image, index) => (
@@ -75,7 +99,7 @@ export const ProfileSlickView = () => {
                     slidesToShow={5}
                     swipeToSlide={true}
                     focusOnSelect={true}
-                    asNavFor={nav1 as any}
+                    asNavFor={nav1 as Slider}
                     ref={slider => (sliderRef2.current = slider)}
                     className="connectingSlick"
                 >
@@ -84,7 +108,7 @@ export const ProfileSlickView = () => {
                             className="profile-slider-img-container"
                             onMouseEnter={() => handleMouseEnter(image)}
                             onMouseLeave={handleMouseLeave}>
-                            <img src={image} className="w-20 mx-auto my-5 rounded-lg" alt={`Slide ${index + 1}`} />
+                            <img src={image} className="w-20 mx-auto my-5 rounded-lg" alt={`Thumbnail ${index + 1}`} />
                         </div>
                     ))}
                 </Slider>
@@ -95,5 +119,5 @@ export const ProfileSlickView = () => {
                 </div>
             )}
         </div>
-    )
-}
+    );
+};

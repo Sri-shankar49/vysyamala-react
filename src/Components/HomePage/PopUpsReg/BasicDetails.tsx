@@ -6,12 +6,13 @@ import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import config from '../../../API'; // Import the configuration file
+import apiClient from "../../../API";
 
 
 // API URL
-const MARITAL_STATUS_API_URL = `${config.apiUrl}/auth/Get_Marital_Status/`;
-const HEIGHT_API_URL = `${config.apiUrl}/auth/Get_Height/`;
-const COMPLEXION_STATUS_API_URL = `${config.apiUrl}/auth/Get_Complexion/`;
+const MARITAL_STATUS_API_URL = await apiClient.post(`/auth/Get_Marital_Status/`);
+const HEIGHT_API_URL = await apiClient.post(`/auth/Get_Height/`);
+const COMPLEXION_STATUS_API_URL = await apiClient.post(`/auth/Get_Complexion/`);
 
 // Calculate the minimum date of birth for age 18
 const getMinDOB = () => {
@@ -93,7 +94,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
   useEffect(() => {
     const fetchMaritalStatus = async () => {
       try {
-        const response = await axios.post(MARITAL_STATUS_API_URL);
+        const response = MARITAL_STATUS_API_URL;
         const options = Object.values(response.data) as MaritalStatusOption[];
         setMaritalStatusOptions(options);
       } catch (error) {
@@ -107,7 +108,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
   useEffect(() => {
     const fetchHeight = async () => {
       try {
-        const response = await axios.post(HEIGHT_API_URL);
+        const response =HEIGHT_API_URL;
         const options = Object.values(response.data) as HeightOption[];
         setHeightOptions(options);
       } catch (error) {
@@ -122,7 +123,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
   useEffect(() => {
     const fetchComplexionStatus = async () => {
       try {
-        const response = await axios.post(COMPLEXION_STATUS_API_URL);
+        const response = COMPLEXION_STATUS_API_URL;
         const options = Object.values(response.data) as ComplexionOption[];
         setComplexionOptions(options);
       } catch (error) {
@@ -197,9 +198,10 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
 
       console.log("Post Data: ", postData);
 
-      const response = await axios.post(`${config.apiUrl}/auth/Registrationstep2/`, postData);
+      const response =  await apiClient.post(`/auth/Registrationstep2/`, postData);
       console.log("Registration successful:", response.data);
       if (response.data.Status === 1) {
+        setIsSubmitting(false);
         const { profile_id } = response.data;
         sessionStorage.setItem('profile_id_new', profile_id);
 

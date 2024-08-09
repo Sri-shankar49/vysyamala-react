@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { IoIosCloseCircle } from "react-icons/io";
 import { FaArrowRightLong } from "react-icons/fa6";
-import axios from 'axios';
+// import axios from 'axios';
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
-import config from '../../../API'; // Import the configuration file
+// import config from '../../../API'; // Import the configuration file
+import apiClient from './../../../API';
 
 // ZOD Schema with updated regex validations
 const schema = zod.object({
     profileID: zod.string().min(1, 'Profile ID is required'),
     password: zod.string()
-        .min(8, 'Password must be at least 8 characters')
-        .regex(/^(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/, 'Password must contain at least one uppercase letter and one special character'),
+        .min(1, 'Password is required')
 }).required();
 
 interface LoginPopUpProps {
@@ -60,13 +60,14 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onPhoneLogin, on
     // Handle form submission
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
-            const response = await axios.post(`${config.apiUrl}/auth/login/`, {
+            const response = await apiClient.post(`/auth/login/`, {
                 username: data.profileID,
                 password: data.password
             });
 
             console.log('Login Response:', response.data);
             sessionStorage.setItem('token', response.data.token);
+            sessionStorage.setItem('loginuser_profile_id', response.data.profile_id);
             if (response.data.status === 1) {
                 setErrorMessage(null); // Clear error message on success
                 if (rememberMe) {

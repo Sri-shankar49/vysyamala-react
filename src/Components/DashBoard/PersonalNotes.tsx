@@ -22,7 +22,7 @@ export const PersonalNotes: React.FC<PersonalNotesProps> = ({ dashBoardAgain }) 
                 {/* Personal Notes Card */}
                 <div>
                     <PersonalNotesCard />
-                    <PersonalNotesCard />
+                    {/* <PersonalNotesCard /> */}
                 </div>
             </div>
             <SuggestedProfiles />

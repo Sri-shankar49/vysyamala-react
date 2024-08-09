@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { IoEye, IoEyeOff } from "react-icons/io5";
@@ -8,6 +9,7 @@ import UploadFile from "../Components/UploadImages/UploadFile";
 import uploadfile from "../assets/icons/uploadfile.png";
 import closebtn from "../assets/icons/closebtn.png";
 import arrow from "../assets/icons/arrow.png";
+import axios from "axios";
 
 
 interface UploadImagesProps { }
@@ -105,7 +107,35 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
     window.scrollTo(0,0)
   },[])
 
-
+  const handleSubmit = () => {
+    const uploadImages = async (files: File[], endpoint: string) => {
+      try {
+        const profile_id = sessionStorage.getItem("profile_id_new"); // Get the profile_id from session storage
+        const formData = new FormData();
+        formData.append("profile_id", profile_id as string);
+  
+        files.forEach((file) => {
+          formData.append("images", file);
+        });
+  
+        const response = await axios.post(endpoint, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+  
+        console.log('UploadImageResponse',response.data);
+        
+      } catch (error) {
+        console.error("Error uploading files:", error);
+      }
+    };
+    // Upload selected files
+    uploadImages(selectedFiles, "http://192.168.1.12:8000/auth/ImageSetUpload/");
+    uploadImages(selectedHoroscopeFiles, "http://192.168.1.12:8000/auth/ImageSetUpload/");
+    uploadImages(selectedIDProofFiles, "http://192.168.1.12:8000/auth/ImageSetUpload/");
+    
+  };
 
   return (
     <div className="pb-20">
@@ -352,7 +382,9 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
                 </button>
               </Link>
               <Link to="/FamilyDetails">
-                <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">
+                <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2"
+                  onClick={handleSubmit}
+                >
                   Next
                   <span>
                     <img src={arrow} alt="next arrow" className="ml-2" />

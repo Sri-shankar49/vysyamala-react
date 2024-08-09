@@ -1,79 +1,68 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-// import { MdModeEdit } from "react-icons/md";
-import axios from 'axios';
 
-export const FamilyView = () => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({
-        aboutFamily: '',
-        fatherName: '',
-        fatherOccupation: '',
-        motherName: '',
-        motherOccupation: '',
-        familyStatus: '',
-        sisters: '',
-        sistersMarried: '',
-        brothers: '',
-        brothersMarried: '',
-        propertyDetails: '',
-        aboutself: '',
-        profileid: '',
-        familyname: '',
-        hobbies: '',
-        bloodgroup: '',
-        Pysicallychanged: '',
-        familytype: '',
-        familyvalue: '',
-        familystatus: '',
-        suyagothram: '',
-        unclegothram: '',
-        ancestororigin: '',
+
+import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
+import axios from 'axios';
+import { useParams } from 'react-router-dom';
+
+interface FamilyDetails {
+    about_family: string;
+    father_name: string;
+    father_occupation: string;
+    mother_name: string;
+    mother_occupation: string;
+    family_status: string;
+    no_of_sisters: string;
+    no_of_brothers: string;
+    no_of_sis_married: string;
+    no_of_bro_married: string;
+    property_details: string;
+}
+
+export const FamilyView: React.FC = () => {
+    const [familyDetails, setFamilyDetails] = useState<FamilyDetails | null>(null);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [formData, setFormData] = useState<FamilyDetails>({
+        about_family: '',
+        father_name: '',
+        father_occupation: '',
+        mother_name: '',
+        mother_occupation: '',
+        family_status: '',
+        no_of_sisters: '',
+        no_of_brothers: '',
+        no_of_sis_married: '',
+        no_of_bro_married: '',
+        property_details: ''
     });
 
+    const { user_profile_id } = useParams<{ user_profile_id: string }>();
+    const queryParams = new URLSearchParams(location.search);
+    const id = queryParams.get('id');
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.post('http://103.214.132.20:8000/auth/Get_save_details/', {
-                    profile_id: 'VY240065',
-                    page_id: '3'
-                });
-                const data = response.data.data;
-                setFormData({
-                    aboutFamily: data.about_family || '',
-                    fatherName: data.father_name || '',
-                    fatherOccupation: data.father_occupation || '',
-                    motherName: data.mother_name || '',
-                    motherOccupation: data.mother_occupation || '',
-                    familyStatus: data.family_status || '',
-                    sisters: data.no_of_sister || '',
-                    sistersMarried: data.no_of_sis_married || '',
-                    brothers: data.no_of_brother || '',
-                    brothersMarried: data.no_of_bro_married || '',
-                    propertyDetails: data.property_details || '',
-                    aboutself: data.about_self || '',
-                    profileid: data.profile_id || '',
-                    familyname: data.family_name || '',
-                    hobbies: data.hobbies || '',
-                    bloodgroup: data.blood_group || '',
-                    Pysicallychanged: data.Pysically_changed || '',
-                    familytype: data.family_type || '',
-                    familyvalue: data.family_value || '',
-                    familystatus: data.family_status || '',
-                    suyagothram: data.suya_gothram || '',
-                    unclegothram: data.uncle_gothram || '',
-                    ancestororigin: data.ancestor_origin || '',
-                });
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
+        const fetchFamilyDetails = async () => {
+          try {
+            const response = await axios.post('http://103.214.132.20:8000/auth/Get_profile_det_match/', {
+              profile_id: 'VY240014',
+              user_profile_id: id
+            });
+            
+            // Extract family_details from the response
+            const data = response.data.family_details;
+            
+            setFamilyDetails(data);
+            setFormData(data);
+          } catch (error) {
+            console.error('Error fetching data:', error);
+          }
         };
+      
+        fetchFamilyDetails();
+      }, [user_profile_id]);
+      
 
-        fetchData();
-    }, []);
-
-    const handleEditClick = () => {
-        setIsEditing(!isEditing);
-    };
+    // const handleEditClick = () => {
+    //     setIsEditing(!isEditing);
+    // };
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -85,43 +74,20 @@ export const FamilyView = () => {
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const payload = {
-            profile_id: "VY240065",
-            father_name: formData.fatherName,
-            father_occupation: formData.fatherOccupation,
-            mother_name: formData.motherName,
-            mother_occupation: formData.motherOccupation,
-            family_name: formData.familyname,
-            about_self: formData.aboutself,
-            hobbies: formData.hobbies,
-            blood_group: formData.bloodgroup,
-            Pysically_changed: formData.Pysicallychanged,
-            no_of_brother: formData.brothers,
-            no_of_sister: formData.sisters,
-            no_of_bro_married: formData.brothersMarried,
-            no_of_sis_married: formData.sistersMarried,
-            family_type: formData.familytype,
-            family_value: formData.familyvalue,
-            family_status: formData.familystatus,
-            property_details: formData.propertyDetails,
-            suyagothram: formData.suyagothram,
-            unclegothram: formData.unclegothram,
-            ancestororigin: formData.ancestororigin
-        };
         try {
-            const response = await axios.post('http://103.214.132.20:8000/auth/Family_registration/', payload);
+            const response = await axios.post('http://103.214.132.20:8000/auth/Family_registration/', formData);
             console.log('Form submission response:', response.data);
             setIsEditing(false);
         } catch (error) {
             console.error('Error submitting form:', error);
         }
     };
+
+    if (!familyDetails) return <p>Loading...</p>;
+
     return (
         <div>
-            <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5">Family Details
-                {/* <MdModeEdit className="text-2xl text-main ml-2 cursor-pointer" onClick={handleEditClick} /> */}
-            </h2>
-
+            <h2 className="text-[30px] text-vysyamalaBlack font-bold mb-5">Family Details</h2>
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-rows-1 grid-cols-2 gap-4">
                     <div>
@@ -129,97 +95,91 @@ export const FamilyView = () => {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="aboutFamily"
-                                    value={formData.aboutFamily}
+                                    name="about_family"
+                                    value={formData.about_family}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.aboutFamily || '-'}</span>
+                                <span className="font-normal"> {formData.about_family || '-'}</span>
                             )}
                         </h5>
-
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Father Name:
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="fatherName"
-                                    value={formData.fatherName}
+                                    name="father_name"
+                                    value={formData.father_name}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.fatherName}</span>
+                                <span className="font-normal"> {formData.father_name || '-'}</span>
                             )}
                         </h5>
-
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Father Occupation:
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="fatherOccupation"
-                                    value={formData.fatherOccupation}
+                                    name="father_occupation"
+                                    value={formData.father_occupation}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.fatherOccupation || '-'}</span>
+                                <span className="font-normal"> {formData.father_occupation || '-'}</span>
                             )}
                         </h5>
-
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Mother Name:
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="motherName"
-                                    value={formData.motherName}
+                                    name="mother_name"
+                                    value={formData.mother_name}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.motherName}</span>
+                                <span className="font-normal"> {formData.mother_name || '-'}</span>
                             )}
                         </h5>
-
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Mother Occupation:
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="motherOccupation"
-                                    value={formData.motherOccupation}
+                                    name="mother_occupation"
+                                    value={formData.mother_occupation}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.motherOccupation}</span>
+                                <span className="font-normal"> {formData.mother_occupation || '-'}</span>
                             )}
                         </h5>
-
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Family Status:
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="familyStatus"
-                                    value={formData.familyStatus}
+                                    name="family_status"
+                                    value={formData.family_status}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.familyStatus}</span>
+                                <span className="font-normal"> {formData.family_status || '-'}</span>
                             )}
                         </h5>
-
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Sisters:
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="sisters"
-                                    value={formData.sisters}
+                                    name="no_of_sisters"
+                                    value={formData.no_of_sisters}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.sisters}</span>
+                                <span className="font-normal"> {formData.no_of_sisters || '-'}</span>
                             )}
                         </h5>
                     </div>
@@ -229,77 +189,86 @@ export const FamilyView = () => {
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="sistersMarried"
-                                    value={formData.sistersMarried}
+                                    name="no_of_sis_married"
+                                    value={formData.no_of_sis_married}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.sistersMarried}</span>
+                                <span className="font-normal"> {formData.no_of_sis_married || '-'}</span>
                             )}
                         </h5>
-
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Brothers:
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="brothers"
-                                    value={formData.brothers}
+                                    name="no_of_brothers"
+                                    value={formData.no_of_brothers}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.brothers}</span>
+                                <span className="font-normal"> {formData.no_of_brothers || '-'}</span>
                             )}
                         </h5>
-
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Brothers Married:
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="brothersMarried"
-                                    value={formData.brothersMarried}
+                                    name="no_of_bro_married"
+                                    value={formData.no_of_bro_married}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.brothersMarried}</span>
+                                <span className="font-normal"> {formData.no_of_bro_married || '-'}</span>
                             )}
                         </h5>
-
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Property Details:
                             {isEditing ? (
                                 <input
                                     type="text"
-                                    name="propertyDetails"
-                                    value={formData.propertyDetails}
+                                    name="property_details"
+                                    value={formData.property_details}
                                     onChange={handleChange}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             ) : (
-                                <span className="font-normal"> {formData.propertyDetails || '-'}</span>
+                                <span className="font-normal"> {formData.property_details || '-'}</span>
                             )}
                         </h5>
                     </div>
                 </div>
 
-                {isEditing && (
+                {/* {isEditing && (
                     <div className="flex justify-end items-center space-x-5">
                         <button
                             type="button"
                             onClick={handleEditClick}
-                            className="text-main flex items-center rounded-lg font-semibold px-5 py-2.5 cursor-pointer"
+                            className="bg-gray-500 text-white px-4 py-2 rounded"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
-                            className="bg-white text-main flex items-center rounded-lg font-semibold border-2 px-5 py-2.5 cursor-pointer"
+                            className="bg-blue-500 text-white px-4 py-2 rounded"
                         >
-                            Update Changes
+                            Save
                         </button>
                     </div>
                 )}
+
+                {!isEditing && (
+                    <div className="flex justify-end">
+                        <button
+                            type="button"
+                            onClick={handleEditClick}
+                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                        >
+                            Edit
+                        </button>
+                    </div>
+                )} */}
             </form>
         </div>
     );

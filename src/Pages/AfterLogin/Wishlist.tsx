@@ -13,8 +13,8 @@ export const Wishlist = () => {
                 {/* WishlistCard */}
                 <div>
                     <WishlistCard />
-                    <WishlistCard />
-                    <WishlistCard />
+                    {/* <WishlistCard />
+                    <WishlistCard /> */}
                 </div>
             </div>
             {/* Suggested Profiles */}

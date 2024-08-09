@@ -1,17 +1,16 @@
 import arrowRed from "../assets/icons/arrowred.png";
 import { PlanCard } from "../Components/MembershipPlan/PlanCard";
-import axios from "axios";
 import { useState, useEffect } from "react";
-import config from '../API'; // Import the configuration file
-
+import apiClient from "../API";
 
 export const MembershipPlan: React.FC = () => {
     const [plans, setPlans] = useState<any[]>([]); // State to hold plans data
 
     useEffect(() => {
-        // Fetch plans data from API
-        axios.post(`${config.apiUrl}/auth/Get_palns/`)
-            .then(response => {
+        // Define an async function to fetch plans data
+        const fetchPlans = async () => {
+            try {
+                const response = await apiClient.post(`/auth/Get_palns/`);
                 const { data } = response.data;
                 const updatedPlans = Object.keys(data).map(planName => ({
                     id: data[planName][0].plan_id, // Assuming plan_id is available in the response
@@ -21,10 +20,12 @@ export const MembershipPlan: React.FC = () => {
                     features: data[planName].map((feature: any) => feature.feature_name)
                 }));
                 setPlans(updatedPlans);
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error("Error fetching plans:", error);
-            });
+            }
+        };
+
+        fetchPlans(); // Call the async function
     }, []);
 
     return (
@@ -68,5 +69,5 @@ export const MembershipPlan: React.FC = () => {
                 ))}
             </div>
         </div>
-    )
-}
+    );
+};

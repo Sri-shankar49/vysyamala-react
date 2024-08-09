@@ -7,6 +7,7 @@ import { FaArrowRightLong } from "react-icons/fa6";
 import axios, { AxiosResponse } from 'axios';
 import { PopupModal } from "./PopupModal";
 import config from '../../API'; // Import the configuration file
+import apiClient from '../../API';
 
 
 const schema = z.object({
@@ -42,7 +43,7 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
   useEffect(() => {
     const fetchProfileOptions = async () => {
       try {
-        const response: AxiosResponse<{ [key: string]: ProfileOption }> = await axios.post(`${config.apiUrl}/auth/Get_Profileholder/`);
+        const response: AxiosResponse<{ [key: string]: ProfileOption }> =  await apiClient.post(`/auth/Get_Profileholder/`);
         const data = response.data;
         const options = Object.values(data).map(item => ({
           owner_id: item.owner_id,
@@ -60,7 +61,7 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
 
   const onSubmit = async (data: FormData) => {
     try {
-      const response = await axios.post(`${config.apiUrl}/auth/Registrationstep1/`, {
+      const response =  await apiClient.post(`/auth/Registrationstep1/`, {
         Profile_for: data.profileFor,
         Gender: data.gender,
         Mobile_no: data.mobileNumber,

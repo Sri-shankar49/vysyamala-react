@@ -1,5 +1,5 @@
 import { IoArrowBackOutline } from "react-icons/io5";
-import { ListCard } from '../../Components/LoginHome/MatchingProfiles/ProfileCard/ListCard';
+import { WishlistCard } from '../../Components/Wishlist/WishlistCard';
 import { SuggestedProfiles } from '../../Components/LoginHome/SuggestedProfiles';
 
 interface DashBoardWishlistProps {
@@ -19,11 +19,11 @@ export const DashBoardWishlist: React.FC<DashBoardWishlistProps> = ({ dashBoardA
 
                 {/* ListCard */}
                 <div>
+                    <WishlistCard />
+                    {/* <ListCard />
                     <ListCard />
                     <ListCard />
-                    <ListCard />
-                    <ListCard />
-                    <ListCard />
+                    <ListCard /> */}
                 </div>
             </div>
             {/* Suggested Profiles */}

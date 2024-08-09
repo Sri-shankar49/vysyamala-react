@@ -1,26 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import Slider from "react-slick";
-import ProfileDetailsImg from "../../../assets/images/ProfileDetailsImg.png";
 import "./ProfileSlickStyle.css";
 import { MdModeEdit } from "react-icons/md";
-
-
-const initialImages = [
-    ProfileDetailsImg,
-    'https://swiperjs.com/demos/images/nature-1.jpg',
-    'https://swiperjs.com/demos/images/nature-2.jpg',
-    'https://swiperjs.com/demos/images/nature-3.jpg',
-    'https://swiperjs.com/demos/images/nature-4.jpg',
-    'https://swiperjs.com/demos/images/nature-5.jpg',
-    'https://swiperjs.com/demos/images/nature-6.jpg',
-    'https://swiperjs.com/demos/images/nature-7.jpg',
-    'https://swiperjs.com/demos/images/nature-8.jpg',
-    'https://swiperjs.com/demos/images/nature-9.jpg',
-    'https://swiperjs.com/demos/images/nature-10.jpg',
-];
+import axios from 'axios';
 
 export const ProfileSlick = () => {
-
     // React Slick Settings
     const [nav1, setNav1] = useState<Slider | null>(null);
     const [nav2, setNav2] = useState<Slider | null>(null);
@@ -28,7 +12,7 @@ export const ProfileSlick = () => {
     const sliderRef2 = useRef<Slider | null>(null);
 
     // Image State
-    const [images, setImages] = useState(initialImages);
+    const [images, setImages] = useState<string[]>([]);
 
     // Image Zoom Effect
     const [zoomImage, setZoomImage] = useState<string | null>(null);
@@ -40,6 +24,35 @@ export const ProfileSlick = () => {
     const handleMouseLeave = () => {
         setZoomImage(null);
     };
+
+    // Fetch images from API
+    const fetchImages = async () => {
+        try {
+            const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+            const user_profile_id = loginuser_profileId; // Replace with the actual id you need
+
+            const response = await axios.post('http://103.214.132.20:8000/auth/Get_profile_det_match/', {
+                profile_id: loginuser_profileId,
+                user_profile_id: user_profile_id
+            });
+
+            const data = response.data;
+
+            // Ensure that data.user_images is correctly typed as UserImages
+            const imagesArray = Object.values(data.user_images) as string[];
+            setImages(imagesArray);
+        } catch (error) {
+            console.error("Error fetching images:", error);
+            // You can handle errors or fallback here
+        }
+    };
+
+    useEffect(() => {
+        fetchImages(); // Fetch images when component mounts
+
+        setNav1(sliderRef1.current);
+        setNav2(sliderRef2.current);
+    }, []);
 
     // Handle Image Upload
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,11 +71,6 @@ export const ProfileSlick = () => {
     const handleEditClick = () => {
         fileInputRef.current?.click();
     };
-
-    useEffect(() => {
-        setNav1(sliderRef1.current);
-        setNav2(sliderRef2.current);
-    }, []);
 
     return (
         <div>
@@ -90,7 +98,7 @@ export const ProfileSlick = () => {
                             className="relative profile-slider-img-container"
                             onMouseEnter={() => handleMouseEnter(image)}
                             onMouseLeave={handleMouseLeave}>
-                            <img src={image} className=" w-full rounded-lg profile-slider-img" alt={`Slide ${index + 1}`} />
+                            <img src={image} className="w-full rounded-lg profile-slider-img" alt={`Slide ${index + 1}`} />
                             <div className="absolute bottom-0 right-0 bg-white px-3 py-3 rounded-tl-lg cursor-pointer z-20"
                                 onClick={handleEditClick}>
                                 <MdModeEdit className="text-2xl text-main" />
@@ -133,5 +141,5 @@ export const ProfileSlick = () => {
                 onChange={handleImageUpload}
             />
         </div>
-    )
+    );
 }

@@ -43,7 +43,7 @@ export const MyVisitors: React.FC<MyVisitorsProps> = ({ dashBoardAgain }) => {
                 <div className="bg-white rounded-xl shadow px-5 py-5 mb-10">
                     <p className="text-ashSecondary font-semibold">Today</p>
                     <MyVisitorsCard />
-                    <MyVisitorsCard />
+                    {/* <MyVisitorsCard /> */}
                 </div>
             </div>
             <SuggestedProfiles />

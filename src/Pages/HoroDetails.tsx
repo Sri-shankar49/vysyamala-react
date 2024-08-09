@@ -95,7 +95,7 @@
 //             page_id: 5
 //           };
 
-//           const response = await axios.post(`${config.apiUrl}/auth/Get_save_details/`, requestData, {
+//           const response =  await apiClient.post(`/auth/Get_save_details/`, requestData, {
 //             headers: {
 //               'Content-Type': 'application/json'
 //             }
@@ -168,7 +168,7 @@
 
 //       console.log("Formatted Data:", formattedData);
 //       setIsSubmitting(true);
-//       const response = await axios.post(`${config.apiUrl}/auth/Horoscope_registration/`, formattedData);
+//       const response =  await apiClient.post(`/auth/Horoscope_registration/`, formattedData);
 //       setIsSubmitting(false);
 
 //       if (response.data.Status === 1) {
@@ -198,7 +198,7 @@
 //   useEffect(() => {
 //     const fetchBirthStar = async () => {
 //       try {
-//         const response = await axios.post(`${config.apiUrl}/auth/Get_Birth_Star/`,{state_id:" "});
+//         const response =  await apiClient.post(`/auth/Get_Birth_Star/`,{state_id:" "});
 //         const options = Object.values(response.data) as BirthStar[];
 //         setBirthStar(options);
 //       } catch (error) {
@@ -212,7 +212,7 @@
 //     if (selectedStar) {
 //       const fetchStateStatus = async () => {
 //         try {
-//           const response = await axios.post(`${config.apiUrl}/auth/Get_Rasi/`, { birth_id: selectedStar });
+//           const response =  await apiClient.post(`/auth/Get_Rasi/`, { birth_id: selectedStar });
 //           const options = Object.values(response.data) as Rasi[];
 //           setRasiOptions(options);
 //         } catch (error) {
@@ -226,7 +226,7 @@
 //   useEffect(() => {
 //     const fetchLagnam = async () => {
 //       try {
-//         const response = await axios.post(`${config.apiUrl}/auth/Get_Lagnam_Didi/`);
+//         const response =  await apiClient.post(`/auth/Get_Lagnam_Didi/`);
 //         const options = Object.values(response.data) as Lagnam[];
 //         setLagnamOptions(options);
 //       } catch (error) {
@@ -557,6 +557,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import config from '../API'; // Import the configuration file
 import AmsamGrid from "../Components/HoroDetails/AmsamGrid";
+import apiClient from "../API";
 
 
 
@@ -646,7 +647,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             page_id: 5
           };
 
-          const response = await axios.post(`${config.apiUrl}/auth/Get_save_details/`, requestData, {
+          const response =  await apiClient.post(`/auth/Get_save_details/`, requestData, {
             headers: {
               'Content-Type': 'application/json'
             }
@@ -773,7 +774,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   
       console.log("Formatted Data:", formattedData);
       setIsSubmitting(true);
-      const response = await axios.post(`${config.apiUrl}/auth/Horoscope_registration/`, formattedData);
+      const response =  await apiClient.post(`/auth/Horoscope_registration/`, formattedData);
       setIsSubmitting(false);
   
       if (response.data.Status === 1) {
@@ -811,7 +812,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   useEffect(() => {
     const fetchBirthStar = async () => {
       try {
-        const response = await axios.post(`${config.apiUrl}/auth/Get_Birth_Star/`, { state_id: " " });
+        const response =  await apiClient.post(`/auth/Get_Birth_Star/`, { state_id: " " });
         const options = Object.values(response.data) as BirthStar[];
         setBirthStar(options);
       } catch (error) {
@@ -825,7 +826,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     if (selectedStar) {
       const fetchStateStatus = async () => {
         try {
-          const response = await axios.post(`${config.apiUrl}/auth/Get_Rasi/`, { birth_id: selectedStar });
+          const response =  await apiClient.post(`/auth/Get_Rasi/`, { birth_id: selectedStar });
           const options = Object.values(response.data) as Rasi[];
           setRasiOptions(options);
         } catch (error) {
@@ -839,7 +840,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   useEffect(() => {
     const fetchLagnam = async () => {
       try {
-        const response = await axios.post(`${config.apiUrl}/auth/Get_Lagnam_Didi/`);
+        const response =  await apiClient.post(`/auth/Get_Lagnam_Didi/`);
         const options = Object.values(response.data) as Lagnam[];
         setLagnamOptions(options);
       } catch (error) {

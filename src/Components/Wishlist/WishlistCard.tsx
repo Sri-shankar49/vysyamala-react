@@ -1,163 +1,143 @@
-import { useState } from "react";
-// import { useDispatch } from "react-redux";
-// import { showInterest } from "../../redux/slices/interestSlice";
-import ProfileListImg from "../../assets/images/ProfileListImg.png";
-import { MdVerifiedUser } from "react-icons/md";
-import { IoCalendar } from "react-icons/io5";
-import { FaPersonArrowUpFromLine } from "react-icons/fa6";
-import { MdStars } from "react-icons/md";
-import { IoSchool } from "react-icons/io5";
-import { FaSuitcase } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Profile, ProfileContext } from '../../ProfileContext'; // Adjust the path as needed
+import { MdVerifiedUser, MdBookmark, MdBookmarkBorder } from "react-icons/md";
+import { IoCalendar, IoSchool } from "react-icons/io5";
+import { FaPersonArrowUpFromLine, FaSuitcase, FaLocationDot, FaUser } from "react-icons/fa6";
 import { MdOutlineGrid3X3 } from "react-icons/md";
-import { FaUser } from "react-icons/fa6";
 import { IoEye } from "react-icons/io5";
-import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 import MatchingScoreImg from "../../assets/images/MatchingScore.png";
-import { Link } from "react-router-dom";
+import ProfileListImg from "../../assets/images/ProfileListImg.png";
 
-export const WishlistCard = () => {
-    // Redux
-    // const dispatch = useDispatch();
+export const WishlistCard: React.FC = () => {
+  const navigate = useNavigate();
 
-    // State to track if the card is bookmarked or not
-    const [isBookmarked, setIsBookmarked] = useState(false);
+  const { selectedProfiles, bookmarkedProfiles, addBookmark, removeBookmark } = useContext(ProfileContext) || { 
+    selectedProfiles: [], 
+    bookmarkedProfiles: [], 
+    addBookmark: () => {}, 
+    removeBookmark: () => {} 
+  };
 
-    const handleBookmark = () => {
-        setIsBookmarked(!isBookmarked);
-    };
+  const handleBookmark = (profile: Profile) => {
+    if (bookmarkedProfiles.find(bp => bp.profile_id === profile.profile_id)) {
+      removeBookmark(profile.profile_id);
+    } else {
+      addBookmark(profile);
+    }
+  };
 
-    // const handleCardClick = () => {
-    //     dispatch(showInterest());
-    // };
+  const handleProfileClick = (profileId: string) => {
+    navigate(`/ProfileDetails?id=${profileId}`);
+  };
 
-    return (
-        <Link to="/ProfileDetails" target="_blank">
 
-            <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5">
-                <div className="w-full flex justify-between items-center">
-                    <div className="flex justify-between items-center space-x-5">
-                        {/* Profile Image */}
-                        <div className="relative">
-                            <img src={ProfileListImg} alt="Profile-image" />
 
-                            {isBookmarked ? (
-                                <MdBookmark
-                                    onClick={handleBookmark}
-                                    className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                                />
-                            ) : (
-                                <MdBookmarkBorder
-                                    onClick={handleBookmark}
-                                    className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                                />
-                            )}
-                        </div>
+  return (
+    <div className="w-full p-4 overflow-y-auto max-h-screen">
+      {selectedProfiles.length === 0 ? (
+        <p>No profiles selected.</p>
+      ) : (
+        <div className="space-y-4">
+          {selectedProfiles.map((profile: Profile) => (
+            <div key={profile.profile_id} className="relative flex items-start bg-white p-4 rounded-lg shadow-md w-full">
+              <div className="flex-shrink-0">
+                <img
+                  src={profile.profile_image || ProfileListImg}
+                  alt="Profile Image"
+                  className="w-48 h-48 object-cover rounded-lg"
+                />
+                {bookmarkedProfiles.find(bp => bp.profile_id === profile.profile_id) ? (
+                  <MdBookmark
+                    onClick={() => handleBookmark(profile)}
+                    className="absolute top-2 right-2 text-white text-[22px] cursor-pointer z-20"
+                  />
+                ) : (
+                  <MdBookmarkBorder
+                    onClick={() => handleBookmark(profile)}
+                    className="absolute top-2 right-2 text-white text-[22px] cursor-pointer z-20"
+                  />
+                )}
+              </div>
 
-                        {/* Profile Details */}
-                        <div className="">
-                            {/* Name & Profile ID */}
-                            <div className="relative mb-2">
-                                <h5
-                                    //  onClick={handleCardClick} 
-                                    className="text-[20px] text-secondary font-semibold cursor-pointer">
-                                    Harini{" "}
-                                    <span className="text-sm text-ashSecondary">(VM32787)</span>
-                                    <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />
-                                </h5>
-                            </div>
-
-                            {/* Years & Height */}
-                            <div className="flex items-center space-x-3 mb-2">
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <IoCalendar className="mr-2" />
-                                    28 yrs
-                                </p>
-
-                                <p className="text-gray font-semibold">|</p>
-
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <FaPersonArrowUpFromLine className="mr-2" />
-                                    5ft 10in (177 cms)
-                                </p>
-                            </div>
-
-                            {/* Uthiram */}
-                            <div className="mb-2">
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <MdStars className="mr-2" />
-                                    Uthiram
-                                </p>
-                            </div>
-
-                            {/* Bachelors */}
-                            <div className="mb-2">
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <IoSchool className="mr-2" />
-                                    Bachelors - Arts/Science/Commerce/B Phil
-                                </p>
-                            </div>
-
-                            {/* Employed */}
-                            <div className="mb-2">
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <FaSuitcase className="mr-2" />
-                                    Employed
-                                </p>
-                            </div>
-
-                            {/* Location */}
-                            <div className="mb-2">
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <FaLocationDot className="mr-2" />
-                                    Chennai
-                                </p>
-                            </div>
-
-                            <div className="flex justify-start items-center space-x-3">
-                                {/* Horoscope Available */}
-                                <div>
-                                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                                        <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
-                                    </p>
-                                </div>
-
-                                {/*  Active User */}
-                                <div>
-                                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                                        <FaUser className="mr-2" /> Active user
-                                    </p>
-                                </div>
-
-                                {/* Last Visit */}
-                                <div>
-                                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                                        <IoCalendar className="mr-2" /> Last visit on June 30, 2024
-                                    </p>
-                                </div>
-
-                                {/* views */}
-                                <div>
-                                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                                        <IoEye className="mr-2" /> 31 views
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Matching Score */}
-                    <div>
-                        <div>
-                            <img
-                                src={MatchingScoreImg}
-                                alt="Matching Score"
-                                className="w-full"
-                            />
-                        </div>
-                    </div>
+              <div className="ml-4 flex-1">
+                <div className="relative mb-2">
+                  <h5 
+                    className="text-[20px] text-secondary font-semibold cursor-pointer flex items-center" 
+                    onClick={() => handleProfileClick(profile.profile_id)}
+                  >
+                    {profile.profile_name || 'Unknown'}{" "}
+                    <span className="text-sm text-ashSecondary">({profile.profile_id || 'N/A'})</span>
+                    <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />
+                  </h5>
                 </div>
+
+                <div className="flex items-center space-x-3 mb-2">
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <IoCalendar className="mr-2" />
+                    {profile.age || 'N/A'} yrs
+                  </p>
+
+                  <p className="text-gray font-semibold">|</p>
+
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <FaPersonArrowUpFromLine className="mr-2" />
+                    {profile.height || 'N/A'}
+                  </p>
+                </div>
+
+                <div className="mb-2">
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <IoSchool className="mr-2" />
+                    {profile.degree || 'N/A'}
+                  </p>
+                </div>
+
+                <div className="mb-2">
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <FaSuitcase className="mr-2" />
+                    {profile.profession || 'N/A'}
+                  </p>
+                </div>
+
+                <div className="mb-2">
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <FaLocationDot className="mr-2" />
+                    {profile.location || 'N/A'}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <div>
+                    <p className="flex items-center bg-gray-300 px-3 py-1 rounded-md text-ashSecondary font-semibold">
+                      <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="flex items-center bg-gray-300 px-3 py-1 rounded-md text-ashSecondary font-semibold">
+                      <FaUser className="mr-2" /> Active user
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="flex items-center bg-gray-300 px-3 py-1 rounded-md text-ashSecondary font-semibold">
+                      <IoEye className="mr-2" /> {profile.user_profile_views || 0} Profile Views
+                    </p>
+                  </div>
+                </div>
+
+                <div className="absolute top-3 right-3">
+                  <div className="relative">
+                    <img src={MatchingScoreImg} alt="Matching Score" />
+                    <span className="absolute top-2.5 left-3 text-white font-semibold">95%</span>
+                  </div>
+                </div>
+              </div>
             </div>
-        </Link>
-    );
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
