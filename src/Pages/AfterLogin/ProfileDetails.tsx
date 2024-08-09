@@ -9,8 +9,8 @@ import { SuggestedProfiles } from '../../Components/LoginHome/SuggestedProfiles'
 export const ProfileDetails = () => {
     return (
         <div>
-            {/* <ProfileDetailsExpressInterest /> */}
-            <ProfileDetailsRequest />
+            <ProfileDetailsExpressInterest />
+            {/* <ProfileDetailsRequest /> */}
 
             <ProfileDetailsSettingsView />
             <FeaturedProfiles />

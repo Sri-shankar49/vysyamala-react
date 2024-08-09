@@ -6,11 +6,12 @@ import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import config from '../../API'; // Import the configuration file
+import apiClient from "../../API";
 
 
 // API URL
-const MARITAL_STATUS_API_URL = `${config.apiUrl}/auth/Get_Marital_Status/`;
-const COMPLEXION_STATUS_API_URL = `${config.apiUrl}/auth/Get_Complexion/`;
+const MARITAL_STATUS_API_URL = await apiClient.post(`/auth/Get_Marital_Status/`);
+const COMPLEXION_STATUS_API_URL = await apiClient.post(`/auth/Get_Complexion/`);
 
 // Calculate the minimum date of birth for age 18
 const getMinDOB = () => {
@@ -73,7 +74,7 @@ export const BasicDetailPopup: React.FC<BasicDetailsProps> = ({ onNext, onClose,
   useEffect(() => {
     const fetchMaritalStatus = async () => {
       try {
-        const response = await axios.post(MARITAL_STATUS_API_URL);
+        const response = MARITAL_STATUS_API_URL;
         const options = Object.values(response.data) as MaritalStatusOption[];
         setMaritalStatusOptions(options);
       } catch (error) {
@@ -87,7 +88,7 @@ export const BasicDetailPopup: React.FC<BasicDetailsProps> = ({ onNext, onClose,
   useEffect(() => {
     const fetchComplexionStatus = async () => {
       try {
-        const response = await axios.post(COMPLEXION_STATUS_API_URL);
+        const response =COMPLEXION_STATUS_API_URL;
         const options = Object.values(response.data) as ComplexionOption[];
         setComplexionOptions(options);
       } catch (error) {

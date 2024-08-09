@@ -5,7 +5,7 @@ import { MdModeEdit } from "react-icons/md";
 export const Personal = () => {
     return (
         <div>
-            <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5">Personal Details
+            <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5">Personal Detailss
                 <MdModeEdit className="text-2xl text-main ml-2 cursor-pointer" />
             </h2>
 

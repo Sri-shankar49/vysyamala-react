@@ -46,7 +46,7 @@ export const ViewedProfiles: React.FC<ViewedProfilesProps> = ({ dashBoardAgain }
                     {/* <InterestSentCard />
                     <InterestSentCard /> */}
                     <ViewedProfilesCard />
-                    <ViewedProfilesCard />
+                    {/* <ViewedProfilesCard /> */}
                 </div>
             </div>
             <SuggestedProfiles />

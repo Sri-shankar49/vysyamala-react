@@ -1,31 +1,49 @@
-import { ListCard } from "./ProfileCard/ListCard";
+import React, { useState, useEffect } from 'react';
+import { fetchProfiles } from '../../../commonapicall'; // Adjust the path as needed
+import { ListCard } from './ProfileCard/ListCard'; // Adjust the path as needed
+import { Profile } from '../../../ProfileContext'; // Adjust the path as needed
 
-export const ListView = () => {
+export const ListView: React.FC = () => {
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+
+        if (!loginuser_profileId) {
+          throw new Error('Profile ID is missing.');
+        }
+
+        const data = await fetchProfiles(loginuser_profileId);
+        setProfiles(data.profiles); // Adjust based on the actual response structure
+      } catch (error) {
+        console.error('Error fetching profiles:', error);
+        setError('Failed to fetch profiles.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
-    <div>
-      <div className=" gap-5 my-5">
-        {/* <div className="grid grid-rows-4 grid-cols-4 my-5">
-                <div className="w-fit shadow-lg px-3 py-3">
-                    <div className="mb-3">
-                        <img src={GridProfileImg} alt="" />
-                    </div>
-                    <div>
-                        <h4 className="text-secondary text-[20px] font-semibold">Harini <span className="text-vysyamalaBlack text-[12px] font-bold">(VM32787)</span></h4>
-                        <div className="flex justify-between items-center">
-                            <p className="text-primary">28 yrs</p>
-                            <p className="text-primary">5ft 10in (177 cms)</p>
-                        </div>
-                    </div>
-                </div>
-            </div> */}
-        <ListCard />
-        <ListCard />
-        <ListCard />
-        <ListCard />
-        <ListCard />
-        <ListCard />
-        <ListCard />
-      </div>
+    <div className="list-view">
+      {profiles.length > 0 ? (
+        profiles.map((profile) => (
+          <ListCard key={profile.profile_id} profile={profile} />
+        ))
+      ) : (
+        <div>No profiles found.</div>
+      )}
     </div>
   );
 };
+
+export default ListView;

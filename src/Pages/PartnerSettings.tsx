@@ -11,9 +11,10 @@ import * as zod from "zod";
 import MatchingStars from "../Components/PartnerPreference/MatchingStars";
 import axios from "axios";
 import config from '../API'; // Import the configuration file
+import apiClient from "../API";
 
 
-const PARTNER_API_URL = `${config.apiUrl}/auth/Partner_pref_registration/`
+// const PARTNER_API_URL = await apiClient.post(`/auth/Partner_pref_registration/`);
 
 const schema = zod.object({
   age: zod.string().nonempty("Age is required"),
@@ -189,7 +190,7 @@ const PartnerSettings: React.FC = () => {
 
       console.log("Post Data:", postData);
 
-      const response = await axios.post(PARTNER_API_URL, postData);
+      const response = await apiClient.post(`/auth/Partner_pref_registration/`, postData);
       console.log("Registration response:", response.data);
 
       if (response.data.Status === 1) {
@@ -221,7 +222,7 @@ const PartnerSettings: React.FC = () => {
             page_id: 6
           };
 
-          const response = await axios.post(`${config.apiUrl}/auth/Get_save_details/`, requestData, {
+          const response =  await apiClient.post(`/auth/Get_save_details/`, requestData, {
             headers: {
               'Content-Type': 'application/json'
             }
@@ -259,7 +260,7 @@ const PartnerSettings: React.FC = () => {
   useEffect(() => {
     const fetchMaritalStatuses = async () => {
       try {
-        const response = await axios.post<{ [key: string]: MaritalStatus }>(`${config.apiUrl}/auth/Get_Marital_Status/`);
+        const response = await axios.post<{ [key: string]: MaritalStatus }>('/auth/Get_Marital_Status/');
         const options = Object.values(response.data);
         setMaritalStatuses(options);
       } catch (error) {
@@ -273,7 +274,7 @@ const PartnerSettings: React.FC = () => {
   useEffect(() => {
     const fetchEduPref = async () => {
       try {
-        const response = await axios.post(`${config.apiUrl}/auth/Get_Edu_Pref/`);
+        const response =  await apiClient.post(`/auth/Get_Edu_Pref/`);
         const options = Object.values(response.data) as EduPref[];
         console.log(options);
         setEduPref(options);
@@ -287,7 +288,7 @@ const PartnerSettings: React.FC = () => {
   useEffect(() => {
     const fetchAnnualIncome = async () => {
       try {
-        const response = await axios.post(`${config.apiUrl}/auth/Get_Annual_Income/`);
+        const response =  await apiClient.post(`/auth/Get_Annual_Income/`);
         const options = Object.values(response.data) as AnnualIncome[];
         setAnnualIncome(options);
       } catch (error) {
@@ -307,7 +308,7 @@ const PartnerSettings: React.FC = () => {
     if (storedBirthStar && storedGender) {
       const fetchMatchingStars = async () => {
         try {
-          const response = await axios.post(`${config.apiUrl}/auth/Get_Matchstr_Pref/`, {
+          const response =  await apiClient.post(`/auth/Get_Matchstr_Pref/`, {
             birth_star_id: storedBirthStar,
             gender: storedGender,
           });

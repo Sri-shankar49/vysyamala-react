@@ -9,6 +9,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import config from '../API'; // Import the configuration file
+import apiClient from "../API";
 
 
 // Define validation schema with zod
@@ -27,8 +28,8 @@ const schema = zod.object({
 
 
 // API call
-const COUNTRY_API_URL = `${config.apiUrl}/auth/Get_Country/`;
-const STATE_API_URL = `${config.apiUrl}/auth/Get_State/`;
+const COUNTRY_API_URL = await apiClient.post(`/auth/Get_Country/`);
+// const STATE_API_URL = await apiClient.post(`/auth/Get_State/`);
 
 interface EduDetailsInputs {
   highestEducationLevel: string;
@@ -103,7 +104,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
             page_id: 4
           };
 
-          const response = await axios.post(`${config.apiUrl}/auth/Get_save_details/`, requestData, {
+          const response =  await apiClient.post(`/auth/Get_save_details/`, requestData, {
             headers: {
               'Content-Type': 'application/json'
             }
@@ -153,7 +154,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   useEffect(() => {
     const fetchHighestEdu = async () => {
       try {
-        const response = await axios.post(`${config.apiUrl}/auth/Get_Highest_Education/`);
+        const response =  await apiClient.post(`/auth/Get_Highest_Education/`);
         const options = Object.values(response.data) as HighesEducation[];
         setHighestEdu(options);
       } catch (error) {
@@ -167,7 +168,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   useEffect(() => {
     const fetchUgDegree = async () => {
       try {
-        const response = await axios.post(`${config.apiUrl}/auth/Get_Ug_Degree/`);
+        const response =  await apiClient.post(`/auth/Get_Ug_Degree/`);
         const options = Object.values(response.data) as Ugdegree[];
         setUgdegree(options);
       } catch (error) {
@@ -181,7 +182,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   useEffect(() => {
     const fetchAnnualIncome = async () => {
       try {
-        const response = await axios.post(`${config.apiUrl}/auth/Get_Annual_Income/`);
+        const response =  await apiClient.post(`/auth/Get_Annual_Income/`);
         const options = Object.values(response.data) as AnnualIncome[];
         setAnnualIncome(options);
       } catch (error) {
@@ -201,7 +202,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   useEffect(() => {
     const fetchCountryStatus = async () => {
       try {
-        const response = await axios.post(COUNTRY_API_URL);
+        const response = COUNTRY_API_URL;
         const options = Object.values(response.data) as CountryOption[];
         setCountryOptions(options);
       } catch (error) {
@@ -217,7 +218,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
     if (selectedCountry) {
       const fetchStateStatus = async () => {
         try {
-          const response = await axios.post(STATE_API_URL, { country_id: selectedCountry });
+          const response = await apiClient.post(`/auth/Get_State/`, { country_id: selectedCountry });
           const options = Object.values(response.data) as StateOption[];
           setStateOptions(options);
         } catch (error) {
@@ -262,7 +263,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
 
       console.log("Formatted Data:", formattedData);
       setIsSubmitting(true);
-      const response = await axios.post(`${config.apiUrl}/auth/Education_registration/`, formattedData);
+      const response =  await apiClient.post(`/auth/Education_registration/`, formattedData);
       setIsSubmitting(false);
 
       if (response.data.Status === 1) {

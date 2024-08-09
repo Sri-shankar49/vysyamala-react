@@ -144,7 +144,7 @@
 //     // };
 //     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
 //         try {
-//             const response = await axios.post<SendOtpResponse>(`${config.apiUrl}/auth/Login_with_mobileno/`, {
+//             const response = await axios.post<SendOtpResponse>(await apiClient.post(`/auth/Login_with_mobileno/`, {
 //                 Mobile_no: data.mobile,
 //             });
 
@@ -222,6 +222,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import axios from "axios";
 import config from '../../../API'; // Import the configuration file
+import apiClient from "../../../API";
 
 // ZOD Schema with updated regex validations
 const schema = zod.object({
@@ -264,7 +265,7 @@ export const PhoneLoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onClose, on
 
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         try {
-            const response = await axios.post<SendOtpResponse>(`${config.apiUrl}/auth/Login_with_mobileno/`, {
+            const response = await apiClient.post<SendOtpResponse>('/auth/Login_with_mobileno/', {
                 Mobile_no: data.mobile,
             });
 

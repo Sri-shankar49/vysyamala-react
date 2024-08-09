@@ -1,27 +1,64 @@
-import { useState } from "react";
-import ProfileListImg from "../../../assets/images/./ProfileListImg.png";
-import { MdVerifiedUser } from "react-icons/md";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import ProfileListImg from "../../../assets/images/ProfileListImg.png";
+import { MdVerifiedUser, MdBookmark, MdBookmarkBorder, MdOutlineGrid3X3 } from "react-icons/md";
 import { IoCalendar } from "react-icons/io5";
-import { FaPersonArrowUpFromLine } from "react-icons/fa6";
-import { MdStars } from "react-icons/md";
-import { IoSchool } from "react-icons/io5";
-import { FaSuitcase } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
-import { MdOutlineGrid3X3 } from "react-icons/md";
-import { FaUser } from "react-icons/fa6";
+import { FaPersonArrowUpFromLine, FaLocationDot, FaUser, FaSuitcase } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
-import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
-// import { MdMessage } from "react-icons/md";
 import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 
+// Define the profile and API response types
+interface Profile {
+    viwed_profileid: string;
+    viwed_profile_name: string;
+    viwed_Profile_img: string;
+    viwed_profile_age: number;
+}
+
+interface ApiResponse {
+    Status: number;
+    message: string;
+    data: {
+        profiles: Profile[];
+    };
+}
+
+// Assuming you have a way to get the logged-in user's profile ID
+
 export const MyVisitorsCard = () => {
+    const [profile, setProfile] = useState<Profile | null>(null);
+    const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+    const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
 
-    // State to track if the card is bookmarked or not
-    const [isBookmarked, setIsBookmarked] = useState(false);
 
+    // Function to handle the bookmark toggle
     const handleBookmark = () => {
         setIsBookmarked(!isBookmarked);
     };
+
+    // Fetch profile data when the component mounts
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            try {
+                const response = await axios.post<ApiResponse>('http://103.214.132.20:8000/auth/My_profile_visit/', {
+                    profile_id:loginuser_profileId
+                });
+
+                // Check if response is successful and contains profiles
+                if (response.data.Status === 1 && response.data.data.profiles.length > 0) {
+                    setProfile(response.data.data.profiles[0]); // Use the first profile
+                }
+            } catch (error) {
+                console.error("Error fetching profile data:", error);
+            }
+        };
+
+        fetchProfileData();
+    }, []);
+
+    if (!profile) {
+        return <div>No Profile Viewer</div>;
+    }
 
     return (
         <div className="border-b-[1px] border-footer-text-gray">
@@ -30,7 +67,7 @@ export const MyVisitorsCard = () => {
                     <div className="flex justify-between items-center space-x-5">
                         {/* Profile Image */}
                         <div className="relative">
-                            <img src={ProfileListImg} alt="Profile-image" />
+                            <img src={profile.viwed_Profile_img || ProfileListImg} alt="Profile-image" />
 
                             {isBookmarked ? (
                                 <MdBookmark
@@ -46,61 +83,26 @@ export const MyVisitorsCard = () => {
                         </div>
 
                         {/* Profile Details */}
-                        <div className="">
+                        <div>
                             {/* Name & Profile ID */}
                             <div className="relative mb-2">
                                 <h5 className="text-[20px] text-secondary font-semibold cursor-pointer">
-                                    Harini{" "}
-                                    <span className="text-sm text-ashSecondary">(VM32787)</span>
-                                    <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />
+                                    {profile.viwed_profile_name || "Unknown Name"}{" "}
+                                    <span className="text-sm text-ashSecondary">({profile.viwed_profileid || "ID"})</span>
+                                    <MdVerifiedUser className="absolute top-1.5 left-[155px] text-checkGreen" />
                                 </h5>
                             </div>
 
-                            {/* Years & Height */}
+                            {/* Age */}
                             <div className="flex items-center space-x-3 mb-2">
                                 <p className="flex items-center text-ashSecondary font-semibold">
                                     <IoCalendar className="mr-2" />
-                                    28 yrs
+                                    {profile.viwed_profile_age || "Unknown Age"} yrs
                                 </p>
 
-                                <p className="text-gray font-semibold">|</p>
 
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <FaPersonArrowUpFromLine className="mr-2" />
-                                    5ft 10in (177 cms)
-                                </p>
-                            </div>
 
-                            {/* Uthiram */}
-                            <div className="mb-2">
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <MdStars className="mr-2" />
-                                    Uthiram
-                                </p>
-                            </div>
-
-                            {/* Bachelors */}
-                            <div className="mb-2">
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <IoSchool className="mr-2" />
-                                    Bachelors - Arts/Science/Commerce/B Phil
-                                </p>
-                            </div>
-
-                            {/* Employed */}
-                            <div className="mb-2">
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <FaSuitcase className="mr-2" />
-                                    Employed
-                                </p>
-                            </div>
-
-                            {/* Location */}
-                            <div className="mb-2">
-                                <p className="flex items-center text-ashSecondary font-semibold">
-                                    <FaLocationDot className="mr-2" />
-                                    Chennai
-                                </p>
+                                
                             </div>
 
                             {/* Tags */}
@@ -112,7 +114,7 @@ export const MyVisitorsCard = () => {
                                     </p>
                                 </div>
 
-                                {/*  Active User */}
+                                {/* Active User */}
                                 <div>
                                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
                                         <FaUser className="mr-2" /> Active user
@@ -126,7 +128,7 @@ export const MyVisitorsCard = () => {
                                     </p>
                                 </div>
 
-                                {/* views */}
+                                {/* Views */}
                                 <div>
                                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
                                         <IoEye className="mr-2" /> 31 views
@@ -139,7 +141,6 @@ export const MyVisitorsCard = () => {
                                 <MdMessage className="text-[26px] mr-2" /> Message
                             </button> */}
                         </div>
-
                     </div>
 
                     {/* Matching Score */}

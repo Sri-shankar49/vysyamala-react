@@ -9,13 +9,14 @@ import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import config from '../API'; // Import the configuration file
+import apiClient from "../API";
 
 
 // API call URLs
-const COUNTRY_API_URL = `${config.apiUrl}/auth/Get_Country/`;
-const STATE_API_URL = `${config.apiUrl}/auth/Get_State/`;
-const CONTACT_REGISTRATION_API_URL = `${config.apiUrl}/auth/Contact_registration/`;
-const COUNTRY_DATA_API_URL = `${config.apiUrl}/auth/Get_save_details/`;
+const COUNTRY_API_URL = await apiClient.post(`/auth/Get_Country/`);
+// const STATE_API_URL = await apiClient.post(`/auth/Get_State/`);
+// const CONTACT_REGISTRATION_API_URL = await apiClient.post(`/auth/Contact_registration/`);
+// const COUNTRY_DATA_API_URL = await apiClient.post(`/auth/Get_save_details/`);
 
 // ZOD Schema
 const schema = zod.object({
@@ -78,7 +79,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
             page_id: 1
           };
 
-          const response = await axios.post(COUNTRY_DATA_API_URL, requestData, {
+          const response = await apiClient.post(`/auth/Get_save_details/`, requestData, {
             headers: {
               'Content-Type': 'application/json'
             }
@@ -119,7 +120,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
   useEffect(() => {
     const fetchCountryStatus = async () => {
       try {
-        const response = await axios.post(COUNTRY_API_URL);
+        const response = COUNTRY_API_URL;
         const options = Object.values(response.data) as CountryOption[];
         setCountryOptions(options);
       } catch (error) {
@@ -135,7 +136,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
     if (selectedCountryId) {
       const fetchStateStatus = async () => {
         try {
-          const response = await axios.post(STATE_API_URL, { country_id: selectedCountryId });
+          const response = await apiClient.post(`/auth/Get_State/`, { country_id: selectedCountryId });
           const options = Object.values(response.data) as StateOption[];
           setStateOptions(options);
         } catch (error) {
@@ -191,7 +192,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
         Profile_mobile_no: data.whatsappNumber
       };
 
-      const response = await axios.post(CONTACT_REGISTRATION_API_URL, postData);
+      const response = await apiClient.post(`/auth/Contact_registration/`, postData);
       if (response.data.Status === 1) {
         navigate('/UploadImages');
       } else {

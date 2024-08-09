@@ -1,4 +1,5 @@
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import React, { useContext, useEffect } from 'react';
 import 'react-circular-progressbar/dist/styles.css';
 import { HiUsers } from "react-icons/hi";
 import ProfileImgRounded from "../../assets/images/ProfileImgRounded.png"
@@ -9,7 +10,7 @@ import VioletLayer from "../../assets/images/violetLayer.png"
 import YellowLayer from "../../assets/images/yellowLayer.png"
 import MyProfileImg from "../../assets/images/MyProfileImg.png"
 import { FaArrowRight } from "react-icons/fa6";
-import { InterestCard } from './DashBoardGrid/InterestCard';
+import  InterestCard  from './DashBoardGrid/InterestCard';
 import { IndicatorCard } from './DashBoardGrid/IndicatorCard';
 import { OptionCard } from './DashBoardGrid/OptionCard';
 import { PiTrayArrowUpFill } from "react-icons/pi";
@@ -20,6 +21,7 @@ import { IoDocumentText } from "react-icons/io5";
 import { BiSolidUserVoice } from "react-icons/bi";
 import { RiAlertFill } from "react-icons/ri";
 import { MdManageAccounts } from "react-icons/md";
+import { ProfileContext } from "../../ProfileContext"
 
 interface DashBoardGridProps {
     onDashBoardMatchingProfiles: () => void;
@@ -44,6 +46,13 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
 
     // Circular Progress bar value
     const percentage = 85;
+   
+
+    const { dashboardDetails, fetchDashboardDetails } = useContext(ProfileContext);
+
+    useEffect(() => {
+        fetchDashboardDetails();
+    }, [fetchDashboardDetails]);
 
     return (
         <div className="container mx-auto">
@@ -80,7 +89,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <h4 className="text-[20px] text-white font-semibold">Mutual Interest</h4>
-                                        <p className="text-[48px] text-white font-semibold">05</p>
+                                        <p className="text-[48px] text-white font-semibold">{dashboardDetails?.mutual_int_count}</p>
                                     </div>
 
                                     <div className="z-10">
@@ -98,7 +107,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <h4 className="text-[20px] text-white font-semibold">Wishlist</h4>
-                                        <p className="text-[48px] text-white font-semibold">05</p>
+                                        <p className="text-[48px] text-white font-semibold">{dashboardDetails?.wishlist_count}</p>
                                     </div>
 
                                     <div className="z-10">
@@ -119,8 +128,8 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
                                         <img src={MyProfileImg} alt="My Profile Image" className="" />
                                     </div>
                                     <div>
-                                        <h4 className="text-[21px] text-vysyamalaBlackSecondary font-bold">Ram Panneer Selvam</h4>
-                                        <p className="text-primary font-semibold">VM32787</p>
+                                        <h4 className="text-[21px] text-vysyamalaBlackSecondary font-bold">{dashboardDetails?.profile_details.profile_name}</h4>
+                                        <p className="text-primary font-semibold">{dashboardDetails?.profile_details.profile_id}</p>
                                         <p className="text-primary font-semibold">Valid Upto : 16-July-2024</p>
                                     </div>
                                 </div>
@@ -133,7 +142,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
                             <div className="bg-vysyamalaLightSandal px-5 py-7">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h5 className="text-lg text-primary font-semibold">Your profile is now 85% complete</h5>
+                                        <h5 className="text-lg text-primary font-semibold">Your profile is now {`${dashboardDetails?.profile_details.completion_per}`} complete</h5>
                                         <p className="text-sm text-primary">Complete your profile we will suggest profiles based on your preference</p>
 
                                         <button onClick={onProfileDetails} className="flex items-center text-lg text-main font-semibold my-3">Complete Your Profile <FaArrowRight className="ml-2" /></button>
@@ -160,25 +169,25 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
                     {/* Received Interest */}
                     <div>
                         <h4 className="text-[21px] text-primary font-semibold mb-5">Received Interest
-                            <span className="text-sm">(05)</span>
+                            <span className="text-sm">({dashboardDetails?.received_int_count})</span>
                         </h4>
 
                         <p className="text-sm text-ashSecondary font-semibold mb-3">Today</p>
 
                         <div className="h-[21rem] overflow-scroll overflow-x-hidden overscroll-y-auto">
                             <InterestCard />
+                            {/* <InterestCard />
                             <InterestCard />
-                            <InterestCard />
-                            <InterestCard />
+                            <InterestCard /> */}
                         </div>
                     </div>
 
                     {/* My Options */}
                     <div>
                         <div className="grid grid-rows-2 grid-cols-2 gap-5">
-                            <IndicatorCard onClick={onInterestSent} cardTitle="Interest Sent" cardCount={"05"} cardIcon={<PiTrayArrowUpFill />} />
-                            <IndicatorCard onClick={onViewedProfiles} cardTitle="Viewed Profiles" cardCount={"05"} cardIcon={<MdPreview />} />
-                            <IndicatorCard onClick={onMyVisitors} cardTitle="My Visitors" cardCount={"05"} cardIcon={<FaUsers />} />
+                            <IndicatorCard onClick={onInterestSent} cardTitle="Interest Sent" cardCount={dashboardDetails?.sent_int_count} cardIcon={<PiTrayArrowUpFill />} />
+                            <IndicatorCard onClick={onViewedProfiles} cardTitle="Viewed Profiles" cardCount={dashboardDetails?.viewed_profile_count} cardIcon={<MdPreview />} />
+                            <IndicatorCard onClick={onMyVisitors} cardTitle="My Visitors" cardCount={dashboardDetails?.myvisitor_count} cardIcon={<FaUsers />} />
                             <IndicatorCard cardTitle="Gallery" cardCount={"05"} cardIcon={<FaImages />} />
                         </div>
 
