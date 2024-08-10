@@ -29,8 +29,9 @@ const MatchingScore = () => {
             <div className="relative w-48 h-48 flex items-center justify-center">
                 <div className="absolute top-0 left-0 w-full h-full rounded-full border-4 border-gray-200"></div>
                 <div
-                    className={`absolute top-0 left-0 w-full h-full rounded-full transform origin-center ${getIndicatorColor()}`}
-                    style={{ clipPath: `polygon(50% 50%, 50% 0, ${50 + 50 * Math.cos((score / 100) * 2 * Math.PI - Math.PI / 2)}% ${50 + 50 * Math.sin((score / 100) * 2 * Math.PI - Math.PI / 2)}%, 50% 50%)` }}
+                    className={`absolute top-0 left-0 w-full h-full rounded-full transform origin-center
+                         ${getIndicatorColor()}`}
+                // style={{ clipPath: `polygon(50% 50%, 50% 0, ${50 + 50 * Math.cos((score / 100) * 2 * Math.PI - Math.PI / 2)}% ${50 + 50 * Math.sin((score / 100) * 2 * Math.PI - Math.PI / 2)}%, 50% 50%)` }}
                 ></div>
                 <div className="relative w-36 h-36 bg-white rounded-full flex items-center justify-center">
                     <span className="text-3xl">{getEmoji()}</span>

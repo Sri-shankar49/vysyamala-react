@@ -3,6 +3,7 @@ import axios from 'axios';
 import { FaCheckCircle } from 'react-icons/fa';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
+import ReceivedInterestImg from "../../../assets/images/ReceivedInterest.png"
 
 interface Profile {
     int_profileid: string;
@@ -54,7 +55,7 @@ const InterestCard: React.FC = () => {
             );
             if (response.data.Status === 1) {
                 // Remove the profile from the state if rejected
-                if (status === '2' ||status === '3') {
+                if (status === '2' || status === '3') {
                     setProfiles(profiles.filter(profile => profile.int_profileid !== profileId));
                 }
                 console.log(`Profile ${status === '2' ? 'accepted' : 'rejected'}`);
@@ -75,9 +76,16 @@ const InterestCard: React.FC = () => {
             {loading ? (
                 <p>Loading...</p> // Or any loading indicator you prefer
             ) : profiles.length === 0 ? (
+
+                // Received Interest Empty State
                 <div className="text-center py-4">
-                    <h4 className="text-xl text-gray-600">No New Interest Received</h4>
+                    <div className="my-5">
+                        <img src={ReceivedInterestImg} alt="Received Interest" className="w-fit mx-auto" />
+                    </div>
+                    <h4 className="text-lg text-primary font-semibold">Received Interest</h4>
+                    <p className="text-md text-vysyamalaBlack">The people who showed interest on you will be listed here.</p>
                 </div>
+
             ) : (
                 profiles.map(profile =>
                     profile.int_status === 1 ? (
@@ -94,7 +102,7 @@ const InterestCard: React.FC = () => {
                                         className="w-24 h-16 object-cover rounded-md"
                                     />
                                 </div>
-    
+
                                 <div>
                                     <h5 className="text-[18px] text-primary font-bold">
                                         {profile.int_profile_name} <span className="text-sm text-ashSecondary font-semibold">({profile.int_profileid})</span>
@@ -103,7 +111,7 @@ const InterestCard: React.FC = () => {
                                     <p className="text-sm text-ashSecondary">{profile.int_profile_notes}</p>
                                 </div>
                             </div>
-    
+
                             <div>
                                 <div className="flex items-center">
                                     <FaCheckCircle
