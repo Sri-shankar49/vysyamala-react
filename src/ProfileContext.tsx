@@ -168,8 +168,8 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
   const addBookmark = async (profile: Profile) => {
     try {
       const response = await axios.post('http://103.214.132.20:8000/auth/Mark_profile_wishlist/', {
-        profile_id: profile.profile_id,
-        profile_to: "VM30491",
+        profile_id:loginuser_profileId,
+        profile_to: profile.profile_id,
         status: "1",
       }, {
         headers: {
@@ -190,8 +190,8 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
   const removeBookmark = async (profile_id: string) => {
     try {
       const response = await axios.post('http://103.214.132.20:8000/auth/Mark_profile_wishlist/', {
-        profile_id,
-        profile_to: "VM30491",
+        profile_id:loginuser_profileId,
+        profile_to: profile_id,
         status: "0",
       }, {
         headers: {

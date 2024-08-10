@@ -11,6 +11,14 @@ import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import { ProfileSlickView } from "../../LoginHome/ProfileDetailsView/ProfileSlickView";
 import { FaTableList } from "react-icons/fa6";
 import { IoMdCloseCircle } from "react-icons/io";
+import { MdLocalPrintshop } from "react-icons/md";
+import { MdArrowDropDown } from "react-icons/md";
+// import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
+import { ProfileDetailsSettingsView } from "../../LoginHome/ProfileDetailsView/ProfileDetailsSettingsView";
+import { FeaturedProfiles } from "../../LoginHome/FeaturedProfiles";
+import { VysyaBazaar } from "../../LoginHome/VysyaBazaar";
+import { SuggestedProfiles } from "../../LoginHome/SuggestedProfiles";
+import MatchingScore from "./MatchingScore";
 
 
 // Define the interfaces for profile data
@@ -44,14 +52,7 @@ interface ProfileData {
     basic_details: BasicDetails;
     personal_details: PersonalDetails;
 }
-import { MdLocalPrintshop } from "react-icons/md";
-import { MdArrowDropDown } from "react-icons/md";
-// import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
-import { ProfileDetailsSettingsView } from "../../LoginHome/ProfileDetailsView/ProfileDetailsSettingsView";
-import { FeaturedProfiles } from "../../LoginHome/FeaturedProfiles";
-import { VysyaBazaar } from "../../LoginHome/VysyaBazaar";
-import { SuggestedProfiles } from "../../LoginHome/SuggestedProfiles";
-import MatchingScore from "./MatchingScore";
+
 
 interface ProfileDetailsExpressInterestProps { }
 
@@ -111,7 +112,7 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
         }
     };
 
-  
+
 
     return (
         <div>
@@ -123,7 +124,7 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
 
                     <div className="grid grid-rows-1 grid-cols-3 justify-start items-center space-x-10 my-5">
                         <div>
-                            <ProfileSlickView />
+                        <ProfileSlickView profileId={profileData?.basic_details.profile_id} />
                         </div>
 
                         {/* Profile Details */}
@@ -208,6 +209,7 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                         </p>
                                         <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
                                             <IoEye className="mr-2" /> {profileData?.basic_details.user_profile_views} views
+                                        </p>
                                         {/* Horoscope Available */}
                                         <div>
                                             <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
@@ -250,25 +252,11 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                             </div>
 
                             <div className="flex justify-between items-center mt-10 mb-3">
-                                <div>
-                                    {/* Buttons */}
-                                    <div className="flex justify-start items-center space-x-5">
-                                        {/* Accept button */}
-                                        <button
-                                            onClick={handleHeartMark}
-                                            className="bg-gradient text-white flex items-center rounded-md px-5 py-3 cursor-pointer">
-                                            <FaHeart className={`text-[22px] mr-2
-                                             ${isHeartMarked ? 'text-white' : 'text-red-500'}`} /> Express Interest</button>
-
-                                        {/* Decline button */}
-                                        <button className="bg-white text-main flex items-center rounded-md border-2 px-5 py-2.5 cursor-pointer">
-                                            <FaTableList className="text-[22px] mr-2" /> Horoscope</button>
-                                    </div>
-                                </div>
+                                
 
                                 <div className="flex justify-center items-center space-x-10"
-                                    onMouseEnter={() => setIsHovered(true)}
-                                    onMouseLeave={() => setIsHovered(false)}
+                                    // onMouseEnter={() => setIsHovered(true)}
+                                    // onMouseLeave={() => setIsHovered(false)}
                                 >
                                     <div className="relative"
 
@@ -306,7 +294,7 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
 
                             {interestParam === '1' && loginuser_profileId && (
 
-                                <div  className="flex justify-start items-center space-x-5 my-5">
+                                <div className="flex justify-start items-center space-x-5 my-5">
                                     {/* Accept button */}
                                     <button className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer">
                                         <FaCheckCircle className="text-[22px] mr-2" /> Accept</button>

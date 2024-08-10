@@ -17,8 +17,10 @@ export const fetchProfiles = async (profileId: string): Promise<any> => {
 
 export const fetchProfilesDetails = async (profileId: string): Promise<any> => {
   try {
+    const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+
     const response = await apiClient.post('/auth/Get_profile_det_match/', {
-      profile_id: profileId,
+      profile_id: loginuser_profileId,
       user_profile_id: profileId // Adjust as needed based on your API requirements
     });
     
