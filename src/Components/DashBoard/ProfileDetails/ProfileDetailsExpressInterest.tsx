@@ -302,8 +302,8 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                 </div>
 
                                 <div className="flex justify-center items-center space-x-10"
-                                    onMouseEnter={() => setIsHovered(true)}
-                                    onMouseLeave={() => setIsHovered(false)}
+                                // onMouseEnter={() => setIsHovered(true)}
+                                // onMouseLeave={() => setIsHovered(false)}
                                 >
                                     <div className="relative"
 
@@ -340,6 +340,43 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                     {selectedLanguage && <p className="ml-4 text-ash">Selected: {selectedLanguage}</p>}
                                 </div>
                             </div>
+
+
+                            {interestParam !== '1' && loginuser_profileId && (
+
+                                < div className="flex justify-start items-center space-x-5 my-5">
+                                    <button
+                                        onClick={handleHeartMark}
+                                        className="bg-gradient text-white flex items-center rounded-md px-5 py-3 cursor-pointer">
+                                        <FaHeart className={`text-[22px] mr-2 ${isHeartMarked ? 'text-red-500' : 'text-gray-400'}`} />
+                                        {isHeartMarked ? 'Remove from Interest' : 'Express Interest'}
+                                    </button>
+
+                                    <button className="bg-white text-main flex items-center rounded-md border-2 px-5 py-2.5 cursor-pointer">
+                                        <FaTableList className="text-[22px] mr-2" /> Horoscope
+                                    </button>
+                                </div>
+                            )}
+
+                            {interestParam === '1' && loginuser_profileId && (
+
+                                <div className="flex justify-start items-center space-x-5 my-5">
+                                    {/* Accept button */}
+                                    <button className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer">
+                                        <FaCheckCircle className="text-[22px] mr-2" /> Accept</button>
+
+                                    {/* Decline button */}
+                                    <button className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer">
+                                        <IoMdCloseCircle className="text-[26px] mr-2" /> Decline</button>
+
+                                    {/* Message button */}
+                                    <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
+                                        <MdMessage className="text-[26px] mr-2" /> Message</button>
+
+                                </div>
+
+
+                            )}
 
 
                         </div>
