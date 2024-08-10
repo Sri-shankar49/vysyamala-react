@@ -112,79 +112,88 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
   const { profile_img, profile_name, profile_id, profile_age, height, degree, profession, location } = profile;
 
   return (
-    <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3" onClick={handleCardClick}>
-      <div className="w-full flex justify-between items-center">
-        <div className="flex justify-between items-center space-x-5">
-          {/* Profile Image */}
-          <div className="relative">
-            <img src={profile_img || ProfileListImg} alt="Profile-image"  />
-            {isBookmarked ? (
-              <MdBookmark
-                onClick={handleBookmark}
-                className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-              />
-            ) : (
-              <MdBookmarkBorder
-                onClick={handleBookmark}
-                className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-              />
-            )}
-          </div>
+    <Link to="/ProfileDetails" target="_blank">
 
-          {/* Profile Details */}
-          <div>
-            {/* Name & Profile ID */}
-            <div className="relative mb-2">
-              <div className="flex items-center">
-                <Link to={`/ProfileDetails?id=${profile_id}`} className="text-secondary text-[20px] font-semibold cursor-pointer">
-                  {profile_name || 'Unknown'}
-                  <span className="text-vysyamalaBlack text-[12px] font-bold">
-                    ({profile_id || 'N/A'})
-                  </span>
+      <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3" onClick={handleCardClick}>
+        <div className="w-full flex justify-between items-center">
+          <div className="flex justify-between items-center space-x-5">
+            {/* Profile Image */}
+            <div className="relative">
+              <img src={profile_img || ProfileListImg} alt="Profile-image" className="w-[180px]" />
+              {isBookmarked ? (
+                <MdBookmark
+                  onClick={handleBookmark}
+                  className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                />
+              ) : (
+                <MdBookmarkBorder
+                  onClick={handleBookmark}
+                  className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                />
+              )}
+            </div>
+
+            {/* Profile Details */}
+            <div>
+              {/* Name & Profile ID */}
+              <div className="relative mb-2">
+                <Link to={`/ProfileDetails?id=${profile_id}`}>
+                  <div className="flex items-center">
+                    <h5 className="text-secondary text-[20px] font-semibold cursor-pointer">{profile_name || 'Unknown'} {" "}
+                      <span className="text-sm text-ashSecondary">
+                        ({profile_id || 'N/A'})
+                      </span>
+                    </h5>
+                    <MdVerifiedUser className="ml-2 text-checkGreen text-[20px]" />
+                  </div>
                 </Link>
-                <MdVerifiedUser className="ml-2 text-checkGreen text-[20px]" />
               </div>
-            </div>
 
-            {/* Years & Height */}
-            <div className="flex items-center space-x-3 mb-2">
-              <p className="flex items-center text-ashSecondary font-semibold">
-                <IoCalendar className="mr-2" />
-                {profile_age || 'N/A'} yrs
-              </p>
-              <p className="text-gray font-semibold">|</p>
-              <p className="flex items-center text-ashSecondary font-semibold">
-                <FaPersonArrowUpFromLine className="mr-2" />
-                {height || 'N/A'}
-              </p>
-            </div>
+              {/* Years & Height */}
+              <div className="flex items-center space-x-3 mb-2">
 
-            {/* Degree */}
-            <div className="mb-2">
-              <p className="flex items-center text-ashSecondary font-semibold">
-                <IoSchool className="mr-2" />
-                {degree || 'N/A'}
-              </p>
-            </div>
+                <p className="flex items-center text-ashSecondary">
+                  <IoCalendar className="mr-2" />
+                  {profile_age || 'N/A'} yrs
+                </p>
 
-            {/* Profession */}
-            <div className="mb-2">
-              <p className="flex items-center text-ashSecondary font-semibold">
-                <FaSuitcase className="mr-2" />
-                {profession || 'N/A'}
-              </p>
-            </div>
+                <p className="text-gray">|</p>
 
-            {/* Location */}
-            <div className="mb-2">
-              <p className="flex items-center text-ashSecondary font-semibold">
-                <FaLocationDot className="mr-2" />
-                {location || 'N/A'}
-              </p>
+                <p className="flex items-center text-ashSecondary">
+                  <FaPersonArrowUpFromLine className="mr-2" />
+                  {height || 'N/A'}
+                </p>
+
+              </div>
+
+              {/* Degree */}
+              <div className="mb-2">
+                <p className="flex items-center text-ashSecondary">
+                  <IoSchool className="mr-2" />
+                  {degree || 'N/A'}
+                </p>
+              </div>
+
+              {/* Profession */}
+              <div className="mb-2">
+                <p className="flex items-center text-ashSecondary">
+                  <FaSuitcase className="mr-2" />
+                  {profession || 'N/A'}
+                </p>
+              </div>
+
+              {/* Location */}
+              <div className="mb-2">
+                <p className="flex items-center text-ashSecondary">
+                  <FaLocationDot className="mr-2" />
+                  {location || 'N/A'}
+                </p>
+              </div>
+
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };

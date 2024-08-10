@@ -10,7 +10,7 @@ import VioletLayer from "../../assets/images/violetLayer.png"
 import YellowLayer from "../../assets/images/yellowLayer.png"
 import MyProfileImg from "../../assets/images/MyProfileImg.png"
 import { FaArrowRight } from "react-icons/fa6";
-import  InterestCard  from './DashBoardGrid/InterestCard';
+import InterestCard from './DashBoardGrid/InterestCard';
 import { IndicatorCard } from './DashBoardGrid/IndicatorCard';
 import { OptionCard } from './DashBoardGrid/OptionCard';
 import { PiTrayArrowUpFill } from "react-icons/pi";
@@ -46,7 +46,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
 
     // Circular Progress bar value
     const percentage = 85;
-   
+
 
     const { dashboardDetails, fetchDashboardDetails } = useContext(ProfileContext);
 
