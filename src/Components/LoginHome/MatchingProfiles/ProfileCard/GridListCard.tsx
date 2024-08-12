@@ -112,7 +112,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
   const { profile_img, profile_name, profile_id, profile_age, height, degree, profession, location } = profile;
 
   return (
-    <Link to="/ProfileDetails" target="_blank">
+    // <Link to="/ProfileDetails" target="_blank">
 
       <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3" onClick={handleCardClick}>
         <div className="w-full flex justify-between items-center">
@@ -123,12 +123,15 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
               {isBookmarked ? (
                 <MdBookmark
                   onClick={handleBookmark}
-                  className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  className="absolute top-2 right-2 text-red-500 text-[22px] cursor-pointer"
                 />
               ) : (
                 <MdBookmarkBorder
                   onClick={handleBookmark}
-                  className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  className="absolute top-2 right-2 text-red-500 text-[22px] cursor-pointer"
+
                 />
               )}
             </div>
@@ -194,6 +197,6 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
           </div>
         </div>
       </div>
-    </Link>
+    // </Link>
   );
 };

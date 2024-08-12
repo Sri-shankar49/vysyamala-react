@@ -4,7 +4,7 @@ import { useState, useEffect, MouseEvent } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { IoArrowBackOutline } from "react-icons/io5";
-import { MdVerifiedUser } from "react-icons/md";
+import { MdMessage, MdVerifiedUser } from "react-icons/md";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 import { IoDocumentText } from "react-icons/io5";
 import { RiAlertFill } from "react-icons/ri";
@@ -27,6 +27,8 @@ import { FeaturedProfiles } from "../../LoginHome/FeaturedProfiles";
 import { VysyaBazaar } from "../../LoginHome/VysyaBazaar";
 import { SuggestedProfiles } from "../../LoginHome/SuggestedProfiles";
 import MatchingScore from "./MatchingScore";
+import { FaCheckCircle } from "react-icons/fa";
+import { IoMdCloseCircle } from "react-icons/io";
 
 // Define the interfaces for profile data
 interface HoroscopeDetails {
@@ -285,20 +287,44 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                             <div className="flex justify-between items-center mt-10 mb-3">
                                 <div>
                                     {/* Buttons */}
-                                    <div className="flex justify-start items-center space-x-5">
-                                        {/* Accept button */}
-                                        <button
-                                            onClick={handleHeartMark}
-                                            className="bg-gradient text-white flex items-center rounded-md px-5 py-3 cursor-pointer">
-                                            <FaHeart className={`text-[22px] mr-2
-                                             ${isHeartMarked ? 'text-white' : 'text-red-500'}`} />
-                                            {isHeartMarked ? 'Express Interest' : 'Remove from Interest'}
-                                        </button>
 
-                                        {/* Decline button */}
-                                        <button className="bg-white text-main flex items-center rounded-md border-2 px-5 py-2.5 cursor-pointer">
-                                            <FaTableList className="text-[22px] mr-2" /> Horoscope</button>
-                                    </div>
+                                    {interestParam !== '1' && loginuser_profileId && (
+
+                                        < div className="flex justify-start items-center space-x-5 my-5">
+                                            <button
+                                                onClick={handleHeartMark}
+                                                className="bg-gradient text-white flex items-center rounded-md px-5 py-3 cursor-pointer">
+                                                <FaHeart className={`text-[22px] mr-2 ${isHeartMarked ? 'text-red-500' : 'text-gray-400'}`} />
+                                                {isHeartMarked ? 'Remove from Interest' : 'Express Interest'}
+                                            </button>
+
+                                            <button className="bg-white text-main flex items-center rounded-md border-2 px-5 py-2.5 cursor-pointer">
+                                                <FaTableList className="text-[22px] mr-2" /> Horoscope
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {interestParam === '1' && loginuser_profileId && (
+
+                                        <div className="flex justify-start items-center space-x-5 my-5">
+                                            {/* Accept button */}
+                                            <button className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer">
+                                                <FaCheckCircle className="text-[22px] mr-2" /> Accept</button>
+
+                                            {/* Decline button */}
+                                            <button className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer">
+                                                <IoMdCloseCircle className="text-[26px] mr-2" /> Decline</button>
+
+                                            {/* Message button */}
+                                            <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
+                                                <MdMessage className="text-[26px] mr-2" /> Message</button>
+
+                                        </div>
+
+
+                                    )}
+
+
                                 </div>
 
                                 <div className="flex justify-center items-center space-x-10"
@@ -342,41 +368,7 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                             </div>
 
 
-                            {interestParam !== '1' && loginuser_profileId && (
 
-                                < div className="flex justify-start items-center space-x-5 my-5">
-                                    <button
-                                        onClick={handleHeartMark}
-                                        className="bg-gradient text-white flex items-center rounded-md px-5 py-3 cursor-pointer">
-                                        <FaHeart className={`text-[22px] mr-2 ${isHeartMarked ? 'text-red-500' : 'text-gray-400'}`} />
-                                        {isHeartMarked ? 'Remove from Interest' : 'Express Interest'}
-                                    </button>
-
-                                    <button className="bg-white text-main flex items-center rounded-md border-2 px-5 py-2.5 cursor-pointer">
-                                        <FaTableList className="text-[22px] mr-2" /> Horoscope
-                                    </button>
-                                </div>
-                            )}
-
-                            {interestParam === '1' && loginuser_profileId && (
-
-                                <div className="flex justify-start items-center space-x-5 my-5">
-                                    {/* Accept button */}
-                                    <button className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer">
-                                        <FaCheckCircle className="text-[22px] mr-2" /> Accept</button>
-
-                                    {/* Decline button */}
-                                    <button className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer">
-                                        <IoMdCloseCircle className="text-[26px] mr-2" /> Decline</button>
-
-                                    {/* Message button */}
-                                    <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
-                                        <MdMessage className="text-[26px] mr-2" /> Message</button>
-
-                                </div>
-
-
-                            )}
 
 
                         </div>
