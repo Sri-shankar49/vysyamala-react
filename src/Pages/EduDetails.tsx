@@ -4,11 +4,9 @@ import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
-import config from '../API'; // Import the configuration file
 import apiClient from "../API";
 
 
@@ -104,7 +102,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
             page_id: 4
           };
 
-          const response =  await apiClient.post(`/auth/Get_save_details/`, requestData, {
+          const response = await apiClient.post(`/auth/Get_save_details/`, requestData, {
             headers: {
               'Content-Type': 'application/json'
             }
@@ -154,7 +152,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   useEffect(() => {
     const fetchHighestEdu = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_Highest_Education/`);
+        const response = await apiClient.post(`/auth/Get_Highest_Education/`);
         const options = Object.values(response.data) as HighesEducation[];
         setHighestEdu(options);
       } catch (error) {
@@ -168,7 +166,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   useEffect(() => {
     const fetchUgDegree = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_Ug_Degree/`);
+        const response = await apiClient.post(`/auth/Get_Ug_Degree/`);
         const options = Object.values(response.data) as Ugdegree[];
         setUgdegree(options);
       } catch (error) {
@@ -182,7 +180,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   useEffect(() => {
     const fetchAnnualIncome = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_Annual_Income/`);
+        const response = await apiClient.post(`/auth/Get_Annual_Income/`);
         const options = Object.values(response.data) as AnnualIncome[];
         setAnnualIncome(options);
       } catch (error) {
@@ -247,9 +245,9 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
         throw new Error("ProfileId not found in sessionStorage");
       }
       const formattedData = {
-        profile_id:profileId,
+        profile_id: profileId,
         highest_education: data.highestEducationLevel,
-        ug_degeree:data.ugDegree,
+        ug_degeree: data.ugDegree,
         about_edu: data.aboutYourEducation,
         profession: data.profession,
         anual_income: data.annualIncome,
@@ -257,13 +255,13 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
         work_country: data.country,
         work_state: data.state,
         work_pincode: data.pincode,
-        career_plans:data.careerPlans,
-        status: "1" 
+        career_plans: data.careerPlans,
+        status: "1"
       };
 
       console.log("Formatted Data:", formattedData);
       setIsSubmitting(true);
-      const response =  await apiClient.post(`/auth/Education_registration/`, formattedData);
+      const response = await apiClient.post(`/auth/Education_registration/`, formattedData);
       setIsSubmitting(false);
 
       if (response.data.Status === 1) {
@@ -279,9 +277,9 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   };
 
 
-  useEffect(()=>{
-    window.scrollTo(0,0)
-  },[])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   return (
     <div className="pb-20">

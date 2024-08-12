@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import UploadFile from "../../../Components/UploadImages/UploadFile";
 import uploadfile from "../../../assets/icons/uploadfile.png";
 import closebtn from "../../../assets/icons/closebtn.png";
-import arrow from "../../../assets/icons/arrow.png";
+// import arrow from "../../../assets/icons/arrow.png";
 
 
 interface PhotoSettingsProps { }

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import ProfileListImg from "../../../../assets/images/ProfileListImg.png";
+import ProfileListImg from "../../../assets/images/ProfileListImg.png";
 import { MdVerifiedUser, MdBookmark, MdBookmarkBorder, MdOutlineGrid3X3 } from "react-icons/md";
 import { IoCalendar, IoEye } from "react-icons/io5";
 import { FaUser } from "react-icons/fa6";
-import MatchingScoreImg from "../../../../assets/images/MatchingScore.png";
+import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import { Link } from "react-router-dom";
 import { MdStars } from "react-icons/md";
 import { IoSchool } from "react-icons/io5";

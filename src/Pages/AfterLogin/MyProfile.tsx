@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { MdVerifiedUser, MdLocalPrintshop, MdArrowDropDown } from "react-icons/md";
 import { FaArrowRight } from "react-icons/fa";
@@ -34,40 +34,40 @@ export const MyProfile = () => {
 
   useEffect(() => {
     const fetchGet_profile_det_match = async () => {
-        setLoading(true); // Start loading when fetch begins
-        try {
-            const response = await axios.post("http://103.214.132.20:8000/auth/Get_profile_det_match/", {
-              profile_id: loginuser_profileId,
-              user_profile_id: loginuser_profileId
-            });
+      setLoading(true); // Start loading when fetch begins
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_profile_det_match/", {
+          profile_id: loginuser_profileId,
+          user_profile_id: loginuser_profileId
+        });
 
-            console.log("API Response:", response.data);
+        console.log("API Response:", response.data);
 
-            // Ensure the response contains `basic_details` before setting it
-            if (response.data && response.data.basic_details) {
-                setGet_profile_det_match(response.data.basic_details);
-            } else {
-                console.error("Unexpected response structure:", response.data);
-                setError("Unexpected response structure");
-            }
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                console.error("Axios error:", error.response?.data || error.message);
-                setError(`Axios error: ${error.response?.data || error.message}`);
-            } else {
-                console.error("Unexpected error:", error);
-                setError("Unexpected error occurred");
-            }
-        } finally {
-            setLoading(false); // Stop loading when fetch is complete
+        // Ensure the response contains `basic_details` before setting it
+        if (response.data && response.data.basic_details) {
+          setGet_profile_det_match(response.data.basic_details);
+        } else {
+          console.error("Unexpected response structure:", response.data);
+          setError("Unexpected response structure");
         }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error("Axios error:", error.response?.data || error.message);
+          setError(`Axios error: ${error.response?.data || error.message}`);
+        } else {
+          console.error("Unexpected error:", error);
+          setError("Unexpected error occurred");
+        }
+      } finally {
+        setLoading(false); // Stop loading when fetch is complete
+      }
     };
 
     fetchGet_profile_det_match();
-}, [loginuser_profileId]); // Add `loginuser_profileId` to the dependency array if it's dynamic
+  }, [loginuser_profileId]); // Add `loginuser_profileId` to the dependency array if it's dynamic
 
 
-  
+
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);

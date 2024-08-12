@@ -30,13 +30,13 @@ export const LoginHeader: React.FC = () => {
   //   setIsNotificationVisible(!isNotificationVisible);
   // };
 
-  const handleNotificationClick = (e) => {
+  const handleNotificationClick = (e: { stopPropagation: () => void; }) => {
     e.stopPropagation(); // Prevent the click event from propagating to the document
     setIsNotificationVisible((prev) => !prev);
   };
 
   // On Click outside of it 
-  const handleClickOutside = (event) => {
+  const handleClickOutside = (event: { target: unknown; }) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsNotificationVisible(false);
     }

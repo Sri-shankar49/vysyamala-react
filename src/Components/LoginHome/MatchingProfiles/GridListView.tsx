@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { GridListCard } from './ProfileCard/GridListCard'; // Named import
 import { fetchProfiles } from '../../../commonapicall'; // Import the API function

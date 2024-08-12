@@ -1,6 +1,6 @@
 import React from 'react';
 import { IoArrowBackOutline } from 'react-icons/io5';
-import { MutualInterestCard } from '../../Components/LoginHome/MatchingProfiles/ProfileCard/MutualInterestCard';
+import { MutualInterestCard } from './DashBoardMutualInterest/MutualInterestCard';
 import { SuggestedProfiles } from '../../Components/LoginHome/SuggestedProfiles';
 
 interface DashBoardMutualInterestProps {

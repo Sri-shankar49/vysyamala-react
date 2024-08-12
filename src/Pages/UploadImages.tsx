@@ -2,7 +2,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { IoEye, IoEyeOff } from "react-icons/io5";
-
 import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import UploadFile from "../Components/UploadImages/UploadFile";
@@ -103,9 +102,9 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
     });
   };
 
-  useEffect(()=>{
-    window.scrollTo(0,0)
-  },[])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
   const handleSubmit = () => {
     const uploadImages = async (files: File[], endpoint: string) => {
@@ -113,19 +112,19 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
         const profile_id = sessionStorage.getItem("profile_id_new"); // Get the profile_id from session storage
         const formData = new FormData();
         formData.append("profile_id", profile_id as string);
-  
+
         files.forEach((file) => {
           formData.append("images", file);
         });
-  
+
         const response = await axios.post(endpoint, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
-  
-        console.log('UploadImageResponse',response.data);
-        
+
+        console.log('UploadImageResponse', response.data);
+
       } catch (error) {
         console.error("Error uploading files:", error);
       }
@@ -134,7 +133,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
     uploadImages(selectedFiles, "http://192.168.1.12:8000/auth/ImageSetUpload/");
     uploadImages(selectedHoroscopeFiles, "http://192.168.1.12:8000/auth/ImageSetUpload/");
     uploadImages(selectedIDProofFiles, "http://192.168.1.12:8000/auth/ImageSetUpload/");
-    
+
   };
 
   return (

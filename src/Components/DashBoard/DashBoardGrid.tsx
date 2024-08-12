@@ -169,16 +169,13 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
                     {/* Received Interest */}
                     <div>
                         <h4 className="text-[21px] text-primary font-semibold mb-5">Received Interest
-                            <span className="text-sm">({dashboardDetails?.received_int_count})</span>
+                            <span className="text-sm"> ({dashboardDetails?.received_int_count})</span>
                         </h4>
 
                         <p className="text-sm text-ashSecondary font-semibold mb-3">Today</p>
 
                         <div className="h-[21rem] overflow-scroll overflow-x-hidden overscroll-y-auto">
                             <InterestCard />
-                            {/* <InterestCard />
-                            <InterestCard />
-                            <InterestCard /> */}
                         </div>
                     </div>
 

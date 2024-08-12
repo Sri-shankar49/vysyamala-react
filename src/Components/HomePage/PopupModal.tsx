@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IoIosCloseCircle } from "react-icons/io";
-import axios from 'axios';
 import { BasicDetails } from "./PopUpsReg/BasicDetails"; // Adjust import path as per your file structure
-import config from '../../API'; // Import the configuration file
 import apiClient from "../../API";
 
 interface PopupModalProps {
@@ -66,7 +64,7 @@ export const PopupModal: React.FC<PopupModalProps> = ({ onClose, mobileNumber })
         };
         console.log('Payload to be sent:', payload);
 
-        const response =  await apiClient.post(`/auth/Otp_verify/`, payload);
+        const response = await apiClient.post(`/auth/Otp_verify/`, payload);
 
         console.log('OTP Verification Response:', response.data);
 
@@ -100,7 +98,7 @@ export const PopupModal: React.FC<PopupModalProps> = ({ onClose, mobileNumber })
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg p-8 max-w-md w-full relative">
-     
+
         {!openNextPopup ? (
           <form onSubmit={handleSubmit}>
             <h2 className="text-primary text-2xl font-semibold mb-4 text-center">OTP Verification</h2>
@@ -139,8 +137,8 @@ export const PopupModal: React.FC<PopupModalProps> = ({ onClose, mobileNumber })
               Verify OTP
             </button>
             <IoIosCloseCircle
-                onClick={onClose}
-                className="absolute top-[-15px] right-[-15px] text-[30px] text-black bg-white rounded-full flex items-center cursor-pointer hover:text-white hover:bg-black"
+              onClick={onClose}
+              className="absolute top-[-15px] right-[-15px] text-[30px] text-black bg-white rounded-full flex items-center cursor-pointer hover:text-white hover:bg-black"
             />
           </form>
         ) : (

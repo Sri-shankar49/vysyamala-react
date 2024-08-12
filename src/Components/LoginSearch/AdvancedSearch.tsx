@@ -86,8 +86,8 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                 }
             }
         };
-        
-        
+
+
         const fetchIncomeOptions = async () => {
             try {
                 const response = await axios.post('http://103.214.132.20:8000/auth/Get_Annual_Income/');
@@ -97,7 +97,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                 console.error("Error fetching income options", error);
             }
         };
-        
+
         fetchIncomeOptions();
         fetchBirthStars();
         fetchEducationOptions();
@@ -189,9 +189,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                         </div>
 
                         {/* Education */}
-                        {/* Education */}
- {/* Education */}
- <div>
+                        <div>
                             <label htmlFor="education" className="block mb-1">
                                 Education
                             </label>
@@ -212,26 +210,24 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
 
 
                         {/* Annual Income */}
-                        {/* Income */}
-{/* Annual Income */}
-<div>
-    <label htmlFor="income" className="block mb-1">
-        Income
-    </label>
-    <select
-        id="income"
-        className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-    >
-        <option value="" selected disabled>
-            -- Select your Income Range --
-        </option>
-        {incomeOptions.map((option) => (
-            <option key={option.income_id} value={option.income_id}>
-                {option.income_description}
-            </option>
-        ))}
-    </select>
-</div>
+                        <div>
+                            <label htmlFor="income" className="block mb-1">
+                                Income
+                            </label>
+                            <select
+                                id="income"
+                                className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                            >
+                                <option value="" selected disabled>
+                                    -- Select your Income Range --
+                                </option>
+                                {incomeOptions.map((option) => (
+                                    <option key={option.income_id} value={option.income_id}>
+                                        {option.income_description}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
 
 
                         {/* Dhosam */}
@@ -257,8 +253,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                                 </div>
                             </div>
                         </div>
-      {/* Birth Star */}
-      <div>
+                        
+                        {/* Birth Star */}
+                        <div>
                             <label htmlFor="birthStar" className="block mb-1">
                                 Birth Star
                             </label>
@@ -343,30 +340,30 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                             </div>
                         </div>
 
-                       {/* Work Location */}
-                       <InputField label={"Work Location"} name={"workLocation"} />
+                        {/* Work Location */}
+                        <InputField label={"Work Location"} name={"workLocation"} />
 
-{/* Profile Photo */}
-<div>
-    <h5 className="text-[18px] text-primary font-semibold mb-2">
-        Profile Photo
-    </h5>
-    <input type="checkbox"
-        id="profilePhoto"
-        value="profilePhoto"
-    // {...register("profilePhoto")} 
-    />
-    <label htmlFor="profilePhoto" className="pl-1">
-        People only with photo
-    </label>
-</div>
+                        {/* Profile Photo */}
+                        <div>
+                            <h5 className="text-[18px] text-primary font-semibold mb-2">
+                                Profile Photo
+                            </h5>
+                            <input type="checkbox"
+                                id="profilePhoto"
+                                value="profilePhoto"
+                            // {...register("profilePhoto")} 
+                            />
+                            <label htmlFor="profilePhoto" className="pl-1">
+                                People only with photo
+                            </label>
+                        </div>
 
 
-{/* Buttons */}
-<div className="flex justify-end space-x-4">
-    <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">Cancel</button>
-    <button onClick={onFindMatch} type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">Find Match</button>
-</div>
+                        {/* Buttons */}
+                        <div className="flex justify-end space-x-4">
+                            <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">Cancel</button>
+                            <button onClick={onFindMatch} type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">Find Match</button>
+                        </div>
 
 
                     </form>

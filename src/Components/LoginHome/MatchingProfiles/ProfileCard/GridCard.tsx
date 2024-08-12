@@ -123,14 +123,14 @@ export const GridCard: React.FC<GridCardProps> = ({ profile }) => {
         <MdBookmark
           onClick={handleBookmark}
           // className="absolute top-5 right-5 text-white text-[22px] cursor-pointer"
-          className="absolute top-2 right-2 text-red-500 text-[22px] cursor-pointer"
+          className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
 
         />
       ) : (
         <MdBookmarkBorder
           onClick={handleBookmark}
           // className="absolute top-5 right-5 text-white text-[22px] cursor-pointer"
-          className="absolute top-2 right-2 text-red-500 text-[22px] cursor-pointer"
+          className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
 
         />
       )}

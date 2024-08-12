@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 // import { useDispatch } from "react-redux";
 // import { showInterest } from "../../../redux/slices/interestSlice";
 import FeaturedProfileImg from "../../../assets/images/FeaturedProfileImg.png";

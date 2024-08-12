@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FiFilter } from "react-icons/fi";
 import { HiOutlineSearch } from "react-icons/hi";
 import { FaSuitcase } from "react-icons/fa";

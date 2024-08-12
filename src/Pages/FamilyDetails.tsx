@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +7,6 @@ import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
-import config from '../API'; // Import the configuration file
 import apiClient from "../API";
 
 
@@ -140,15 +138,15 @@ const FamilyDetails: React.FC = () => {
             page_id: 3
           };
 
-          const response = 
+          const response =
             await apiClient.post(`/auth/Get_save_details/`,
-            requestData,
-            {
-              headers: {
-                'Content-Type': 'application/json'
+              requestData,
+              {
+                headers: {
+                  'Content-Type': 'application/json'
+                }
               }
-            }
-          );
+            );
 
           console.log('API Response:', response.data);
 
@@ -225,7 +223,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchOccupations = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_Parent_Occupation/`);
+        const response = await apiClient.post(`/auth/Get_Parent_Occupation/`);
         const options = Object.values(response.data) as Occupation[];
         setOccupations(options);
       } catch (error) {
@@ -238,7 +236,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchPropertyworth = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_Property_Worth/`);
+        const response = await apiClient.post(`/auth/Get_Property_Worth/`);
         const options = Object.values(response.data) as PropertyWorth[];
         setPropertyworth(options);
       } catch (error) {
@@ -251,7 +249,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchFamilyTypes = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_FamilyType/`);
+        const response = await apiClient.post(`/auth/Get_FamilyType/`);
         const data = response.data;
         const familyTypesArray = Object.values(data) as FamilyType[];
         setFamilyTypes(familyTypesArray);
@@ -266,7 +264,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchFamilyStatus = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_FamilyStatus/`);
+        const response = await apiClient.post(`/auth/Get_FamilyStatus/`);
         const data = response.data;
         const familyTypesArray = Object.values(data) as FamilyStatus[];
         setFamilyStatus(familyTypesArray);
@@ -281,7 +279,7 @@ const FamilyDetails: React.FC = () => {
   useEffect(() => {
     const fetchFamilyValue = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_FamilyValue/`);
+        const response = await apiClient.post(`/auth/Get_FamilyValue/`);
         const data = response.data;
         const familyTypesArray = Object.values(data) as FamilyValue[];
         setFamilyValue(familyTypesArray);
@@ -359,10 +357,10 @@ const FamilyDetails: React.FC = () => {
         family_type: data.familyType,
         family_value: data.familyValue,
         family_status: data.familyStatus,
-        about_family:data.aboutMyFamily,
-        property_worth:data.propertyWorth,
-        property_details:data.propertyDetails
-        
+        about_family: data.aboutMyFamily,
+        property_worth: data.propertyWorth,
+        property_details: data.propertyDetails
+
         // Include other fields as necessary
       };
 
@@ -372,7 +370,7 @@ const FamilyDetails: React.FC = () => {
       console.log("Formatted Data:", formattedData);
 
       setIsSubmitting(true);
-      const response =  await apiClient.post(`/auth/Family_registration/`, formattedData);
+      const response = await apiClient.post(`/auth/Family_registration/`, formattedData);
       setIsSubmitting(false);
 
       if (response.data.Status === 1) {
@@ -388,9 +386,9 @@ const FamilyDetails: React.FC = () => {
   };
 
 
-  useEffect(()=>{
-    window.scrollTo(0,0)
-  },[])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
 
 

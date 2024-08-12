@@ -22,7 +22,7 @@ import ProfileListImg from '../../../../assets/images/ProfileListImg.png';
 import MatchingScoreImg from '../../../../assets/images/MatchingScore.png';
 import { ProfileContext, Profile } from '../../../../ProfileContext'; // Adjust the path as needed
 import { Link } from 'react-router-dom';
-import { fetchProfiles } from '../../../../commonapicall'; // Adjust the path as needed
+import MatchingScore from '../../../DashBoard/ProfileDetails/MatchingScore';
 
 interface ListCardProps {
   profile: Profile;
@@ -104,14 +104,14 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
                 <MdBookmark
                   onClick={handleBookmark}
                   // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                  className="absolute top-2 right-2 text-red-500 text-[22px] cursor-pointer"
+                  className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
 
                 />
               ) : (
                 <MdBookmarkBorder
                   onClick={handleBookmark}
                   // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                  className="absolute top-2 right-2 text-red-500 text-[22px] cursor-pointer"
+                  className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
 
                 />
               )}
@@ -216,11 +216,14 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
           </div>
 
           {/* Matching Score */}
-          <div className="absolute top-3 right-3">
+          {/* <div className="absolute top-3 right-3">
             <div className="relative">
               <img src={MatchingScoreImg} alt="Matching Score" />
-              {/* <span className="absolute top-2.5 left-3 text-white font-semibold">95%</span> */}
+              <span className="absolute top-2.5 left-3 text-white font-semibold">95%</span>
             </div>
+          </div> */}
+          <div>
+            <MatchingScore />
           </div>
         </div>
       </div>

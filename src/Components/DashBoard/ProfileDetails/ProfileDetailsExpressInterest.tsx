@@ -22,13 +22,16 @@ import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import { MdLocalPrintshop } from "react-icons/md";
 import { MdArrowDropDown } from "react-icons/md";
 // import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
-import { ProfileDetailsSettingsView } from "../../LoginHome/ProfileDetailsView/ProfileDetailsSettingsView";
-import { FeaturedProfiles } from "../../LoginHome/FeaturedProfiles";
-import { VysyaBazaar } from "../../LoginHome/VysyaBazaar";
-import { SuggestedProfiles } from "../../LoginHome/SuggestedProfiles";
+// import { ProfileDetailsSettingsView } from "../../LoginHome/ProfileDetailsView/ProfileDetailsSettingsView";
+// import { FeaturedProfiles } from "../../LoginHome/FeaturedProfiles";
+// import { VysyaBazaar } from "../../LoginHome/VysyaBazaar";
+// import { SuggestedProfiles } from "../../LoginHome/SuggestedProfiles";
 import MatchingScore from "./MatchingScore";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
+import { ToastNotification, NotifySuccess, NotifyError } from "../../Toast/ToastNotification";
+import { toast } from 'react-toastify';
+import { PersonalNotesPopup } from "../PersonalNotes/PersonalNotesPopup";
 
 // Define the interfaces for profile data
 interface HoroscopeDetails {
@@ -106,6 +109,12 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
 
     const handleBookmark = () => {
         setIsBookmarked(!isBookmarked);
+        if (!isBookmarked) {
+            NotifySuccess('Added to Wishlist');
+        }
+        else {
+            toast.error('Removed from Wishlist');
+        }
     };
 
     // Declaration for Heart State
@@ -124,10 +133,24 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
 
             if (response.status === 200) {
                 setIsHeartMarked(!isHeartMarked);
+
+                // Toast Notification
+                if (!isHeartMarked) {
+                    NotifySuccess('Expressed Interest');
+                } else {
+                    toast.error('Removed Interest');
+                }
+
             } else {
+                // Toast Notification
+                NotifyError('Failed to update express interest');
+
                 console.error("Failed to update express interest");
             }
         } catch (error) {
+            // Toast Notification
+            NotifyError('Error updating express interest');
+
             console.error("Error updating express interest:", error);
         }
     }
@@ -145,6 +168,17 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
         setSelectedLanguage(language);
         setIsOpen(false);
     };
+
+    // Personal Notes Popup
+    const [showPersonalNotes, setShowPersonalNotes] = useState(false);
+
+    const handlePersonalNotesPopup = () => {
+        setShowPersonalNotes(!showPersonalNotes)
+    }
+
+    const closePersonalNotesPopup = () => {
+        setShowPersonalNotes(false)
+    }
 
     return (
         <div>
@@ -195,7 +229,10 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                         )}
                                     </div>
                                     <div>
-                                        <IoDocumentText title="Personal Notes" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
+                                        <IoDocumentText onClick={handlePersonalNotesPopup} title="Personal Notes" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
+                                        {showPersonalNotes && (
+                                            <PersonalNotesPopup closePopup={closePersonalNotesPopup} />
+                                        )}
                                     </div>
                                     <div>
                                         <RiAlertFill title="Spot on Error" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
@@ -290,12 +327,15 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
 
                                     {interestParam !== '1' && loginuser_profileId && (
 
-                                        < div className="flex justify-start items-center space-x-5 my-5">
+                                        <div className="flex justify-start items-center space-x-5 my-5">
                                             <button
                                                 onClick={handleHeartMark}
                                                 className="bg-gradient text-white flex items-center rounded-md px-5 py-3 cursor-pointer">
                                                 <FaHeart className={`text-[22px] mr-2 ${isHeartMarked ? 'text-red-500' : 'text-gray-400'}`} />
                                                 {isHeartMarked ? 'Remove from Interest' : 'Express Interest'}
+
+                                                {/* Toast Notifications */}
+                                                <ToastNotification />
                                             </button>
 
                                             <button className="bg-white text-main flex items-center rounded-md border-2 px-5 py-2.5 cursor-pointer">

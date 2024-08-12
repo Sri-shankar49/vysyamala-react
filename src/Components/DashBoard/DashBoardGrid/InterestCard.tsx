@@ -4,6 +4,8 @@ import { FaCheckCircle } from 'react-icons/fa';
 import { IoMdCloseCircle } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
 import ReceivedInterestImg from "../../../assets/images/ReceivedInterest.png"
+import { ToastNotification, NotifySuccess, NotifyError } from "../../Toast/ToastNotification";
+import { toast } from 'react-toastify';
 
 interface Profile {
     int_profileid: string;
@@ -54,16 +56,24 @@ const InterestCard: React.FC = () => {
                 }
             );
             if (response.data.Status === 1) {
+
                 // Remove the profile from the state if rejected
-                if (status === '2' || status === '3') {
+                if (status === '2') {
+                    NotifySuccess('Interest Accepted');
                     setProfiles(profiles.filter(profile => profile.int_profileid !== profileId));
                 }
-                console.log(`Profile ${status === '2' ? 'accepted' : 'rejected'}`);
-            } else {
-                console.error('Error updating profile interest:', response.data.message);
+                else if (status === '3') {
+                    setProfiles(profiles.filter(profile => profile.int_profileid !== profileId));
+                    toast.error('Interest Declined');
+                }
+                else {
+                    console.error('Error updating profile interest:', response.data.message);
+                    NotifyError('Error updating profile interest');
+                }
             }
         } catch (error) {
             console.error('Error updating profile interest:', error);
+            NotifyError('Error updating profile interest');
         }
     };
 
@@ -122,6 +132,9 @@ const InterestCard: React.FC = () => {
                                         className="text-[65px] text-closeRed rounded-xl px-3 py-3 m-3 cursor-pointer hover:bg-gray"
                                         onClick={(e) => { e.stopPropagation(); handleUpdateInterest(profile.int_profileid, '3'); }}
                                     />
+
+                                    {/* // Toast Notification */}
+                                    <ToastNotification />
                                 </div>
                             </div>
                         </div>

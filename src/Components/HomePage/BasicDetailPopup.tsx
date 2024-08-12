@@ -4,8 +4,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
-import config from '../../API'; // Import the configuration file
 import apiClient from "../../API";
 
 
@@ -88,7 +86,7 @@ export const BasicDetailPopup: React.FC<BasicDetailsProps> = ({ onNext, onClose,
   useEffect(() => {
     const fetchComplexionStatus = async () => {
       try {
-        const response =COMPLEXION_STATUS_API_URL;
+        const response = COMPLEXION_STATUS_API_URL;
         const options = Object.values(response.data) as ComplexionOption[];
         setComplexionOptions(options);
       } catch (error) {
@@ -159,20 +157,20 @@ export const BasicDetailPopup: React.FC<BasicDetailsProps> = ({ onNext, onClose,
         </div>
 
         <div>
-        <select
-          id="maritalStatus"
-          className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
-          {...register("maritalStatus")}
-        >
-          <option value="" disabled selected>Select your Marital Status</option>
-          {maritalStatusOptions.map((option) => (
-            <option key={option.marital_sts_id} value={option.marital_sts_id}>
-              {option.marital_sts_name}
-            </option>
-          ))}
-        </select>
-        {errors.maritalStatus && <span className="text-red-500">{errors.maritalStatus.message}</span>}
-      </div>
+          <select
+            id="maritalStatus"
+            className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+            {...register("maritalStatus")}
+          >
+            <option value="" disabled selected>Select your Marital Status</option>
+            {maritalStatusOptions.map((option) => (
+              <option key={option.marital_sts_id} value={option.marital_sts_id}>
+                {option.marital_sts_name}
+              </option>
+            ))}
+          </select>
+          {errors.maritalStatus && <span className="text-red-500">{errors.maritalStatus.message}</span>}
+        </div>
 
         <div>
           <input
@@ -207,10 +205,10 @@ export const BasicDetailPopup: React.FC<BasicDetailsProps> = ({ onNext, onClose,
           >
             <option value="" disabled selected>Select your complexion</option>
             {complexionOptions.map((option) => (
-            <option key={option.complexion_id} value={option.complexion_id}>
-              {option.complexion_description}
-            </option>
-          ))}
+              <option key={option.complexion_id} value={option.complexion_id}>
+                {option.complexion_description}
+              </option>
+            ))}
           </select>
           {errors.complexion && <span className="text-red-500">{errors.complexion.message}</span>}
         </div>

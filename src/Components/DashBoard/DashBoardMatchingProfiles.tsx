@@ -16,7 +16,7 @@ import { BsSortDown } from "react-icons/bs";
 // import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
 // import { IoChevronBackOutline } from "react-icons/io5";
 // import { IoChevronForwardOutline } from "react-icons/io5";
-import { MatchingProfiles } from "../../Components/LoginHome/MatchingProfiles";
+// import { MatchingProfiles } from "../../Components/LoginHome/MatchingProfiles";
 import { GridListView } from "../LoginHome/MatchingProfiles/GridListView";
 import { ListView } from "../LoginHome/MatchingProfiles/ListView";
 import { GridView } from "../LoginHome/MatchingProfiles/GridView";

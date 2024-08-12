@@ -6,17 +6,18 @@ import { IoCalendar, IoSchool } from "react-icons/io5";
 import { FaPersonArrowUpFromLine, FaSuitcase, FaLocationDot, FaUser } from "react-icons/fa6";
 import { MdOutlineGrid3X3 } from "react-icons/md";
 import { IoEye } from "react-icons/io5";
-import MatchingScoreImg from "../../assets/images/MatchingScore.png";
+// import MatchingScoreImg from "../../assets/images/MatchingScore.png";
 import ProfileListImg from "../../assets/images/ProfileListImg.png";
+import MatchingScore from '../DashBoard/ProfileDetails/MatchingScore';
 
 export const WishlistCard: React.FC = () => {
   const navigate = useNavigate();
 
-  const { selectedProfiles, bookmarkedProfiles, addBookmark, removeBookmark } = useContext(ProfileContext) || { 
-    selectedProfiles: [], 
-    bookmarkedProfiles: [], 
-    addBookmark: () => {}, 
-    removeBookmark: () => {} 
+  const { selectedProfiles, bookmarkedProfiles, addBookmark, removeBookmark } = useContext(ProfileContext) || {
+    selectedProfiles: [],
+    bookmarkedProfiles: [],
+    addBookmark: () => { },
+    removeBookmark: () => { }
   };
 
   const handleBookmark = (profile: Profile) => {
@@ -62,8 +63,8 @@ export const WishlistCard: React.FC = () => {
 
               <div className="ml-4 flex-1">
                 <div className="relative mb-2">
-                  <h5 
-                    className="text-[20px] text-secondary font-semibold cursor-pointer flex items-center" 
+                  <h5
+                    className="text-[20px] text-secondary font-semibold cursor-pointer flex items-center"
                     onClick={() => handleProfileClick(profile.profile_id)}
                   >
                     {profile.profile_name || 'Unknown'}{" "}
@@ -127,11 +128,14 @@ export const WishlistCard: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="absolute top-3 right-3">
+                {/* <div className="absolute top-3 right-3">
                   <div className="relative">
                     <img src={MatchingScoreImg} alt="Matching Score" />
                     <span className="absolute top-2.5 left-3 text-white font-semibold">95%</span>
                   </div>
+                </div> */}
+                <div>
+                  <MatchingScore />
                 </div>
               </div>
             </div>

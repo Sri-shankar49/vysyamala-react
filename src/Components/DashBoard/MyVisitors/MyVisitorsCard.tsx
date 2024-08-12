@@ -3,7 +3,10 @@ import axios from "axios";
 import ProfileListImg from "../../../assets/images/ProfileListImg.png";
 import { MdVerifiedUser, MdBookmark, MdBookmarkBorder, MdOutlineGrid3X3 } from "react-icons/md";
 import { IoCalendar } from "react-icons/io5";
-import { FaPersonArrowUpFromLine, FaLocationDot, FaUser, FaSuitcase } from "react-icons/fa";
+// import { FaPersonArrowUpFromLine } from "react-icons/fa";
+// import { FaPersonArrowUpFromLine } from "react-icons/fa";
+import { FaUser, } from "react-icons/fa";
+// import { FaSuitcase } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 
@@ -41,7 +44,7 @@ export const MyVisitorsCard = () => {
         const fetchProfileData = async () => {
             try {
                 const response = await axios.post<ApiResponse>('http://103.214.132.20:8000/auth/My_profile_visit/', {
-                    profile_id:loginuser_profileId
+                    profile_id: loginuser_profileId
                 });
 
                 // Check if response is successful and contains profiles
@@ -102,7 +105,7 @@ export const MyVisitorsCard = () => {
 
 
 
-                                
+
                             </div>
 
                             {/* Tags */}
@@ -146,11 +149,12 @@ export const MyVisitorsCard = () => {
                     {/* Matching Score */}
                     <div>
                         <div>
-                            <img
+                            {/* <img
                                 src={MatchingScoreImg}
                                 alt="Matching Score"
                                 className="w-full"
-                            />
+                            /> */}
+                            <MatchingScoreImg />
                         </div>
                     </div>
                 </div>

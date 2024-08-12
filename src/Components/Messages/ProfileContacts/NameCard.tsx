@@ -1,4 +1,3 @@
-import React from 'react'
 import ProfileChatImg from "../../../assets/images/ProfileChatImg.png"
 
 export const NameCard = () => {

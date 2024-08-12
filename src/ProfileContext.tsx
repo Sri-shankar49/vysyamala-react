@@ -135,10 +135,10 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
   //       setLoadingAdditional(false);
   //     }
   //   };
-  
+
   //   fetchProfileData();
   // }, []);
-  
+
 
   const fetchDashboardDetails = async () => {
     try {
@@ -168,7 +168,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
   const addBookmark = async (profile: Profile) => {
     try {
       const response = await axios.post('http://103.214.132.20:8000/auth/Mark_profile_wishlist/', {
-        profile_id:loginuser_profileId,
+        profile_id: loginuser_profileId,
         profile_to: profile.profile_id,
         status: "1",
       }, {
@@ -190,7 +190,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
   const removeBookmark = async (profile_id: string) => {
     try {
       const response = await axios.post('http://103.214.132.20:8000/auth/Mark_profile_wishlist/', {
-        profile_id:loginuser_profileId,
+        profile_id: loginuser_profileId,
         profile_to: profile_id,
         status: "0",
       }, {

@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import MatchingStars from "../Components/PartnerPreference/MatchingStars";
 import axios from "axios";
-import config from '../API'; // Import the configuration file
 import apiClient from "../API";
 
 

@@ -7,8 +7,6 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
-import axios from 'axios';
-import config from '../API'; // Import the configuration file
 import apiClient from "../API";
 
 
@@ -207,9 +205,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
 
 
 
-  useEffect(()=>{
-    window.scrollTo(0,0)
-  },[])
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
 
 
 
@@ -315,32 +313,32 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               For Admin Verification
             </h1>
 
-           
-          <div className="space-y-5">
-            <div>
-              <InputField
-                label={`${profileowner} Mobile Number`}
-                type="text"
-                {...register("daughterMobileNumber")}
-                onChange={(e) => {
-                  validateDaughterMobileNumber(e.target.value);
-                }}
-              />
-              {errors.daughterMobileNumber && <span className="text-red-500">{errors.daughterMobileNumber.message}</span>}
-            </div>
 
-            <div>
-              <InputField
-                label={`${profileowner} Daughter Email`}
-                type="email"
-                {...register("daughterEmail")}
-                onChange={(e) => {
-                  validateDaughterEmail(e.target.value);
-                }}
-              />
-              {errors.daughterEmail && <span className="text-red-500">{errors.daughterEmail.message}</span>}
+            <div className="space-y-5">
+              <div>
+                <InputField
+                  label={`${profileowner} Mobile Number`}
+                  type="text"
+                  {...register("daughterMobileNumber")}
+                  onChange={(e) => {
+                    validateDaughterMobileNumber(e.target.value);
+                  }}
+                />
+                {errors.daughterMobileNumber && <span className="text-red-500">{errors.daughterMobileNumber.message}</span>}
+              </div>
+
+              <div>
+                <InputField
+                  label={`${profileowner} Daughter Email`}
+                  type="email"
+                  {...register("daughterEmail")}
+                  onChange={(e) => {
+                    validateDaughterEmail(e.target.value);
+                  }}
+                />
+                {errors.daughterEmail && <span className="text-red-500">{errors.daughterEmail.message}</span>}
+              </div>
             </div>
-          </div>
 
 
             <div className="mt-6 flex justify-end space-x-4">

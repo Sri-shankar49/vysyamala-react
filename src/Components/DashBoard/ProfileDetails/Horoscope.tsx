@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import { MdModeEdit } from 'react-icons/md';
 import RasiGrid from '../../HoroDetails/RasiGrid';
