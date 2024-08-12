@@ -90,7 +90,7 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
   const { profile_img, profile_name, profile_id, profile_age, height, degree, profession, location, user_profile_views } = profile;
 
   return (
-    <Link to="/ProfileDetails" target="_blank">
+    // <Link to="/ProfileDetails" target="_blank">
       <div className="flex justify-between items-start space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5"
         onClick={handleCardClick}>
         <div className="w-full flex justify-between items-center">
@@ -103,12 +103,16 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
               {isBookmarked ? (
                 <MdBookmark
                   onClick={handleBookmark}
-                  className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  className="absolute top-2 right-2 text-red-500 text-[22px] cursor-pointer"
+
                 />
               ) : (
                 <MdBookmarkBorder
                   onClick={handleBookmark}
-                  className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  className="absolute top-2 right-2 text-red-500 text-[22px] cursor-pointer"
+
                 />
               )}
             </div>
@@ -220,6 +224,6 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
           </div>
         </div>
       </div>
-    </Link>
+    // </Link>
   );
 };
