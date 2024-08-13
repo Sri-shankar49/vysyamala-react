@@ -8,7 +8,7 @@ import { IoCalendar } from "react-icons/io5";
 import { FaUser, } from "react-icons/fa";
 // import { FaSuitcase } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
-import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+// import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 
 // Define the profile and API response types
 interface Profile {
@@ -57,7 +57,7 @@ export const MyVisitorsCard = () => {
         };
 
         fetchProfileData();
-    }, []);
+    },);
 
     if (!profile) {
         return <div>No Profile Viewer</div>;
@@ -154,7 +154,7 @@ export const MyVisitorsCard = () => {
                                 alt="Matching Score"
                                 className="w-full"
                             /> */}
-                            <MatchingScoreImg />
+                            {/* <MatchingScoreImg /> */}
                         </div>
                     </div>
                 </div>

@@ -17,12 +17,12 @@ export const DashBoardMyProfile: React.FC<DashBoardMyProfileProps> = ({ dashBoar
 
     // Declaration for Horoscope State
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedLanguage, setSelectedLanguage] = useState(null);
+    const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
     const [isHovered, setIsHovered] = useState(false);
 
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
+    // const toggleDropdown = () => {
+    //     setIsOpen(!isOpen);
+    // };
 
     const handleSelectLanguage = (language: string) => {
         setSelectedLanguage(language);

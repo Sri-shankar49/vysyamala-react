@@ -8,8 +8,8 @@ import apiClient from "../../API";
 
 
 // API URL
-const MARITAL_STATUS_API_URL = await apiClient.post(`/auth/Get_Marital_Status/`);
-const COMPLEXION_STATUS_API_URL = await apiClient.post(`/auth/Get_Complexion/`);
+// const MARITAL_STATUS_API_URL = await apiClient.post(`/auth/Get_Marital_Status/`);
+// const COMPLEXION_STATUS_API_URL = await apiClient.post(`/auth/Get_Complexion/`);
 
 // Calculate the minimum date of birth for age 18
 const getMinDOB = () => {
@@ -72,7 +72,7 @@ export const BasicDetailPopup: React.FC<BasicDetailsProps> = ({ onNext, onClose,
   useEffect(() => {
     const fetchMaritalStatus = async () => {
       try {
-        const response = MARITAL_STATUS_API_URL;
+        const response = await apiClient.post(`/auth/Get_Marital_Status/`);
         const options = Object.values(response.data) as MaritalStatusOption[];
         setMaritalStatusOptions(options);
       } catch (error) {
@@ -86,7 +86,7 @@ export const BasicDetailPopup: React.FC<BasicDetailsProps> = ({ onNext, onClose,
   useEffect(() => {
     const fetchComplexionStatus = async () => {
       try {
-        const response = COMPLEXION_STATUS_API_URL;
+        const response = await apiClient.post(`/auth/Get_Complexion/`);
         const options = Object.values(response.data) as ComplexionOption[];
         setComplexionOptions(options);
       } catch (error) {

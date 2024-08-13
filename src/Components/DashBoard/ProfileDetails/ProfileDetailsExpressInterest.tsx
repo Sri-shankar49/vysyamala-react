@@ -3,7 +3,7 @@ import { useState, useEffect, MouseEvent } from "react";
 // import { hideInterest } from "../../../redux/slices/interestSlice";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-import { IoArrowBackOutline } from "react-icons/io5";
+// import { IoArrowBackOutline } from "react-icons/io5";
 import { MdMessage, MdVerifiedUser } from "react-icons/md";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 import { IoDocumentText } from "react-icons/io5";
@@ -18,7 +18,7 @@ import { FaHeart } from "react-icons/fa6";
 import { FaTableList } from "react-icons/fa6";
 // import { ProfileSlick } from "./ProfileSlick";
 import { ProfileSlickView } from "../../LoginHome/ProfileDetailsView/ProfileSlickView";
-import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+// import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import { MdLocalPrintshop } from "react-icons/md";
 import { MdArrowDropDown } from "react-icons/md";
 // import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
@@ -160,9 +160,9 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
     const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
     const [isHovered, setIsHovered] = useState(false);
 
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
+    // const toggleDropdown = () => {
+    //     setIsOpen(!isOpen);
+    // };
 
     const handleSelectLanguage = (language: string) => {
         setSelectedLanguage(language);
@@ -368,8 +368,8 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                 </div>
 
                                 <div className="flex justify-center items-center space-x-10"
-                                // onMouseEnter={() => setIsHovered(true)}
-                                // onMouseLeave={() => setIsHovered(false)}
+                                onMouseEnter={() => setIsHovered(true)}
+                                onMouseLeave={() => setIsHovered(false)}
                                 >
                                     <div className="relative"
 

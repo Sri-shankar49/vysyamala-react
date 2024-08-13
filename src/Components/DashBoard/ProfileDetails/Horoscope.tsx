@@ -37,9 +37,8 @@ export const Horoscope = () => {
                     profile_id: 'VY240065'
                 });
                 const fetchedData = response.data.data;
-                sessionStorage.setItem('formattedDatarasi',fetchedData.rasi_kattam );
-                sessionStorage.setItem('formattedDatamsam',fetchedData.amsa_kattam);
-
+                sessionStorage.setItem('formattedDatarasi', fetchedData.rasi_kattam);
+                sessionStorage.setItem('formattedDatamsam', fetchedData.amsa_kattam);
 
                 setData({
                     tamilYear: fetchedData.time_of_birth || 'Not available',
@@ -58,7 +57,7 @@ export const Horoscope = () => {
                     dasa: fetchedData.dasa_name || 'Not available',
                     dasaBalance: fetchedData.dasa_balance || 'Not available',
                     chevaiDosham: fetchedData.chevvai_dosaham || 'Not available',
-                    sarpaDosham: fetchedData.ragu_dosham || 'Not available',
+                    sarpaDosham: fetchedData.sarpa_dosham || 'Not available', // Ensure this matches your API
                 });
             } catch (error) {
                 console.error('Error fetching horoscope data:', error);
@@ -89,20 +88,20 @@ export const Horoscope = () => {
                 place_of_birth: data.tamilMonth,
                 birthstar_name: data.tamilDay,
                 birth_rasi_name: data.teluguYear,
-                lagnam_didi: data.teluguMonth,
+                // lagnam_didi: data.teluguMonth,
                 nalikai: data.teluguDay,
                 rasi_kattam: data.rasi,
                 amsa_kattam: data.starPadham,
                 lagnam_didi: data.lagnam,
-                nalikai: data.nallikai,
+                nalikai_additional: data.nallikai, // Unique key
                 dasa_name: data.didi,
                 dasa_balance: data.dasaBalance,
-                ragu_dosham: data.suyaGothram,
-                ragu_dosham: data.madhulam,
-                dasa_name: data.dasa,
-                dasa_balance: data.dasaBalance,
+                ragu_dosham_suya: data.suyaGothram, // Unique key
+                ragu_dosham_madhulam: data.madhulam, // Unique key
+                dasa_name_additional: data.dasa, // Unique key
+                dasa_balance_additional: data.dasaBalance, // Unique key
                 chevvai_dosaham: data.chevaiDosham,
-                ragu_dosham: data.sarpaDosham
+                sarpa_dosham: data.sarpaDosham
             });
             console.log('Horoscope details updated:', response.data);
             setIsEditing(false);
@@ -111,8 +110,6 @@ export const Horoscope = () => {
             console.error('Error submitting horoscope details:', error);
         }
     };
-
-
 
     return (
         <div>

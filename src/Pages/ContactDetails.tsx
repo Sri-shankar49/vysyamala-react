@@ -11,7 +11,7 @@ import apiClient from "../API";
 
 
 // API call URLs
-const COUNTRY_API_URL = await apiClient.post(`/auth/Get_Country/`);
+// const COUNTRY_API_URL = await apiClient.post(`/auth/Get_Country/`);
 // const STATE_API_URL = await apiClient.post(`/auth/Get_State/`);
 // const CONTACT_REGISTRATION_API_URL = await apiClient.post(`/auth/Contact_registration/`);
 // const COUNTRY_DATA_API_URL = await apiClient.post(`/auth/Get_save_details/`);
@@ -118,7 +118,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
   useEffect(() => {
     const fetchCountryStatus = async () => {
       try {
-        const response = COUNTRY_API_URL;
+        const response = await apiClient.post(`/auth/Get_Country/`);
         const options = Object.values(response.data) as CountryOption[];
         setCountryOptions(options);
       } catch (error) {

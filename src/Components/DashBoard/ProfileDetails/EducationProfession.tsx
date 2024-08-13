@@ -49,7 +49,7 @@ export const EducationProfession = () => {
         setIsEditing(!isEditing);
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setData({
             ...data,
@@ -57,7 +57,7 @@ export const EducationProfession = () => {
         });
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         
         // Prepare the payload

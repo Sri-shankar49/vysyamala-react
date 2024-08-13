@@ -5,10 +5,9 @@ import { SuggestedProfiles } from '../../Components/LoginHome/SuggestedProfiles'
 
 interface DashBoardMutualInterestProps {
   dashBoardAgain: () => void;
-  profile: Profile; // Ensure that profile is passed here
 }
 
-export const DashBoardMutualInterest: React.FC<DashBoardMutualInterestProps> = ({ dashBoardAgain, profile }) => {
+export const DashBoardMutualInterest: React.FC<DashBoardMutualInterestProps> = ({ dashBoardAgain }) => {
   return (
     <div className="bg-grayBg">
       <div className="container mx-auto py-10">
@@ -21,7 +20,7 @@ export const DashBoardMutualInterest: React.FC<DashBoardMutualInterestProps> = (
         </div>
 
         <div>
-          <MutualInterestCard profile={profile} />
+          <MutualInterestCard />
         </div>
       </div>
       <SuggestedProfiles />

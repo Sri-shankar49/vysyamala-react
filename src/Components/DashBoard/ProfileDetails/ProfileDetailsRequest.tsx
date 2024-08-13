@@ -38,9 +38,9 @@ export const ProfileDetailsRequest: React.FC<ProfileDetailsRequestProps> = () =>
     const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
     const [isHovered, setIsHovered] = useState(false);
 
-    const toggleDropdown = () => {
-        setIsOpen(!isOpen);
-    };
+    // const toggleDropdown = () => {
+    //     setIsOpen(!isOpen);
+    // };
 
     const handleSelectLanguage = (language: string) => {
         setSelectedLanguage(language);

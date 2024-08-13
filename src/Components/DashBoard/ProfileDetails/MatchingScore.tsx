@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 
 const MatchingScore = () => {
     const [score, setScore] = useState(75);
@@ -17,7 +17,7 @@ const MatchingScore = () => {
         return 'bg-red-500';
     };
 
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newScore = parseInt(e.target.value, 10);
         if (!isNaN(newScore)) {
             setScore(newScore);

@@ -47,12 +47,19 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
     // Circular Progress bar value
     const percentage = 85;
 
+    // Use context safely
+    const context = useContext(ProfileContext);
 
-    const { dashboardDetails, fetchDashboardDetails } = useContext(ProfileContext);
+    if (!context) {
+        throw new Error('DashBoardGrid must be used within a ProfileProvider');
+    }
+
+    const { dashboardDetails, fetchDashboardDetails } = context;
 
     useEffect(() => {
         fetchDashboardDetails();
-    }, [fetchDashboardDetails]);
+    }, []);
+
 
     return (
         <div className="container mx-auto">
@@ -182,18 +189,39 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({ onDashBoardMatchin
                     {/* My Options */}
                     <div>
                         <div className="grid grid-rows-2 grid-cols-2 gap-5">
-                            <IndicatorCard onClick={onInterestSent} cardTitle="Interest Sent" cardCount={dashboardDetails?.sent_int_count} cardIcon={<PiTrayArrowUpFill />} />
-                            <IndicatorCard onClick={onViewedProfiles} cardTitle="Viewed Profiles" cardCount={dashboardDetails?.viewed_profile_count} cardIcon={<MdPreview />} />
-                            <IndicatorCard onClick={onMyVisitors} cardTitle="My Visitors" cardCount={dashboardDetails?.myvisitor_count} cardIcon={<FaUsers />} />
-                            <IndicatorCard cardTitle="Gallery" cardCount={"05"} cardIcon={<FaImages />} />
+                            <IndicatorCard
+                                onClick={onInterestSent}
+                                cardTitle="Interest Sent"
+                                cardCount={String(dashboardDetails?.sent_int_count || 0)}
+                                cardIcon={<PiTrayArrowUpFill />}
+                            />
+                            <IndicatorCard
+                                onClick={onViewedProfiles}
+                                cardTitle="Viewed Profiles"
+                                cardCount={String(dashboardDetails?.viewed_profile_count || 0)}
+                                cardIcon={<MdPreview />}
+                            />
+                            <IndicatorCard
+                                onClick={onMyVisitors}
+                                cardTitle="My Visitors"
+                                cardCount={String(dashboardDetails?.myvisitor_count || 0)}
+                                cardIcon={<FaUsers />}
+                            />
+                            <IndicatorCard cardTitle="Gallery" cardCount={"05"} cardIcon={<FaImages />} onClick={function (): void {
+                                throw new Error('Function not implemented.');
+                            }} />
                         </div>
 
                         {/* Other options */}
                         <div className="mt-5">
                             <div className="flex justify-between items-center gap-5">
                                 <OptionCard onClick={onPersonalNotes} cardTitle="Personal Notes" cardIcon={<IoDocumentText />} />
-                                <OptionCard cardTitle="Vys Assist" cardIcon={<BiSolidUserVoice />} />
-                                <OptionCard cardTitle="Spot on Error" cardIcon={<RiAlertFill />} />
+                                <OptionCard cardTitle="Vys Assist" cardIcon={<BiSolidUserVoice />} onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                }} />
+                                <OptionCard cardTitle="Spot on Error" cardIcon={<RiAlertFill />} onClick={function (): void {
+                                    throw new Error('Function not implemented.');
+                                }} />
                                 <OptionCard onClick={onOtherSettings} cardTitle="Other Settings" cardIcon={<MdManageAccounts />} />
 
                             </div>

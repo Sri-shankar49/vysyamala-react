@@ -7,22 +7,11 @@ import axios from 'axios';
 import { ProfileContext, Profile } from "../../../../ProfileContext";
 import { Link } from "react-router-dom";
 
-// import { Link } from "react-router-dom";
-
 interface GridCardProps {
-  profile: {
-    profile_id: string;
-    profile_name: string;
-    profile_age: number;
-    height: string;
-    profile_img: string;
-
-  };
+  profile: Profile; // Use Profile type here
 }
 
 export const GridCard: React.FC<GridCardProps> = ({ profile }) => {
-
-  // Bookmark state declaration
   const [isBookmarked, setIsBookmarked] = useState(false);
   const { addBookmark, removeBookmark, setSelectedProfiles } = useContext(ProfileContext) || {
     addBookmark: () => { },
@@ -45,12 +34,12 @@ export const GridCard: React.FC<GridCardProps> = ({ profile }) => {
       // Remove bookmark
       updatedBookmarks = updatedBookmarks.filter((item: Profile) => item.profile_id !== profile.profile_id);
       removeBookmark(profile.profile_id);
-      setSelectedProfiles((prevProfiles) => prevProfiles.filter(p => p.profile_id !== profile.profile_id));
+      setSelectedProfiles(updatedBookmarks);
     } else {
       // Add bookmark
       updatedBookmarks.push(profile);
       addBookmark(profile);
-      setSelectedProfiles((prevProfiles) => [...prevProfiles, profile]);
+      setSelectedProfiles(updatedBookmarks);
     }
 
     localStorage.setItem('bookmarkedProfiles', JSON.stringify(updatedBookmarks));
@@ -81,25 +70,14 @@ export const GridCard: React.FC<GridCardProps> = ({ profile }) => {
     }
   };
 
-  // const handleClick = (profileId: string) => {
-  //   const url = `/profiledetails?id=${profileId}`;
-  //   window.open(url, '_blank');
-  // };
-
   return (
-    // <div onClick={() => handleCardClick(profile.profile_id)}
-    <div onClick={handleCardClick}
-      className="relative w-11/12 rounded-xl shadow-md px-3 py-3 mx-auto">
-      {/* <Link to={`/ProfileDetails?id=${profile.profile_id}`} target="_blank"> */}
-
+    <div onClick={handleCardClick} className="relative w-11/12 rounded-xl shadow-md px-3 py-3 mx-auto">
       <div className="mb-3">
-        <img
-          src={profile.profile_img || GridProfileImg} alt={"default"} className="w-[275px]" />
+        <img src={profile.profile_img || GridProfileImg} alt={profile.profile_name || "default"} className="w-[275px]" />
       </div>
 
       <div>
         <Link to={`/ProfileDetails?id=${profile.profile_id}`}>
-
           <h4 className="text-secondary text-[20px] font-semibold cursor-pointer">
             {profile.profile_name}{" "}
             <span className="text-sm text-ashSecondary font-semibold">
@@ -107,7 +85,6 @@ export const GridCard: React.FC<GridCardProps> = ({ profile }) => {
             </span>
           </h4>
         </Link>
-
 
         <div className="flex justify-between items-center">
           <p className="text-primary flex items-center">
@@ -122,19 +99,14 @@ export const GridCard: React.FC<GridCardProps> = ({ profile }) => {
       {isBookmarked ? (
         <MdBookmark
           onClick={handleBookmark}
-          // className="absolute top-5 right-5 text-white text-[22px] cursor-pointer"
           className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
-
         />
       ) : (
         <MdBookmarkBorder
           onClick={handleBookmark}
-          // className="absolute top-5 right-5 text-white text-[22px] cursor-pointer"
           className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
-
         />
       )}
-      {/* </Link> */}
     </div>
   );
 };
