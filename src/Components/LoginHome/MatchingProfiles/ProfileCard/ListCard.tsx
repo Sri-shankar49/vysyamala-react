@@ -19,7 +19,7 @@ import {
   FaUser
 } from 'react-icons/fa6';
 import ProfileListImg from '../../../../assets/images/ProfileListImg.png';
-import MatchingScoreImg from '../../../../assets/images/MatchingScore.png';
+// import MatchingScoreImg from '../../../../assets/images/MatchingScore.png';
 import { ProfileContext, Profile } from '../../../../ProfileContext'; // Adjust the path as needed
 import { Link } from 'react-router-dom';
 import MatchingScore from '../../../DashBoard/ProfileDetails/MatchingScore';
@@ -51,12 +51,12 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
       // Remove bookmark
       updatedBookmarks = updatedBookmarks.filter((item: Profile) => item.profile_id !== profile.profile_id);
       removeBookmark(profile.profile_id);
-      setSelectedProfiles((prevProfiles) => prevProfiles.filter(p => p.profile_id !== profile.profile_id));
+      setSelectedProfiles(updatedBookmarks);
     } else {
       // Add bookmark
       updatedBookmarks.push(profile);
       addBookmark(profile);
-      setSelectedProfiles((prevProfiles) => [...prevProfiles, profile]);
+      setSelectedProfiles(updatedBookmarks);
     }
 
     localStorage.setItem('bookmarkedProfiles', JSON.stringify(updatedBookmarks));

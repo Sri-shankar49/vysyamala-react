@@ -45,7 +45,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
         const fetchMaritalStatuses = async () => {
             try {
                 const response = await axios.post('http://103.214.132.20:8000/auth/Get_Marital_Status/');
-                const status = Object.values(response.data);
+                const status = Object.values(response.data) as MaritalStatus[];
                 setMaritalStatuses(status);
             } catch (error) {
                 console.error("Error fetching marital statuses", error);
@@ -55,7 +55,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
         const fetchProfessions = async () => {
             try {
                 const response = await axios.post('http://103.214.132.20:8000/auth/Get_Profes_Pref/');
-                const professionList = Object.values(response.data);
+                const professionList = Object.values(response.data) as Profession[] ;
                 setProfessions(professionList);
             } catch (error) {
                 console.error("Error fetching professions", error);
@@ -65,7 +65,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
         const fetchEducationOptions = async () => {
             try {
                 const response = await axios.post('http://103.214.132.20:8000/auth/Get_Highest_Education/');
-                const educationList = Object.values(response.data);
+                const educationList = Object.values(response.data) as Education[];
                 setEducationOptions(educationList);
             } catch (error) {
                 console.error("Error fetching education options", error);
@@ -76,7 +76,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                 const response = await axios.post('http://103.214.132.20:8000/auth/Get_Birth_Star/', {
                     state_id: '' // or `null` depending on what the API expects
                 });
-                const starList = Object.values(response.data);
+                const starList = Object.values(response.data) as BirthStar[];
                 setBirthStars(starList);
             } catch (error) {
                 if (axios.isAxiosError(error)) {
@@ -91,7 +91,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
         const fetchIncomeOptions = async () => {
             try {
                 const response = await axios.post('http://103.214.132.20:8000/auth/Get_Annual_Income/');
-                const incomeList = Object.values(response.data);
+                const incomeList = Object.values(response.data) as Income[];
                 setIncomeOptions(incomeList);
             } catch (error) {
                 console.error("Error fetching income options", error);

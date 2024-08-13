@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";
 // import { showInterest } from "../../../redux/slices/interestSlice";
-import { RootState } from '../../../redux/store';
+// import { RootState } from '../../../redux/store';
 import { IoCalendar } from "react-icons/io5";
 import { FaPersonArrowUpFromLine } from "react-icons/fa6";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";

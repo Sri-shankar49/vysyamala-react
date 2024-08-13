@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { Profile, ProfileContext } from '../../ProfileContext'; // Adjust the path as needed
 // import { useDispatch } from "react-redux";
 // import { showInterest } from "../../redux/slices/interestSlice";
@@ -13,9 +13,9 @@ import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineGrid3X3 } from "react-icons/md";
 import { FaUser } from "react-icons/fa6";
 import { IoEye } from "react-icons/io5";
-import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
-import MatchingScoreImg from "../../assets/images/MatchingScore.png";
-import { Link, useNavigate } from "react-router-dom";
+// import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
+// import MatchingScoreImg from "../../assets/images/MatchingScore.png";
+import { useNavigate } from "react-router-dom";
 import MatchingScore from "../DashBoard/ProfileDetails/MatchingScore";
 
 export const WishlistCard: React.FC = () => {
@@ -25,20 +25,21 @@ export const WishlistCard: React.FC = () => {
   // State to track if the card is bookmarked or not
   const navigate = useNavigate();
 
-  const { selectedProfiles, bookmarkedProfiles, addBookmark, removeBookmark } = useContext(ProfileContext) || {
+  // const { selectedProfiles, bookmarkedProfiles, addBookmark, removeBookmark } = useContext(ProfileContext) || {
+  const { selectedProfiles } = useContext(ProfileContext) || {
     selectedProfiles: [],
     bookmarkedProfiles: [],
     addBookmark: () => { },
     removeBookmark: () => { }
   };
 
-  const handleBookmark = (profile: Profile) => {
-    if (bookmarkedProfiles.find(bp => bp.profile_id === profile.profile_id)) {
-      removeBookmark(profile.profile_id);
-    } else {
-      addBookmark(profile);
-    }
-  };
+  // const handleBookmark = (profile: Profile) => {
+  //   if (bookmarkedProfiles.find(bp => bp.profile_id === profile.profile_id)) {
+  //     removeBookmark(profile.profile_id);
+  //   } else {
+  //     addBookmark(profile);
+  //   }
+  // };
 
   const handleProfileClick = (profileId: string) => {
     navigate(`/ProfileDetails?id=${profileId}`);
@@ -93,7 +94,7 @@ export const WishlistCard: React.FC = () => {
                       <div className="flex items-center space-x-3 mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <IoCalendar className="mr-2" />
-                          {profile.age || 'N/A'} yrs
+                          {profile.profile_age || 'N/A'} yrs
                         </p>
 
                         <p className="text-gray font-semibold">|</p>

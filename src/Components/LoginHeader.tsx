@@ -12,7 +12,7 @@ import { FiLogOut } from "react-icons/fi";
 export const LoginHeader: React.FC = () => {
 
   // Retrieve token from sessionStorage
-  const token = sessionStorage.getItem("token");
+  // const token = sessionStorage.getItem("token");
 
   // Function to handle logout
   const handleLogout = () => {
@@ -23,7 +23,7 @@ export const LoginHeader: React.FC = () => {
 
   // Notification Dropdown State Declaration
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
-  const dropdownRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null); // Ensure the ref is typed correctly
 
   const handleNotificationClick = (e: { stopPropagation: () => void; }) => {
     e.stopPropagation(); // Prevent the click event from propagating to the document
@@ -31,11 +31,12 @@ export const LoginHeader: React.FC = () => {
   };
 
   // On Click outside of it 
-  const handleClickOutside = (event: { target: unknown; }) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
       setIsNotificationVisible(false);
     }
   };
+  
 
   useEffect(() => {
     if (isNotificationVisible) {

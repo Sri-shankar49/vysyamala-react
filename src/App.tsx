@@ -1,6 +1,6 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import MainLayout from './Layout/MainLayout';
-import LoginLayout from './Layout/LoginLayout';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import MainLayout from "./Layout/MainLayout";
+import LoginLayout from "./Layout/LoginLayout";
 
 // Pages Components
 import { HomePage } from './Pages/HomePage';
@@ -29,7 +29,7 @@ import GridListView from './Components/LoginHome/MatchingProfiles/GridListView';
 import ProtectedRoute from './Components/ProtectorRoute';
 
 function App() {
-  const token = sessionStorage.getItem('token');
+  const token = sessionStorage.getItem("token");
   console.log("Current token:", token); // Log token value for debugging
 
   return (
@@ -39,7 +39,9 @@ function App() {
           <Route element={<MainLayout />}>
             <Route
               path="/"
-              element={token ? <Navigate to="/LoginHome" replace /> : <HomePage />}
+              element={
+                token ? <Navigate to="/LoginHome" replace /> : <HomePage />
+              }
             />
             <Route path="/ThankYou" element={<ThankYou />} />
             <Route path="/ContactDetails" element={<ContactDetails />} />

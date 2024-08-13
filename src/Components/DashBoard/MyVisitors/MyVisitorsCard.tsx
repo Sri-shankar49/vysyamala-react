@@ -8,7 +8,7 @@ import { IoCalendar, IoSchool } from "react-icons/io5";
 import { FaUser, } from "react-icons/fa";
 // import { FaSuitcase } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
-import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+// import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import MatchingScore from "../ProfileDetails/MatchingScore";
 import { FaLocationDot, FaPersonArrowUpFromLine, FaSuitcase } from "react-icons/fa6";
 
@@ -59,7 +59,7 @@ export const MyVisitorsCard = () => {
         };
 
         fetchProfileData();
-    }, []);
+    },);
 
     if (!profile) {
         return <div>No Profile Viewer</div>;

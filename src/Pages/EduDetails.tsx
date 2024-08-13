@@ -26,7 +26,7 @@ const schema = zod.object({
 
 
 // API call
-const COUNTRY_API_URL = await apiClient.post(`/auth/Get_Country/`);
+// const COUNTRY_API_URL = await apiClient.post(`/auth/Get_Country/`);
 // const STATE_API_URL = await apiClient.post(`/auth/Get_State/`);
 
 interface EduDetailsInputs {
@@ -200,7 +200,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   useEffect(() => {
     const fetchCountryStatus = async () => {
       try {
-        const response = COUNTRY_API_URL;
+        const response = await apiClient.post(`/auth/Get_Country/`);
         const options = Object.values(response.data) as CountryOption[];
         setCountryOptions(options);
       } catch (error) {

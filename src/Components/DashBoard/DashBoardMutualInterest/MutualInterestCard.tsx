@@ -1,14 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ProfileListImg from "../../../assets/images/ProfileListImg.png";
-import { MdVerifiedUser, MdBookmark, MdBookmarkBorder, MdOutlineGrid3X3 } from "react-icons/md";
-import { IoCalendar, IoEye } from "react-icons/io5";
-import { FaUser } from "react-icons/fa6";
+import { MdVerifiedUser, MdBookmark, MdBookmarkBorder, MdOutlineGrid3X3, MdStars } from "react-icons/md";
+import { IoCalendar, IoEye, IoSchool } from "react-icons/io5";
+import { FaUser, FaSuitcase } from "react-icons/fa";
 import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import { Link } from "react-router-dom";
-import { MdStars } from "react-icons/md";
-import { IoSchool } from "react-icons/io5";
-import { FaSuitcase } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 
 // Define the Profile interface
@@ -23,19 +20,18 @@ export interface Profile {
   profile_views: number;
 }
 
-export const MutualInterestCard = () => {
+export const MutualInterestCard: React.FC = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [isBookmarked, setIsBookmarked] = useState<{ [key: string]: boolean }>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
 
-
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
         const response = await axios.post("http://103.214.132.20:8000/auth/Get_mutual_intrests/", {
-          profile_id: loginuser_profileId // Replace with actual profile_id as needed
+          profile_id: loginuser_profileId
         });
 
         if (response.data.Status === 1) {
@@ -56,9 +52,9 @@ export const MutualInterestCard = () => {
     };
 
     fetchProfiles();
-  }, []);
+  }, [loginuser_profileId]);
 
-  const handleBookmark = (profileId: string) => {
+  const handleBookmarkToggle = (profileId: string) => {
     setIsBookmarked((prev) => ({
       ...prev,
       [profileId]: !prev[profileId],
@@ -80,117 +76,134 @@ export const MutualInterestCard = () => {
   return (
     <div className="border-b-[1px] border-footer-text-gray">
       {profiles.map((profile) => (
-        <div key={profile.mutint_profileid} className="flex justify-start items-center space-x-5 relative rounded-xl shadow-sm py-5">
-          <Link to="/ProfileDetails" className="w-full flex justify-between items-center">
-            <div className="flex justify-between items-center space-x-5">
-              {/* Profile Image */}
-              <div className="relative">
-                <img src={profile.mutint_Profile_img || ProfileListImg} alt="Profile image" />
-                {isBookmarked[profile.mutint_profileid] ? (
-                  <MdBookmark
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleBookmark(profile.mutint_profileid);
-                    }}
-                    className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                  />
-                ) : (
-                  <MdBookmarkBorder
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleBookmark(profile.mutint_profileid);
-                    }}
-                    className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                  />
-                )}
-              </div>
-
-              {/* Profile Details */}
-              <div className="">
-                {/* Name & Profile ID */}
-                <div className="relative mb-2">
-                  <div className="flex items-center">
-                    <h5 className="text-[20px] text-secondary font-semibold cursor-pointer mr-2">
-                      {profile.mutint_profile_name || "Unknown"}
-                    </h5>
-                    <span className="text-sm text-ashSecondary mr-2">
-                      ({profile.mutint_profileid || "N/A"})
-                    </span>
-                    <MdVerifiedUser className="text-checkGreen" />
-                  </div>
-                </div>
-
-                {/* Age */}
-                <div className="flex items-center space-x-3 mb-2">
-                  <p className="flex items-center text-ashSecondary font-semibold">
-                    <IoCalendar className="mr-2" />
-                    {profile.mutint_profile_age || "N/A"} yrs
-                  </p>
-                </div>
-
-                {/* Other Details */}
-                <div className="mb-2">
-                  <p className="flex items-center text-ashSecondary font-semibold">
-                    <MdStars className="mr-2" />
-                    Uthiram
-                  </p>
-                </div>
-                <div className="mb-2">
-                  <p className="flex items-center text-ashSecondary font-semibold">
-                    <IoSchool className="mr-2" />
-                    Bachelors - Arts/Science/Commerce/B Phil
-                  </p>
-                </div>
-                <div className="mb-2">
-                  <p className="flex items-center text-ashSecondary font-semibold">
-                    <FaSuitcase className="mr-2" />
-                    Employed
-                  </p>
-                </div>
-                <div className="mb-2">
-                  <p className="flex items-center text-ashSecondary font-semibold">
-                    <FaLocationDot className="mr-2" />
-                    Chennai
-                  </p>
-                </div>
-
-                {/* Tags */}
-                <div className="flex justify-start items-center space-x-3">
-                  <div>
-                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
-                    </p>
-                  </div>
-                  <div>
-                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <FaUser className="mr-2" /> {profile.user_status}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <IoCalendar className="mr-2" /> Last visit on {profile.last_visit}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <IoEye className="mr-2" /> {profile.profile_views} views
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Matching Score */}
-            <div>
-              <img
-                src={MatchingScoreImg}
-                alt="Matching Score"
-                className="w-full"
-              />
-            </div>
-          </Link>
-        </div>
+        <ProfileCard
+          key={profile.mutint_profileid}
+          profile={profile}
+          isBookmarked={isBookmarked[profile.mutint_profileid] || false}
+          onBookmarkToggle={() => handleBookmarkToggle(profile.mutint_profileid)}
+        />
       ))}
+    </div>
+  );
+};
+
+interface ProfileCardProps {
+  profile: Profile;
+  isBookmarked: boolean;
+  onBookmarkToggle: () => void;
+}
+
+const ProfileCard: React.FC<ProfileCardProps> = ({ profile, isBookmarked, onBookmarkToggle }) => {
+  return (
+    <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-sm py-5">
+      <Link to="/ProfileDetails" className="w-full flex justify-between items-center">
+        <div className="flex justify-between items-center space-x-5">
+          {/* Profile Image */}
+          <div className="relative">
+            <img src={profile.mutint_Profile_img || ProfileListImg} alt="Profile image" />
+            {isBookmarked ? (
+              <MdBookmark
+                onClick={(e) => {
+                  e.preventDefault();
+                  onBookmarkToggle();
+                }}
+                className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+              />
+            ) : (
+              <MdBookmarkBorder
+                onClick={(e) => {
+                  e.preventDefault();
+                  onBookmarkToggle();
+                }}
+                className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+              />
+            )}
+          </div>
+
+          {/* Profile Details */}
+          <div>
+            {/* Name & Profile ID */}
+            <div className="relative mb-2">
+              <div className="flex items-center">
+                <h5 className="text-[20px] text-secondary font-semibold cursor-pointer mr-2">
+                  {profile.mutint_profile_name || "Unknown"}
+                </h5>
+                <span className="text-sm text-ashSecondary mr-2">
+                  ({profile.mutint_profileid || "N/A"})
+                </span>
+                <MdVerifiedUser className="text-checkGreen" />
+              </div>
+            </div>
+
+            {/* Age */}
+            <div className="flex items-center space-x-3 mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <IoCalendar className="mr-2" />
+                {profile.mutint_profile_age || "N/A"} yrs
+              </p>
+            </div>
+
+            {/* Other Details */}
+            <div className="mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <MdStars className="mr-2" />
+                Uthiram
+              </p>
+            </div>
+            <div className="mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <IoSchool className="mr-2" />
+                Bachelors - Arts/Science/Commerce/B Phil
+              </p>
+            </div>
+            <div className="mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <FaSuitcase className="mr-2" />
+                Employed
+              </p>
+            </div>
+            <div className="mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <FaLocationDot className="mr-2" />
+                Chennai
+              </p>
+            </div>
+
+            {/* Tags */}
+            <div className="flex justify-start items-center space-x-3">
+              <div>
+                <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                  <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
+                </p>
+              </div>
+              <div>
+                <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                  <FaUser className="mr-2" /> {profile.user_status}
+                </p>
+              </div>
+              <div>
+                <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                  <IoCalendar className="mr-2" /> Last visit on {profile.last_visit}
+                </p>
+              </div>
+              <div>
+                <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                  <IoEye className="mr-2" /> {profile.profile_views} views
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Matching Score */}
+        <div>
+          <img
+            src={MatchingScoreImg}
+            alt="Matching Score"
+            className="w-full"
+          />
+        </div>
+      </Link>
     </div>
   );
 };

@@ -69,9 +69,9 @@ export const MyProfile = () => {
 
 
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
+  // const toggleDropdown = () => {
+  //   setIsOpen(!isOpen);
+  // };
 
   const handleSelectLanguage = (language: string) => {
     setSelectedLanguage(language);
