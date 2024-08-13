@@ -89,7 +89,7 @@ export const GridCard: React.FC<GridCardProps> = ({ profile }) => {
   return (
     // <div onClick={() => handleCardClick(profile.profile_id)}
     <div onClick={handleCardClick}
-      className="relative w-11/12 rounded-xl shadow-md px-3 py-3 mx-auto">
+      className="relative sm:w-fit md:w-11/12 rounded-xl shadow-md px-3 py-3 mx-auto">
       {/* <Link to={`/ProfileDetails?id=${profile.profile_id}`} target="_blank"> */}
 
       <div className="mb-3">

@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ProfileListImg from "../../../assets/images/ProfileListImg.png";
-import { MdVerifiedUser, MdBookmark, MdBookmarkBorder, MdOutlineGrid3X3 } from "react-icons/md";
-import { IoCalendar } from "react-icons/io5";
+import { MdVerifiedUser, MdBookmark, MdBookmarkBorder, MdOutlineGrid3X3, MdStars } from "react-icons/md";
+import { IoCalendar, IoSchool } from "react-icons/io5";
 // import { FaPersonArrowUpFromLine } from "react-icons/fa";
 // import { FaPersonArrowUpFromLine } from "react-icons/fa";
 import { FaUser, } from "react-icons/fa";
 // import { FaSuitcase } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+import MatchingScore from "../ProfileDetails/MatchingScore";
+import { FaLocationDot, FaPersonArrowUpFromLine, FaSuitcase } from "react-icons/fa6";
 
 // Define the profile and API response types
 interface Profile {
@@ -96,15 +98,59 @@ export const MyVisitorsCard = () => {
                                 </h5>
                             </div>
 
+                            {/* Years & Height */}
+                            <div className="flex items-center space-x-3 mb-2">
+                                <p className="flex items-center text-ashSecondary font-semibold">
+                                    <IoCalendar className="mr-2" />
+                                    28 yrs
+                                </p>
+
+                                <p className="text-gray font-semibold">|</p>
+
+                                <p className="flex items-center text-ashSecondary font-semibold">
+                                    <FaPersonArrowUpFromLine className="mr-2" />
+                                    5ft 10in (177 cms)
+                                </p>
+                            </div>
+
+                            {/* Uthiram */}
+                            <div className="mb-2">
+                                <p className="flex items-center text-ashSecondary font-semibold">
+                                    <MdStars className="mr-2" />
+                                    Uthiram
+                                </p>
+                            </div>
+
+                            {/* Bachelors */}
+                            <div className="mb-2">
+                                <p className="flex items-center text-ashSecondary font-semibold">
+                                    <IoSchool className="mr-2" />
+                                    Bachelors - Arts/Science/Commerce/B Phil
+                                </p>
+                            </div>
+
+                            {/* Employed */}
+                            <div className="mb-2">
+                                <p className="flex items-center text-ashSecondary font-semibold">
+                                    <FaSuitcase className="mr-2" />
+                                    Employed
+                                </p>
+                            </div>
+
+                            {/* Location */}
+                            <div className="mb-2">
+                                <p className="flex items-center text-ashSecondary font-semibold">
+                                    <FaLocationDot className="mr-2" />
+                                    Chennai
+                                </p>
+                            </div>
+
                             {/* Age */}
                             <div className="flex items-center space-x-3 mb-2">
                                 <p className="flex items-center text-ashSecondary font-semibold">
                                     <IoCalendar className="mr-2" />
                                     {profile.viwed_profile_age || "Unknown Age"} yrs
                                 </p>
-
-
-
 
                             </div>
 
@@ -154,7 +200,7 @@ export const MyVisitorsCard = () => {
                                 alt="Matching Score"
                                 className="w-full"
                             /> */}
-                            <MatchingScoreImg />
+                            <MatchingScore />
                         </div>
                     </div>
                 </div>

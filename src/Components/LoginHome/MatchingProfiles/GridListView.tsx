@@ -56,7 +56,7 @@ export const GridListView: React.FC = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="grid grid-rows-1 grid-cols-3 gap-5 my-5">
+    <div className="grid grid-rows-1 md:grid-cols-3 gap-5 my-5">
       {profiles.length > 0 ? (
         profiles.map(profile => (
           <GridListCard key={profile.profile_id} profileId={profile.profile_id} />

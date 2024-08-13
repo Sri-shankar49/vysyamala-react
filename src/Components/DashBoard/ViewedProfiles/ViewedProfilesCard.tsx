@@ -12,6 +12,7 @@ import { FaUser } from "react-icons/fa6";
 import { IoEye } from "react-icons/io5";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+import MatchingScore from "../ProfileDetails/MatchingScore";
 
 // Define types for API response
 interface Profile {
@@ -158,11 +159,12 @@ export const ViewedProfilesCard = () => {
                         {/* Matching Score */}
                         <div>
                             <div>
-                                <img
+                                {/* <img
                                     src={MatchingScoreImg}
                                     alt="Matching Score"
                                     className="w-full"
-                                />
+                                /> */}
+                                <MatchingScore />
                             </div>
                         </div>
                     </div>

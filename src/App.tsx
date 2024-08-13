@@ -18,6 +18,7 @@ import { LoginHome } from './Pages/AfterLogin/LoginHome';
 import Search from './Pages/AfterLogin/Search';
 import { DashBoard } from './Pages/AfterLogin/DashBoard';
 import { Wishlist } from './Pages/AfterLogin/Wishlist';
+import { Notifications } from './Pages/AfterLogin/Notifications';
 import { Messages } from './Pages/AfterLogin/Messages';
 import { MyProfile } from './Pages/AfterLogin/MyProfile';
 import { ProfileDetails } from './Pages/AfterLogin/ProfileDetails';
@@ -59,6 +60,7 @@ function App() {
               <Route path="/DashBoard" element={<DashBoard />} />
               <Route path="/Wishlist" element={<Wishlist />} />
               <Route path="/Messages" element={<Messages />} />
+              <Route path="/Notifications" element={<Notifications />} />
               <Route path="/MyProfile" element={<MyProfile />} />
               <Route path="/ProfileDetails" element={<ProfileDetails />} />
               <Route path="/ProfileGrid" element={<ProfileGrid />} />

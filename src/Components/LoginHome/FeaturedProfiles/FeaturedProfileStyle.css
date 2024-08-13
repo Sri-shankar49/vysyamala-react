@@ -12,7 +12,10 @@
 .featuredProfileStyle .slick-next:before{
   color: #fff !important;
   font-size: 30px !important;
+}
 
+.featuredProfileStyle .slick-dots li button:before {
+  color: #fff !important;
 }
 
 
