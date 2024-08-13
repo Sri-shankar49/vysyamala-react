@@ -5,6 +5,7 @@ import { MdVerifiedUser, MdBookmark, MdBookmarkBorder, MdStars, MdOutlineGrid3X3
 import { IoCalendar, IoSchool, IoEye } from "react-icons/io5";
 import { FaPersonArrowUpFromLine, FaSuitcase, FaLocationDot, FaUser } from "react-icons/fa6";
 import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+import MatchingScore from "../ProfileDetails/MatchingScore";
 
 // Define the Profile interface
 export interface Profile {
@@ -39,12 +40,12 @@ export const InterestSentCard = () => {
                 setLoading(false);
                 return;
             }
-    
+
             try {
                 const response = await axios.post('http://103.214.132.20:8000/auth/My_intrests_list/', {
                     profile_id: loginuser_profileId
                 });
-    
+
                 // Check the response status
                 if (response.data.Status === 1) {
                     setProfiles(response.data.data.profiles);
@@ -70,13 +71,13 @@ export const InterestSentCard = () => {
                 setLoading(false);
             }
         };
-    
+
         fetchProfiles();
     }, [loginuser_profileId]);
-    
-    
-    
-    
+
+
+
+
 
     if (loading) {
         return <p>Loading profiles...</p>;
@@ -95,7 +96,7 @@ export const InterestSentCard = () => {
             {profiles.map(profile => (
                 <div key={profile.myint_profileid} className="flex justify-start items-center space-x-5 relative rounded-xl shadow-sm py-5">
                     <div className="w-full flex justify-between items-center">
-                        <div className="flex justify-between items-start space-x-5">    
+                        <div className="flex justify-between items-start space-x-5">
                             {/* Profile Image */}
                             <div className="relative">
                                 <img src={profile.myint_Profile_img || ProfileListImg} alt="Profile-image" />
@@ -219,11 +220,12 @@ export const InterestSentCard = () => {
                         {/* Matching Score */}
                         <div>
                             <div>
-                                <img
+                                {/* <img
                                     src={MatchingScoreImg}
                                     alt="Matching Score"
                                     className="w-full"
-                                />
+                                /> */}
+                                <MatchingScore />
                             </div>
                         </div>
                     </div>

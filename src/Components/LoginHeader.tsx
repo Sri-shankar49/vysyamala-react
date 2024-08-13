@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import VysyamalaLogo from "../assets/icons/VysyamalaLogo.png";
 import ProfileImg from "../assets/icons/profileRound.png";
 import { MdMessage } from "react-icons/md";
-import { FaBell } from "react-icons/fa";
+import { FaBell, FaBars, FaTimes } from "react-icons/fa";
 import NotificationsImg from "../assets/images/NotificationsImg.png";
 import { Link, NavLink } from "react-router-dom";
 import { FaCircleUser } from "react-icons/fa6";
@@ -125,64 +125,50 @@ export const LoginHeader: React.FC = () => {
   useEffect(() => {
     getNotification();
   },[]);
+  // Menu Toggle State
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <div>
-      <div>
-        {/* <h2>LoginHome</h2> */}
-        {/* <p>Token: {token}</p> */}
-        {/* <button>Logout</button> */}
-      </div>
       <header className="transition-all duration-300 z-[1]">
-        <div className="container mx-auto flex justify-between items-center py-5 bg-transparent">
+        <div className="container mx-auto flex justify-between items-center py-5 px-4 sm:px-6 lg:px-8 bg-transparent">
           <div>
             <Link to="/LoginHome">
               <img src={VysyamalaLogo} alt="Vysyamala-Logo" className="w-36" />
             </Link>
           </div>
 
-          <nav className="flex items-center space-x-10">
-            <ul className="flex justify-center items-center text-ash space-x-12">
-              <NavLink
-                to="/LoginHome"
-                className="active-nav"
-                aria-current="page"
-              >
-                <li className="text-[16px] cursor-pointer font-medium px-3">
-                  Home
-                </li>
+          <nav className="flex items-center space-x-4 sm:space-x-10">
+            {/* Hamburger Button */}
+            <div className="block lg:hidden">
+              <button onClick={toggleMenu} className="text-2xl">
+                {isMenuOpen ? <FaTimes /> : <FaBars />}
+              </button>
+            </div>
+
+            {/* Main Menu */}
+            <ul className={`flex-col lg:flex-row lg:flex-wrap justify-center items-center text-ash space-x-4 sm:space-x-12 lg:flex ${isMenuOpen ? "flex" : "hidden"}`}>
+              <NavLink to="/LoginHome" className="active-nav" aria-current="page">
+                <li className="text-[16px] cursor-pointer font-medium px-3">Home</li>
               </NavLink>
 
               <NavLink to="/Search" aria-current="page" className="active-nav">
-                <li className="text-[16px] cursor-pointer font-medium">
-                  Search
-                </li>
+                <li className="text-[16px] cursor-pointer font-medium">Search</li>
               </NavLink>
 
-              <NavLink
-                to="/Dashboard"
-                aria-current="page"
-                className="active-nav"
-              >
-                <li className="text-[16px] cursor-pointer font-medium px-3">
-                  Dashboard
-                </li>
+              <NavLink to="/Dashboard" aria-current="page" className="active-nav">
+                <li className="text-[16px] cursor-pointer font-medium px-3">Dashboard</li>
               </NavLink>
 
-              <NavLink
-                to={"/Wishlist"}
-                aria-current="page"
-                className="active-nav"
-              >
-                <li className="text-[16px] cursor-pointer font-medium px-3">
-                  Wishlist
-                </li>
+              <NavLink to="/Wishlist" aria-current="page" className="active-nav">
+                <li className="text-[16px] cursor-pointer font-medium px-3">Wishlist</li>
               </NavLink>
 
-              <NavLink
-                to={"/Messages"}
-                aria-current="page"
-                className="active-nav"
-              >
+              <NavLink to="/Messages" aria-current="page" className="active-nav">
                 <li className="text-[16px] cursor-pointer font-medium px-3">
                   <MdMessage className="text-[22px]" />
                 </li>
@@ -207,25 +193,15 @@ export const LoginHeader: React.FC = () => {
                 {isNotificationVisible && (
                   <div
                     ref={dropdownRef}
-                    className="notification-dropdown absolute top-16 right-0 translate-x-2/4 w-[30rem] bg-white rounded-md shadow-lg py-1 z-20"
-                  >
-                    <h4 className="text-vysyamalaBlack text-[20px] font-bold px-3 py-3">
-                      Notifications
-                    </h4>
+                    className="notification-dropdown absolute top-16 right-0 translate-x-2/4 w-full sm:w-[30rem] bg-white rounded-md shadow-lg py-1 z-20">
+                    <h4 className="text-vysyamalaBlack text-[20px] font-bold px-3 py-3">Notifications</h4>
 
                     <div className="h-96 overflow-y-auto">
                       {/* Express Interest */}
-
-                      {NotificationData.length > 5
-                        ? NotificationData.slice(0, 5).map((notification) => (
-                          <div className="bg-lightFade-pink flex items-start border-b-[1px] border-gray px-3 py-3 space-x-5" key={notification.id}>
-                            <div>
-                              <img
-                                src={notification.notify_img}
-                                alt={notification.notify_profile_name}
-                                className="w-full"
-                              />
-                            </div>
+                      <div className="bg-lightFade-pink flex items-start border-b-[1px] border-gray px-3 py-3 space-x-5">
+                        <div>
+                          <img src={NotificationsImg} alt="Harini Image" className="w-full" />
+                        </div>
 
                             <div>
                               <h5 className="text-vysyamalaBlack font-semibold">
@@ -336,7 +312,7 @@ export const LoginHeader: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Change in Photo */}
+                      {/* Change in Annual Income */}
                       <div className="bg-white flex items-start border-b-[1px] border-gray px-3 py-3 space-x-5">
                         <div>
                           <img
@@ -362,29 +338,22 @@ export const LoginHeader: React.FC = () => {
                     </div>
 
                     <div className="text-center px-3 py-3">
-                      <button onClick={() => readNotification()} className="w-full rounded-md text-main py-3 font-semibold hover:bg-gradient hover:text-white">
-                        Load more
-                      </button>
+                      <Link to="/Notifications">
+                        <button className="w-full rounded-md text-main py-3 font-semibold hover:bg-gradient hover:text-white">Load more</button>
+                      </Link>
                     </div>
                   </div>
                 )}
               </li>
 
               {/* Upgrade Button */}
-              <NavLink
-                to={"/MembershipPlan"}
-                aria-current="page"
-                className="active-nav"
-              >
-                <li className="bg-gradientLight rounded-[6px] py-[8px] px-[24px] text-white text-[16px] font-semibold cursor-pointer">
-                  Upgrade
-                </li>
-              </NavLink>
+              <li className="bg-gradientLight rounded-[6px] py-[8px] px-[16px] sm:px-[24px] text-white text-[16px] font-semibold cursor-pointer">
+                Upgrade
+              </li>
             </ul>
 
             {/* Profile Image on hover */}
-            <div
-              className="border-l-2 border-l-ashSecondary pl-8 relative inline-block"
+            <div className="border-l-2 border-l-ashSecondary pl-4 sm:pl-8 relative inline-block"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
@@ -394,19 +363,14 @@ export const LoginHeader: React.FC = () => {
                 className="rounded-full cursor-pointer"
               />
               {isHovered && (
-                <div className="absolute top-9 right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
+                <div className="absolute top-9 right-0 mt-2 w-40 sm:w-48 bg-white rounded-md shadow-lg py-1 z-20">
                   <Link to="/MyProfile">
                     <div className="block px-4 py-2 text-gray-800 hover:bg-gray">
-                      <FaCircleUser className="text-[18px] inline mr-2" />{" "}
-                      Profile
+                      <FaCircleUser className="text-[18px] inline mr-2" /> Profile
                     </div>
                   </Link>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-gray-800 hover:bg-gray"
-                  >
-                    <MdManageAccounts className="text-[18px] inline mr-2" />{" "}
-                    Settings
+                  <a href="#" className="block px-4 py-2 text-gray-800 hover:bg-gray">
+                    <MdManageAccounts className="text-[18px] inline mr-2" /> Settings
                   </a>
                   <a
                     href="#"

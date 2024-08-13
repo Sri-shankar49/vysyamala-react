@@ -11,6 +11,7 @@ import {
 } from "react-icons/md";
 import { IoCalendar, IoSchool, IoEye } from "react-icons/io5";
 import { FaPersonArrowUpFromLine, FaSuitcase, FaLocationDot, FaUser } from "react-icons/fa6";
+import MatchingScore from "../ProfileDetails/MatchingScore";
 
 interface GetProfListMatch {
   profile_id: string;
@@ -194,11 +195,12 @@ export const PersonalNotesCard = () => {
             {/* Matching Score */}
             <div>
               <div>
-                <img
+                {/* <img
                   src={MatchingScoreImg}
                   alt="Matching Score"
                   className="w-full"
-                />
+                /> */}
+                <MatchingScore />
               </div>
             </div>
           </div>

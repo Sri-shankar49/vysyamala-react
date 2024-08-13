@@ -69,8 +69,8 @@ export const MatchingProfiles = () => {
           </h4>
         </div>
 
-        <div className="bg-white flex justify-center items-center rounded-lg space-x-5 shadow-lg my-5 px-3 py-3">
-          <div className="relative w-[150rem]">
+        <div className="bg-white flex justify-center items-center rounded-lg space-x-5 shadow-lg my-5 px-3 py-3 md:flex-row sm:flex-col">
+          <div className="relative md:w-[150rem] sm:w-full">
             <input
               type="text"
               placeholder="Search Profile ID on Matching Profiles"
@@ -79,7 +79,7 @@ export const MatchingProfiles = () => {
             <HiOutlineSearch className="absolute top-4 text-[22px] text-ashSecondary" />
           </div>
 
-          <div className="relative w-[100rem]">
+          <div className="relative md:w-[100rem] sm:w-full">
             <select
               name=""
               id=""

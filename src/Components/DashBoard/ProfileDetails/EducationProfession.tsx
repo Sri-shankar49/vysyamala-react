@@ -93,7 +93,7 @@ export const EducationProfession = () => {
             </h2>
 
             <form onSubmit={handleSubmit}>
-                <div className="grid grid-rows-1 grid-cols-2">
+                <div className="grid grid-rows-1 grid-cols-2 gap-4">
                     <div>
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Education Level :
                             {isEditing ? (

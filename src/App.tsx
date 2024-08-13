@@ -3,29 +3,30 @@ import MainLayout from "./Layout/MainLayout";
 import LoginLayout from "./Layout/LoginLayout";
 
 // Pages Components
-import { HomePage } from "./Pages/HomePage";
-import { ThankYou } from "./Pages/ThankYou";
-import ContactDetails from "./Pages/ContactDetails";
-import UploadImages from "./Pages/UploadImages";
-import FamilyDetails from "./Pages/FamilyDetails";
-import EduDetails from "./Pages/EduDetails";
-import HoroDetails from "./Pages/HoroDetails";
-import PartnerSettings from "./Pages/PartnerSettings";
-import { MembershipPlan } from "./Pages/MembershipPlan";
-import { PayNow } from "./Pages/PayNow";
-import { ThankYouReg } from "./Pages/ThankYouReg";
-import { LoginHome } from "./Pages/AfterLogin/LoginHome";
-import Search from "./Pages/AfterLogin/Search";
-import { DashBoard } from "./Pages/AfterLogin/DashBoard";
-import { Wishlist } from "./Pages/AfterLogin/Wishlist";
-import { Messages } from "./Pages/AfterLogin/Messages";
-import { MyProfile } from "./Pages/AfterLogin/MyProfile";
-import { ProfileDetails } from "./Pages/AfterLogin/ProfileDetails";
-import { ProfileProvider } from "./ProfileContext";
-import ProfileGrid from "./Components/LoginHome/MatchingProfiles/GridView";
-import ListView from "./Components/LoginHome/MatchingProfiles/ListView"; // Import ListView
-import GridListView from "./Components/LoginHome/MatchingProfiles/GridListView"; // Import GridListView
-import ProtectedRoute from "./Components/ProtectorRoute";
+import { HomePage } from './Pages/HomePage';
+import { ThankYou } from './Pages/ThankYou';
+import ContactDetails from './Pages/ContactDetails';
+import UploadImages from './Pages/UploadImages';
+import FamilyDetails from './Pages/FamilyDetails';
+import EduDetails from './Pages/EduDetails';
+import HoroDetails from './Pages/HoroDetails';
+import PartnerSettings from './Pages/PartnerSettings';
+import { MembershipPlan } from './Pages/MembershipPlan';
+import { PayNow } from './Pages/PayNow';
+import { ThankYouReg } from './Pages/ThankYouReg';
+import { LoginHome } from './Pages/AfterLogin/LoginHome';
+import Search from './Pages/AfterLogin/Search';
+import { DashBoard } from './Pages/AfterLogin/DashBoard';
+import { Wishlist } from './Pages/AfterLogin/Wishlist';
+import { Notifications } from './Pages/AfterLogin/Notifications';
+import { Messages } from './Pages/AfterLogin/Messages';
+import { MyProfile } from './Pages/AfterLogin/MyProfile';
+import { ProfileDetails } from './Pages/AfterLogin/ProfileDetails';
+import { ProfileProvider } from './ProfileContext';
+import ProfileGrid from './Components/LoginHome/MatchingProfiles/GridView';
+import ListView from './Components/LoginHome/MatchingProfiles/ListView'; // Import ListView
+import GridListView from './Components/LoginHome/MatchingProfiles/GridListView'; // Import GridListView
+import ProtectedRoute from './Components/ProtectorRoute';
 
 function App() {
   const token = sessionStorage.getItem("token");
@@ -61,6 +62,7 @@ function App() {
               <Route path="/DashBoard" element={<DashBoard />} />
               <Route path="/Wishlist" element={<Wishlist />} />
               <Route path="/Messages" element={<Messages />} />
+              <Route path="/Notifications" element={<Notifications />} />
               <Route path="/MyProfile" element={<MyProfile />} />
               <Route path="/ProfileDetails" element={<ProfileDetails />} />
               <Route path="/ProfileGrid" element={<ProfileGrid />} />

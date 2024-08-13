@@ -95,7 +95,7 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
         onClick={handleCardClick}>
         <div className="w-full flex justify-between items-center">
 
-          <div className="flex justify-between items-center space-x-5">
+          <div className="flex justify-between md:items-center space-x-5">
 
             {/* Profile Image */}
             <div className="relative">
@@ -181,7 +181,7 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
                 </p>
               </div>
 
-              <div className="flex justify-start items-center space-x-3">
+              <div className="md:flex justify-start items-center md:space-x-3 sm:flex-col sm:space-y-2">
                 {/* Horoscope Available */}
                 <div>
                   <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
@@ -222,7 +222,7 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
               <span className="absolute top-2.5 left-3 text-white font-semibold">95%</span>
             </div>
           </div> */}
-          <div>
+          <div className="sm:hidden md:block">
             <MatchingScore />
           </div>
         </div>
