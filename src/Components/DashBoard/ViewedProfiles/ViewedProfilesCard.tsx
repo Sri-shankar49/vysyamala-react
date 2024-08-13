@@ -11,7 +11,7 @@ import { MdOutlineGrid3X3 } from "react-icons/md";
 import { FaUser } from "react-icons/fa6";
 import { IoEye } from "react-icons/io5";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
-import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+// import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import MatchingScore from "../ProfileDetails/MatchingScore";
 
 // Define types for API response

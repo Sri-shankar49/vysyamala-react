@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ProfileListImg from "../../../assets/images/ProfileListImg.png";
-import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+// import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import {
   MdVerifiedUser,
   MdStars,

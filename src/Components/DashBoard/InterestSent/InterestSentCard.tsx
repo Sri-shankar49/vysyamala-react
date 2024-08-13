@@ -4,7 +4,7 @@ import ProfileListImg from "../../../assets/images/./ProfileListImg.png";
 import { MdVerifiedUser, MdBookmark, MdBookmarkBorder, MdStars, MdOutlineGrid3X3, MdMessage } from "react-icons/md";
 import { IoCalendar, IoSchool, IoEye } from "react-icons/io5";
 import { FaPersonArrowUpFromLine, FaSuitcase, FaLocationDot, FaUser } from "react-icons/fa6";
-import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+// import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import MatchingScore from "../ProfileDetails/MatchingScore";
 
 // Define the Profile interface
