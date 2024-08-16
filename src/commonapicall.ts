@@ -34,3 +34,6 @@ export const fetchProfilesDetails = async (profileId: string): Promise<any> => {
     throw error;
   }
 };
+
+
+export const Update_photo_request="http://103.214.132.20:8000/auth/Update_photo_request/"

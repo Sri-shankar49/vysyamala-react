@@ -202,8 +202,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
         setIsSubmitting(false);
         const { profile_id } = response.data;
         sessionStorage.setItem('profile_id_new', profile_id);
-
-
+        onClose();
         navigate('/ThankYou');
       } else {
         setIsSubmitting(false); // Set isSubmitting to false when form submission fails
