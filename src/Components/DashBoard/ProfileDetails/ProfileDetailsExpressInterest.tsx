@@ -3,7 +3,7 @@ import { useState, useEffect, MouseEvent } from "react";
 // import { hideInterest } from "../../../redux/slices/interestSlice";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
-// import { IoArrowBackOutline } from "react-icons/io5";
+
 import { MdMessage, MdVerifiedUser } from "react-icons/md";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 import { IoDocumentText } from "react-icons/io5";
@@ -18,7 +18,7 @@ import { FaHeart } from "react-icons/fa6";
 import { FaTableList } from "react-icons/fa6";
 // import { ProfileSlick } from "./ProfileSlick";
 import { ProfileSlickView } from "../../LoginHome/ProfileDetailsView/ProfileSlickView";
-// import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
+
 import { MdLocalPrintshop } from "react-icons/md";
 import { MdArrowDropDown } from "react-icons/md";
 // import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
@@ -32,6 +32,60 @@ import { IoMdCloseCircle } from "react-icons/io";
 import { ToastNotification, NotifySuccess, NotifyError } from "../../Toast/ToastNotification";
 import { toast } from 'react-toastify';
 import { PersonalNotesPopup } from "../PersonalNotes/PersonalNotesPopup";
+import {
+    EmailShareButton,
+    FacebookShareButton,
+    GabShareButton,
+    HatenaShareButton,
+    InstapaperShareButton,
+    LineShareButton,
+    LinkedinShareButton,
+    LivejournalShareButton,
+    MailruShareButton,
+    OKShareButton,
+
+    PocketShareButton,
+    RedditShareButton,
+    TelegramShareButton,
+    TumblrShareButton,
+    TwitterShareButton,
+    ViberShareButton,
+    VKShareButton,
+    WhatsappShareButton,
+    WorkplaceShareButton,
+
+    WeiboShareButton,
+
+} from "react-share";
+
+import {
+    EmailIcon,
+    FacebookIcon,
+
+    GabIcon,
+    HatenaIcon,
+    InstapaperIcon,
+    LineIcon,
+    LinkedinIcon,
+    LivejournalIcon,
+    MailruIcon,
+    OKIcon,
+
+    PocketIcon,
+    RedditIcon,
+    TelegramIcon,
+    TumblrIcon,
+    TwitterIcon,
+    ViberIcon,
+    VKIcon,
+    WeiboIcon,
+    WhatsappIcon,
+    WorkplaceIcon,
+
+} from "react-share";
+
+
+
 
 // Define the interfaces for profile data
 interface HoroscopeDetails {
@@ -82,7 +136,7 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
         const fetchProfileData = async () => {
             try {
                 const response = await axios.post("http://103.214.132.20:8000/auth/Get_profile_det_match/", {
-                    profile_id: loginuser_profileId, // Replace with the appropriate value or extract from route params if needed
+                    profile_id: loginuser_profileId,
                     user_profile_id: id
                 });
                 setProfileData(response.data);
@@ -95,7 +149,36 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
         };
 
         fetchProfileData();
-    }, []);
+    }, [id, loginuser_profileId]);
+
+    const handleAccept = async () => {
+        try {
+            await axios.post("http://103.214.132.20:8000/auth/Update_profile_intrests/", {
+                profile_id: loginuser_profileId,
+                profile_from: id,
+                status: 2
+            });
+            toast.success('Profile accepted!');
+            setIsHeartMarked(true);
+        } catch (error) {
+            console.error('Error accepting profile:', error);
+            toast.error('Failed to accept profile.');
+        }
+    };
+
+    const handleDecline = async () => {
+        try {
+            await axios.post("http://103.214.132.20:8000/auth/Update_profile_intrests/", {
+                profile_id: loginuser_profileId,
+                profile_from: id,
+                status: 3
+            });
+            toast.success('Profile declined!');
+        } catch (error) {
+            console.error('Error declining profile:', error);
+            toast.error('Failed to decline profile.');
+        }
+    };
 
     // Redux 
     // const dispatch = useDispatch();
@@ -105,17 +188,103 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
     // };
 
     // Declaration for Bookmarking Profile
+    // Declaration for Bookmarking Profile
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const [bookmarkedProfiles, setBookmarkedProfiles] = useState<ProfileData[]>(() => {
+        const savedBookmarks = localStorage.getItem('bookmarkedProfiles');
+        return savedBookmarks ? JSON.parse(savedBookmarks) : [];
+    });
+    const [selectedProfiles, setSelectedProfiles] = useState<ProfileData[]>(() => {
+        const savedSelectedProfiles = localStorage.getItem('selectedProfiles');
+        return savedSelectedProfiles ? JSON.parse(savedSelectedProfiles) : [];
+    });
 
-    const handleBookmark = () => {
-        setIsBookmarked(!isBookmarked);
-        if (!isBookmarked) {
-            NotifySuccess('Added to Wishlist');
-        }
-        else {
-            toast.error('Removed from Wishlist');
+    // useEffect(() => {
+    //     const fetchProfileData = async () => {
+    //         try {
+    //             const response = await axios.post("http://103.214.132.20:8000/auth/Get_profile_det_match/", {
+    //                 profile_id: loginuser_profileId,
+    //                 user_profile_id: id
+    //             });
+    //             setProfileData(response.data);
+    //             if (response.data.basic_details.express_int === "1") {
+    //                 setIsHeartMarked(true);
+    //             }
+
+    //             const isAlreadyBookmarked = bookmarkedProfiles.some(profile => profile.basic_details.profile_id === response.data.basic_details.profile_id);
+    //             setIsBookmarked(isAlreadyBookmarked);
+    //         } catch (error) {
+    //             console.error("Error fetching profile data:", error);
+    //         }
+    //     };
+
+    //     fetchProfileData();
+    // }, [id, loginuser_profileId, bookmarkedProfiles]);
+
+    useEffect(() => {
+        localStorage.setItem('bookmarkedProfiles', JSON.stringify(bookmarkedProfiles));
+    }, [bookmarkedProfiles]);
+
+    useEffect(() => {
+        localStorage.setItem('selectedProfiles', JSON.stringify(selectedProfiles));
+    }, [selectedProfiles]);
+
+    const addBookmark = async (profile: ProfileData) => {
+        try {
+            const response = await axios.post('http://103.214.132.20:8000/auth/Mark_profile_wishlist/', {
+                profile_id: loginuser_profileId,
+                profile_to: id,
+                status: "1",
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.data.Status === 1) {
+                setBookmarkedProfiles((prev) => [...prev, profile]);
+                setSelectedProfiles((prev) => [...prev, profile]);
+                setIsBookmarked(true);
+                console.log(`Profile ${profile.basic_details.profile_id} bookmarked successfully with status 1.`);
+            } else {
+                console.log('Failed to bookmark profile:', response.data.Message);
+            }
+        } catch (error) {
+            console.error('Error bookmarking profile:', error);
         }
     };
+
+    const removeBookmark = async (profile_id: string) => {
+        try {
+            const response = await axios.post('http://103.214.132.20:8000/auth/Mark_profile_wishlist/', {
+                profile_id: loginuser_profileId,
+                profile_to: id,
+                status: "0",
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+            if (response.data.Status === 1) {
+                setBookmarkedProfiles((prev) => prev.filter((profile) => profile.basic_details.profile_id !== profile_id));
+                setSelectedProfiles((prev) => prev.filter((profile) => profile.basic_details.profile_id !== profile_id));
+                setIsBookmarked(false);
+                console.log(`Profile ${profile_id} removed from bookmarks successfully with status 0.`);
+            } else {
+                console.log('Failed to remove bookmark:', response.data.Message);
+            }
+        } catch (error) {
+            console.error('Error removing bookmark:', error);
+        }
+    };
+
+    const handleBookmark = () => {
+        if (isBookmarked && profileData) {
+            removeBookmark(profileData.basic_details.profile_id);
+        } else if (profileData) {
+            addBookmark(profileData);
+        }
+    };
+
 
     // Declaration for Heart State
     const [isHeartMarked, setIsHeartMarked] = useState(false);
@@ -160,6 +329,32 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
     const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
     const [isHovered, setIsHovered] = useState(false);
 
+
+    const sendPhotoRequest = async () => {
+        try {
+            const response = await axios.post(
+                "http://103.214.132.20:8000/auth/Send_photo_request/",
+                {
+                    profile_id: loginuser_profileId,
+                    profile_to: profileData?.basic_details.profile_id,
+                    status: 1,
+                }
+            );
+            if (response.status >= 200 || response.status >= 204) {
+                NotifySuccess("Photo interests sent successfully");
+            } else {
+                NotifyError("Something went wrong, please try again later");
+            }
+
+            return response.data;
+        } catch (error: any) {
+            console.error(
+                "Error sending photo request:",
+                error.response ? error.response.data : error.message
+            );
+        }
+    };
+
     // const toggleDropdown = () => {
     //     setIsOpen(!isOpen);
     // };
@@ -179,6 +374,35 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
     const closePersonalNotesPopup = () => {
         setShowPersonalNotes(false)
     }
+
+
+
+
+    const [isShareVisible, setIsShareVisible] = useState(false);
+    const shareUrl = window.location.href;
+    const title = "Check out this profile!";
+
+
+    const toggleShareVisibility = () => {
+        setIsShareVisible(!isShareVisible);
+    };
+
+
+    const copyLinkToClipboard = () => {
+        navigator.clipboard.writeText(shareUrl)
+            .then(() => {
+                alert("Link copied to clipboard!");
+            })
+            .catch(err => {
+                console.error('Failed to copy the link: ', err);
+            });
+    };
+
+    const closeModal = (e: React.MouseEvent<HTMLDivElement>) => {
+        if ((e.target as HTMLElement).className.includes('modal-overlay')) {
+            setIsShareVisible(false);
+        }
+    };
 
     return (
         <div>
@@ -210,7 +434,106 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                 {/* Icons */}
                                 <div className="flex justify-center items-center space-x-10">
                                     <div>
-                                        <IoShareSocialSharp title="Share Profile" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
+                                        <IoShareSocialSharp
+                                            title="Share Profile"
+                                            className="text-[22px] text-vysyamalaBlack cursor-pointer"
+                                            onClick={toggleShareVisibility}
+                                        />
+                                        {isShareVisible && (
+                                            <div className="modal-overlay fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50" onClick={closeModal}>
+                                                <div className="modal-container w-60 bg-white border rounded shadow-lg p-4 relative">
+                                                    <button
+                                                        className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+                                                        onClick={() => setIsShareVisible(false)}
+                                                    >
+                                                        &times; {/* Close button */}
+                                                    </button>
+                                                    <div className="flex flex-wrap justify-center gap-4">
+                                                        <FacebookShareButton url={shareUrl} title="Check out this profile!">
+                                                            <FacebookIcon size={32} round />
+                                                        </FacebookShareButton>
+                                                        <TwitterShareButton url={shareUrl} title="Check out this profile!">
+                                                            <TwitterIcon size={32} round />
+                                                        </TwitterShareButton>
+                                                        <WhatsappShareButton url={shareUrl} title="Check out this profile!">
+                                                            <WhatsappIcon size={32} round />
+                                                        </WhatsappShareButton>
+                                                        <EmailShareButton url={shareUrl} title="Check out this profile!">
+                                                            <EmailIcon size={32} round />
+                                                        </EmailShareButton>
+                                                        <GabShareButton url={shareUrl} title={title}>
+                                                            <GabIcon size={32} round />
+                                                        </GabShareButton>
+                                                        <HatenaShareButton url={shareUrl} title={title}>
+                                                            <HatenaIcon size={32} round />
+                                                        </HatenaShareButton>
+                                                        <InstapaperShareButton url={shareUrl} title={title}>
+                                                            < InstapaperIcon size={32} round />
+                                                        </InstapaperShareButton>
+                                                        < LineShareButton url={shareUrl} title={title}>
+                                                            < LineIcon size={32} round />
+                                                        </ LineShareButton>
+                                                        < LinkedinShareButton url={shareUrl} title={title}>
+                                                            < LinkedinIcon size={32} round />
+                                                        </LinkedinShareButton>
+
+
+                                                        <  LivejournalShareButton url={shareUrl} title={title}>
+                                                            <LivejournalIcon size={32} round />
+                                                        </ LivejournalShareButton>
+                                                        < MailruShareButton url={shareUrl} title={title}>
+                                                            <MailruIcon size={32} round />
+                                                        </MailruShareButton>
+                                                        < OKShareButton url={shareUrl} title={title}>
+                                                            <OKIcon size={32} round />
+                                                        </OKShareButton>
+                                                        {/* <PinterestShareButton url={shareUrl} title={title}>
+                                    < PinterestIcon size={32} round />
+                                </ PinterestShareButton> */}
+                                                        < PocketShareButton url={shareUrl} title={title}>
+                                                            < PocketIcon size={32} round />
+                                                        </ PocketShareButton>
+                                                        < RedditShareButton url={shareUrl} title={title}>
+                                                            <RedditIcon size={32} round />
+                                                        </RedditShareButton>
+                                                        < TelegramShareButton url={shareUrl} title={title}>
+
+                                                            <  TelegramIcon size={32} round />
+                                                        </TelegramShareButton>
+                                                        < TumblrShareButton url={shareUrl} title={title}>
+                                                            < TumblrIcon size={32} round />
+                                                        </TumblrShareButton>
+                                                        <ViberShareButton url={shareUrl} title={title}>
+                                                            <  ViberIcon size={32} round />
+                                                        </ViberShareButton>
+                                                        <VKShareButton url={shareUrl} title={title}>
+                                                            < VKIcon size={32} round />
+                                                        </VKShareButton>
+                                                        < WorkplaceShareButton url={shareUrl} title={title}>
+                                                            < WorkplaceIcon size={32} round />
+                                                        </WorkplaceShareButton>
+                                                        {/* <FacebookMessengerShareButton url={shareUrl} title={title}>
+                                    <FacebookMessengerIcon size={32} round />
+                                </FacebookMessengerShareButton> */}
+                                                        < WeiboShareButton url={shareUrl} title={title}>
+                                                            < WeiboIcon size={32} round />
+                                                        </WeiboShareButton>
+                                                        {/* <  XShareButton url={shareUrl} title={title}>
+                                    < XIcon size={32} round />
+                                </ XShareButton> */}
+                                                        <div className="mt-4 w-full flex flex-col items-center">
+                                                            <p className="text-sm text-gray-600 mb-2 text-center">{window.location.href}</p>
+                                                            <button
+                                                                className="px-4 py-2 bg-blue-500 text-white rounded"
+                                                                onClick={copyLinkToClipboard}
+                                                            >
+                                                                Copy Link
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                     <div>
                                         {/* <MdBookmarkBorder title="Bookmark Profile" className="text-[22px] text-vysyamalaBlack cursor-pointer" /> */}
@@ -231,11 +554,11 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                     <div>
                                         <IoDocumentText onClick={handlePersonalNotesPopup} title="Personal Notes" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
                                         {showPersonalNotes && (
-                                            <PersonalNotesPopup closePopup={closePersonalNotesPopup} />
+                                            <PersonalNotesPopup closePopup={closePersonalNotesPopup} profileId={""} profileTo={""} />
                                         )}
                                     </div>
                                     <div>
-                                        <RiAlertFill title="Spot on Error" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
+                                        <RiAlertFill onClick={() => sendPhotoRequest()} title="Spot on Error" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
                                     </div>
                                     <div>
                                         <BiSolidUserVoice title="Vys Assist" className="text-[22px] text-vysyamalaBlack cursor-pointer" />
@@ -348,17 +671,25 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
 
                                         <div className="flex justify-start items-center space-x-5 my-5">
                                             {/* Accept button */}
-                                            <button className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer">
-                                                <FaCheckCircle className="text-[22px] mr-2" /> Accept</button>
+                                            <button
+                                                className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer"
+                                                onClick={handleAccept}
+                                            >
+                                                <FaCheckCircle className="text-[22px] mr-2" /> Accept
+                                            </button>
 
                                             {/* Decline button */}
-                                            <button className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer">
-                                                <IoMdCloseCircle className="text-[26px] mr-2" /> Decline</button>
+                                            <button
+                                                className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer"
+                                                onClick={handleDecline}
+                                            >
+                                                <IoMdCloseCircle className="text-[26px] mr-2" /> Decline
+                                            </button>
 
                                             {/* Message button */}
                                             <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
-                                                <MdMessage className="text-[26px] mr-2" /> Message</button>
-
+                                                <MdMessage className="text-[26px] mr-2" /> Message
+                                            </button>
                                         </div>
 
 
@@ -368,8 +699,8 @@ export const ProfileDetailsExpressInterest: React.FC<ProfileDetailsExpressIntere
                                 </div>
 
                                 <div className="flex justify-center items-center space-x-10"
-                                onMouseEnter={() => setIsHovered(true)}
-                                onMouseLeave={() => setIsHovered(false)}
+                                    onMouseEnter={() => setIsHovered(true)}
+                                    onMouseLeave={() => setIsHovered(false)}
                                 >
                                     <div className="relative"
 

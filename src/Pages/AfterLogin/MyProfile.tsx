@@ -78,14 +78,15 @@ export const MyProfile = () => {
     setIsOpen(false);
   };
 
-  const getMatchingScorePercentage = () => {
-    if (Get_profile_det_match?.matching_score) {
-      return parseInt(Get_profile_det_match.matching_score.replace('%', '')) || 0;
-    }
-    return 0;
-  };
+  // const getMatchingScorePercentage = () => {
+  //   if (Get_profile_det_match?.matching_score) {
+  //     return parseInt(Get_profile_det_match.matching_score.replace('%', '')) || 0;
+  //   }
+  //   return 0;
+  // };
 
-  const percentage = getMatchingScorePercentage();
+  // const percentage = getMatchingScorePercentage();
+  const percentage = 85;
 
   return (
     <div>

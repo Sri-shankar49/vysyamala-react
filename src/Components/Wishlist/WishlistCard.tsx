@@ -1,7 +1,5 @@
-import { useContext } from "react";
-import { Profile, ProfileContext } from '../../ProfileContext'; // Adjust the path as needed
-// import { useDispatch } from "react-redux";
-// import { showInterest } from "../../redux/slices/interestSlice";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import ProfileListImg from "../../assets/images/ProfileListImg.png";
 import { MdVerifiedUser } from "react-icons/md";
 import { IoCalendar } from "react-icons/io5";
@@ -13,68 +11,79 @@ import { FaLocationDot } from "react-icons/fa6";
 import { MdOutlineGrid3X3 } from "react-icons/md";
 import { FaUser } from "react-icons/fa6";
 import { IoEye } from "react-icons/io5";
-// import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
-// import MatchingScoreImg from "../../assets/images/MatchingScore.png";
 import { useNavigate } from "react-router-dom";
 import MatchingScore from "../DashBoard/ProfileDetails/MatchingScore";
 
-export const WishlistCard: React.FC = () => {
-  // Redux
-  // const dispatch = useDispatch();
+// Define the shape of your wishlist profile
+interface WishlistProfile {
+  height: string;
+  degree: string;
+  profession: string;
+  location: string;
+  wishlist_profileid: string;
+  wishlist_profile_name: string;
+  wishlist_Profile_img: string;
+  wishlist_profile_age: number;
+}
 
-  // State to track if the card is bookmarked or not
+export const WishlistCard: React.FC = () => {
   const navigate = useNavigate();
 
-  // const { selectedProfiles, bookmarkedProfiles, addBookmark, removeBookmark } = useContext(ProfileContext) || {
-  const { selectedProfiles } = useContext(ProfileContext) || {
-    selectedProfiles: [],
-    bookmarkedProfiles: [],
-    addBookmark: () => { },
-    removeBookmark: () => { }
-  };
+  // State to hold the profiles data
+  const [wishlistProfiles, setWishlistProfiles] = useState<WishlistProfile[]>([]);
+  
 
-  // const handleBookmark = (profile: Profile) => {
-  //   if (bookmarkedProfiles.find(bp => bp.profile_id === profile.profile_id)) {
-  //     removeBookmark(profile.profile_id);
-  //   } else {
-  //     addBookmark(profile);
-  //   }
-  // };
+  // Fetch data from API
+  const fetchWishlistProfiles = async (profileId: string) => {
+    try {
+      const response = await axios.post('http://103.214.132.20:8000/auth/Get_profile_wishlist/', {
+        profile_id: profileId // Include the profile_id in the request body
+      });
+      
+      if (response.data.Status === 1) {
+        // Assuming you have a state to store the profiles
+        setWishlistProfiles(response.data.data.profiles);
+      } else {
+        console.error("Failed to fetch wishlist profiles:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching wishlist profiles:", error);
+    }
+  };
+  
+  
+    useEffect(() => {
+      // Retrieve profile_id from sessionStorage
+      const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+      
+      if (loginuser_profileId) {
+        fetchWishlistProfiles(loginuser_profileId);
+      } else {
+        console.error("Profile ID not found in sessionStorage.");
+      }
+    }, []);
+
 
   const handleProfileClick = (profileId: string) => {
     navigate(`/ProfileDetails?id=${profileId}`);
   };
 
-  // const handleCardClick = () => {
-  //     dispatch(showInterest());
-  // };
-
   return (
     <div>
       <div>
-        {selectedProfiles.length === 0 ? (
-          <p>No profiles selected.</p>
-        ) :
-          (<div>
-            {selectedProfiles.map((profile: Profile) => (
-              <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5">
+        {wishlistProfiles.length === 0 ? (
+          <p>No profiles in wishlist.</p>
+        ) : (
+          <div>
+            {wishlistProfiles.map((profile) => (
+              <div key={profile.wishlist_profileid} className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5">
                 <div className="w-full flex justify-between items-center">
                   <div className="flex justify-between items-center space-x-5">
                     {/* Profile Image */}
                     <div className="relative">
-                      <img src={profile.profile_image || ProfileListImg} alt="Profile-image" />
+                      <img src={profile.wishlist_Profile_img || ProfileListImg} alt="Profile-image" />
 
-                      {/* {isBookmarked ? (
-                <MdBookmark
-                  onClick={handleBookmark}
-                  className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                />
-              ) : (
-                <MdBookmarkBorder
-                  onClick={handleBookmark}
-                  className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                />
-              )} */}
+                      {/* No Bookmark icon functionality here */}
                     </div>
 
                     {/* Profile Details */}
@@ -82,10 +91,10 @@ export const WishlistCard: React.FC = () => {
                       {/* Name & Profile ID */}
                       <div className="relative mb-2">
                         <h5
-                          onClick={() => handleProfileClick(profile.profile_id)}
+                          onClick={() => handleProfileClick(profile.wishlist_profileid)}
                           className="text-[20px] text-secondary font-semibold cursor-pointer">
-                          {profile.profile_name || 'Unknown'}{" "}
-                          <span className="text-sm text-ashSecondary">({profile.profile_id || 'N/A'})</span>
+                          {profile.wishlist_profile_name || 'Unknown'}{" "}
+                          <span className="text-sm text-ashSecondary">({profile.wishlist_profileid || 'N/A'})</span>
                           <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />
                         </h5>
                       </div>
@@ -94,7 +103,7 @@ export const WishlistCard: React.FC = () => {
                       <div className="flex items-center space-x-3 mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <IoCalendar className="mr-2" />
-                          {profile.profile_age || 'N/A'} yrs
+                          {profile.wishlist_profile_age || 'N/A'} yrs
                         </p>
 
                         <p className="text-gray font-semibold">|</p>
@@ -184,7 +193,7 @@ export const WishlistCard: React.FC = () => {
               </div>
             ))}
           </div>
-          )}
+        )}
       </div>
     </div>
   );
