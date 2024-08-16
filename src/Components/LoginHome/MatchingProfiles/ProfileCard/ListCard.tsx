@@ -91,142 +91,144 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
 
   return (
     // <Link to="/ProfileDetails" target="_blank">
-      <div className="flex justify-between items-start space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5"
-        onClick={handleCardClick}>
-        <div className="w-full flex justify-between items-center">
+    <div className="flex justify-between items-start space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5"
+      onClick={handleCardClick}>
+      <div className="w-full flex justify-between items-center">
 
-          <div className="flex justify-between md:items-center space-x-5">
+        <div className="flex justify-between md:items-center space-x-5">
 
-            {/* Profile Image */}
-            <div className="relative">
-              <img src={profile_img || ProfileListImg} alt="Profile-image" className="w-[200px]" />
-              {isBookmarked ? (
-                <MdBookmark
-                  onClick={handleBookmark}
-                  // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                  className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
+          {/* Profile Image */}
+          <div className="relative">
+            <img src={profile_img || ProfileListImg} alt="Profile-image" className="w-[200px]" />
+            {isBookmarked ? (
+              <MdBookmark
+                onClick={handleBookmark}
+                // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
 
-                />
-              ) : (
-                <MdBookmarkBorder
-                  onClick={handleBookmark}
-                  // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                  className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
+              />
+            ) : (
+              <MdBookmarkBorder
+                onClick={handleBookmark}
+                // className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                className="absolute top-2 right-2 text-secondary text-[22px] cursor-pointer"
 
-                />
-              )}
-            </div>
+              />
+            )}
+          </div>
 
-            {/* Profile Details */}
-            <div className="">
+          {/* Profile Details */}
+          <div className="">
 
-              {/* Name & Profile ID */}
-              <div className="relative mb-2">
+            {/* Name & Profile ID */}
+            <div className="relative mb-2">
 
-                <Link to={`/ProfileDetails?id=${profile_id}`}>
+              <Link to={`/ProfileDetails?id=${profile_id}`}>
+                <div className="flex items-center">
                   <h5 className="text-[20px] text-secondary font-semibold cursor-pointer">
                     {profile_name || 'Unknown'} {" "}
                     <span className="text-sm text-ashSecondary">
                       ({profile_id || 'N/A'})
                     </span>
-                    <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />
                   </h5>
-                </Link>
-              </div>
-
-              {/* Years & Height */}
-              <div className="flex items-center space-x-3 mb-2">
-                <p className="flex items-center text-ashSecondary font-semibold">
-                  <IoCalendar className="mr-2" />
-                  {profile_age || 'N/A'} yrs
-                </p>
-
-                <p className="text-gray font-semibold">|</p>
-
-                <p className="flex items-center text-ashSecondary font-semibold">
-                  <FaPersonArrowUpFromLine className="mr-2" />
-                  {height || 'N/A'}
-                </p>
-              </div>
-
-              {/* Uthiram */}
-              <div className="mb-2">
-                <p className="flex items-center text-ashSecondary font-semibold">
-                  <MdStars className="mr-2" />
-                  Uthiram
-                </p>
-              </div>
-
-              {/* Degree */}
-              <div className="mb-2">
-                <p className="flex items-center text-ashSecondary font-semibold">
-                  <IoSchool className="mr-2" />
-                  {degree || 'N/A'}
-                </p>
-              </div>
-
-              {/* Profession */}
-              <div className="mb-2">
-                <p className="flex items-center text-ashSecondary font-semibold">
-                  <FaSuitcase className="mr-2" />
-                  {profession || 'N/A'}
-                </p>
-              </div>
-
-              {/* Location */}
-              <div className="mb-2">
-                <p className="flex items-center text-ashSecondary font-semibold">
-                  <FaLocationDot className="mr-2" />
-                  {location || 'N/A'}
-                </p>
-              </div>
-
-              <div className="md:flex justify-start items-center md:space-x-3 sm:flex-col sm:space-y-2">
-                {/* Horoscope Available */}
-                <div>
-                  <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                    <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
-                  </p>
+                  <MdVerifiedUser className=" text-[20px] text-checkGreen ml-2" />
                 </div>
+              </Link>
+            </div>
 
-                {/*  Active User */}
-                <div>
-                  <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                    <FaUser className="mr-2" /> Active user
-                  </p>
-                </div>
+            {/* Years & Height */}
+            <div className="flex items-center space-x-3 mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <IoCalendar className="mr-2" />
+                {profile_age || 'N/A'} yrs
+              </p>
 
-                {/* Last Visit */}
-                <div>
-                  <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                    <IoEye className="mr-2" /> {user_profile_views || 0} Profile Views
-                  </p>
-                </div>
+              <p className="text-gray font-semibold">|</p>
 
-                {/* views */}
-                <div>
-                  <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                    <IoEye className="mr-2" /> 31 views
-                  </p>
-                </div>
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <FaPersonArrowUpFromLine className="mr-2" />
+                {height || 'N/A'}
+              </p>
+            </div>
 
+            {/* Uthiram */}
+            <div className="mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <MdStars className="mr-2" />
+                Uthiram
+              </p>
+            </div>
+
+            {/* Degree */}
+            <div className="mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <IoSchool className="mr-2" />
+                {degree || 'N/A'}
+              </p>
+            </div>
+
+            {/* Profession */}
+            <div className="mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <FaSuitcase className="mr-2" />
+                {profession || 'N/A'}
+              </p>
+            </div>
+
+            {/* Location */}
+            <div className="mb-2">
+              <p className="flex items-center text-ashSecondary font-semibold">
+                <FaLocationDot className="mr-2" />
+                {location || 'N/A'}
+              </p>
+            </div>
+
+            <div className="flex justify-start items-center md:flex-row md:space-x-3 md:space-y-0 sm:flex-col sm:space-y-2">
+              {/* Horoscope Available */}
+              <div>
+                <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                  <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
+                </p>
+              </div>
+
+              {/*  Active User */}
+              <div>
+                <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                  <FaUser className="mr-2" /> Active user
+                </p>
+              </div>
+
+              {/* Last Visit */}
+              <div>
+                <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                  <IoEye className="mr-2" /> {user_profile_views || 0} Profile Views
+                </p>
+              </div>
+
+              {/* views */}
+              <div>
+                <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                  <IoEye className="mr-2" /> 31 views
+                </p>
               </div>
 
             </div>
-          </div>
 
-          {/* Matching Score */}
-          {/* <div className="absolute top-3 right-3">
+          </div>
+        </div>
+
+        {/* Matching Score */}
+        {/* <div className="absolute top-3 right-3">
             <div className="relative">
               <img src={MatchingScoreImg} alt="Matching Score" />
               <span className="absolute top-2.5 left-3 text-white font-semibold">95%</span>
             </div>
           </div> */}
-          <div className="sm:hidden md:block">
-            <MatchingScore />
-          </div>
+        <div className="sm:hidden md:block">
+          <MatchingScore />
         </div>
       </div>
+    </div>
     // </Link>
   );
 };
