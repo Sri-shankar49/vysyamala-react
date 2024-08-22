@@ -22,7 +22,6 @@ export interface Notification {
   time_ago: string;
   to_message: string;
   created_at: string;
-
 }
 
 export const LoginHeader: React.FC = () => {
@@ -32,8 +31,11 @@ export const LoginHeader: React.FC = () => {
   const navigate = useNavigate();
   // Function to handle logout
   const handleLogout = () => {
+    sessionStorage.clear();
     // Clear token from sessionStorage
     sessionStorage.removeItem("token");
+    sessionStorage.removeItem("profile_completion");
+    sessionStorage.removeItem("userImages");
     window.location.href = "/";
   };
 
@@ -42,6 +44,7 @@ export const LoginHeader: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [NotificationData, setNotificationData] = useState<Notification[]>([]);
   const [notificationCount, setNotificationCount] = useState<number>(0);
+  const userProfileImage = sessionStorage.getItem("user_profile_image");
 
   // const handleNotificationClick = (e) => {
   //   e.stopPropagation(); // Prevent the click event from propagating to the document
@@ -52,7 +55,6 @@ export const LoginHeader: React.FC = () => {
     e.stopPropagation(); // Prevent the click event from propagating to the document
     setIsNotificationVisible((prev) => !prev);
   };
-
 
   // On Click outside of it
   const handleClickOutside = (event: MouseEvent) => {
@@ -94,8 +96,8 @@ export const LoginHeader: React.FC = () => {
       })
       .then((response) => {
         setNotificationData(response.data.data);
-        setNotificationCount(response.data.notifiy_count)
-        console.log(notificationCount, "notificationCount")
+        setNotificationCount(response.data.notifiy_count);
+        console.log(notificationCount, "notificationCount");
       })
       .catch((error) => {
         console.error(
@@ -114,8 +116,8 @@ export const LoginHeader: React.FC = () => {
     try {
       console.log(response.data);
       if (response.status === 200) {
-        navigate('/Notifications')
-        getNotification()
+        navigate("/Notifications");
+        getNotification();
       }
     } catch (error) {
       console.log("error", error);
@@ -124,7 +126,7 @@ export const LoginHeader: React.FC = () => {
 
   useEffect(() => {
     getNotification();
-  },[]);
+  }, []);
   return (
     <div>
       <div>
@@ -192,12 +194,14 @@ export const LoginHeader: React.FC = () => {
               <li
                 onClick={handleNotificationClick}
                 className={`text-[16px] rounded-md transition-all cursor-pointer 
-                ${isNotificationVisible ? "bg-light-pink" : ""
-                  } font-medium px-3 py-3 relative`}
+                ${
+                  isNotificationVisible ? "bg-light-pink" : ""
+                } font-medium px-3 py-3 relative`}
               >
                 <FaBell
-                  className={`text-[22px] ${isNotificationVisible ? "text-main" : ""
-                    } `}
+                  className={`text-[22px] ${
+                    isNotificationVisible ? "text-main" : ""
+                  } `}
                 />
                 {notificationCount > 0 && (
                   <span className="absolute top-3 right-3 transform translate-x-1/2 -translate-y-1/2 bg-red-500 text-white rounded-full text-[12px] w-5 h-5 flex items-center justify-center">
@@ -218,86 +222,96 @@ export const LoginHeader: React.FC = () => {
 
                       {NotificationData.length > 5
                         ? NotificationData.slice(0, 5).map((notification) => (
-                          <div className="bg-lightFade-pink flex items-start border-b-[1px] border-gray px-3 py-3 space-x-5" key={notification.id}>
-                            <div>
-                              <img
-                                src={notification.notify_img}
-                                alt={notification.notify_profile_name}
-                                className="w-full"
-                              />
+                            <div
+                              className="bg-lightFade-pink flex items-start border-b-[1px] border-gray px-3 py-3 space-x-5"
+                              key={notification.id}
+                            >
+                              <div>
+                                <img
+                                  src={notification.notify_img}
+                                  alt={notification.notify_profile_name}
+                                  className="w-full"
+                                />
+                              </div>
+
+                              <div>
+                                <h5 className="text-vysyamalaBlack font-semibold">
+                                  {notification.notify_profile_name}{" "}
+                                  {notification.message_titile}
+                                </h5>
+                                <p className="text-ashSecondary text-sm font-normal mb-3">
+                                  {notification.to_message}
+                                </p>
+
+                                {notification.notification_type ===
+                                "express_interests" ? (
+                                  <button className="text-main rounded-md border-[2px] border-main px-2 py-1">
+                                    Message
+                                  </button>
+                                ) : (
+                                  <button className="text-main rounded-md border-[2px] border-main px-2 py-1">
+                                    Update my photo
+                                  </button>
+                                )}
+
+                                <p className="text-sm text-ashSecondary font-semibold mt-3">
+                                  {notification.time_ago}
+                                </p>
+                              </div>
                             </div>
-
-                            <div>
-                              <h5 className="text-vysyamalaBlack font-semibold">
-                                {notification.notify_profile_name} {notification.message_titile}
-                              </h5>
-                              <p className="text-ashSecondary text-sm font-normal mb-3">
-                                {notification.to_message}
-                              </p>
-
-                              {notification.notification_type === "express_interests" ? (
-                                <button className="text-main rounded-md border-[2px] border-main px-2 py-1">
-                                  Message
-                                </button>
-                              ) : (
-                                <button className="text-main rounded-md border-[2px] border-main px-2 py-1">
-                                  Update my photo
-                                </button>
-                              )}
-
-                              <p className="text-sm text-ashSecondary font-semibold mt-3">
-                                {notification.time_ago}
-                              </p>
-                            </div>
-                          </div>
-                        ))
+                          ))
                         : NotificationData.map((notification) => (
-                          <div className="bg-lightFade-pink flex items-start border-b-[1px] border-gray px-3 py-3 space-x-5" key={notification.id}>
-                            <div>
-                              <img
-                                src={notification.notify_img}
-                                alt={notification.notify_profile_name}
-                                className="w-full"
-                              />
+                            <div
+                              className="bg-lightFade-pink flex items-start border-b-[1px] border-gray px-3 py-3 space-x-5"
+                              key={notification.id}
+                            >
+                              <div>
+                                <img
+                                  src={notification.notify_img}
+                                  alt={notification.notify_profile_name}
+                                  className="w-full"
+                                />
+                              </div>
+
+                              <div>
+                                <h5 className="text-vysyamalaBlack font-semibold">
+                                  {notification.notify_profile_name}{" "}
+                                  {notification.message_titile}
+                                </h5>
+                                <p className="text-ashSecondary text-sm font-normal mb-3">
+                                  {notification.to_message}
+                                </p>
+
+                                {notification.notification_type ===
+                                "express_interests" ? (
+                                  <button className="text-main rounded-md border-[2px] border-main px-2 py-1">
+                                    Message
+                                  </button>
+                                ) : (
+                                  <button className="text-main rounded-md border-[2px] border-main px-2 py-1">
+                                    Update my photo
+                                  </button>
+                                )}
+
+                                <p className="text-sm text-ashSecondary font-semibold mt-3">
+                                  {notification.time_ago}
+                                </p>
+                              </div>
                             </div>
-
-                            <div>
-                              <h5 className="text-vysyamalaBlack font-semibold">
-                                {notification.notify_profile_name} {notification.message_titile}
-                              </h5>
-                              <p className="text-ashSecondary text-sm font-normal mb-3">
-                                {notification.to_message}
-                              </p>
-
-                              {notification.notification_type === "express_interests" ? (
-                                <button className="text-main rounded-md border-[2px] border-main px-2 py-1">
-                                  Message
-                                </button>
-                              ) : (
-                                <button className="text-main rounded-md border-[2px] border-main px-2 py-1">
-                                  Update my photo
-                                </button>
-                              )}
-
-                              <p className="text-sm text-ashSecondary font-semibold mt-3">
-                                {notification.time_ago}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
+                          ))}
 
                       {/* Photo Request */}
-                      
 
                       {/* Change in Photo */}
-                      
 
                       {/* Change in Photo */}
-                      
                     </div>
 
                     <div className="text-center px-3 py-3">
-                      <button onClick={() => readNotification()} className="w-full rounded-md text-main py-3 font-semibold hover:bg-gradient hover:text-white">
+                      <button
+                        onClick={() => readNotification()}
+                        className="w-full rounded-md text-main py-3 font-semibold hover:bg-gradient hover:text-white"
+                      >
                         Load more
                       </button>
                     </div>
@@ -324,10 +338,11 @@ export const LoginHeader: React.FC = () => {
               onMouseLeave={handleMouseLeave}
             >
               <img
-                src={ProfileImg}
+                src={userProfileImage ? userProfileImage : ProfileImg}
                 alt="Profile-image"
-                className="rounded-full cursor-pointer"
+                className="w-11 h-11 rounded-full cursor-pointer object-cover"
               />
+
               {isHovered && (
                 <div className="absolute top-9 right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
                   <Link to="/MyProfile">

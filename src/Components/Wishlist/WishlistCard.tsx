@@ -31,7 +31,7 @@ export const WishlistCard: React.FC = () => {
 
   // State to hold the profiles data
   const [wishlistProfiles, setWishlistProfiles] = useState<WishlistProfile[]>([]);
-  
+
 
   // Fetch data from API
   const fetchWishlistProfiles = async (profileId: string) => {
@@ -39,7 +39,7 @@ export const WishlistCard: React.FC = () => {
       const response = await axios.post('http://103.214.132.20:8000/auth/Get_profile_wishlist/', {
         profile_id: profileId // Include the profile_id in the request body
       });
-      
+
       if (response.data.Status === 1) {
         // Assuming you have a state to store the profiles
         setWishlistProfiles(response.data.data.profiles);
@@ -50,18 +50,18 @@ export const WishlistCard: React.FC = () => {
       console.error("Error fetching wishlist profiles:", error);
     }
   };
-  
-  
-    useEffect(() => {
-      // Retrieve profile_id from sessionStorage
-      const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
-      
-      if (loginuser_profileId) {
-        fetchWishlistProfiles(loginuser_profileId);
-      } else {
-        console.error("Profile ID not found in sessionStorage.");
-      }
-    }, []);
+
+
+  useEffect(() => {
+    // Retrieve profile_id from sessionStorage
+    const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+
+    if (loginuser_profileId) {
+      fetchWishlistProfiles(loginuser_profileId);
+    } else {
+      console.error("Profile ID not found in sessionStorage.");
+    }
+  }, []);
 
 
   const handleProfileClick = (profileId: string) => {
@@ -89,7 +89,8 @@ export const WishlistCard: React.FC = () => {
                     {/* Profile Details */}
                     <div className="">
                       {/* Name & Profile ID */}
-                      <div className="relative mb-2">
+
+                      {/* <div className="relative mb-2">
                         <h5
                           onClick={() => handleProfileClick(profile.wishlist_profileid)}
                           className="text-[20px] text-secondary font-semibold cursor-pointer">
@@ -97,6 +98,20 @@ export const WishlistCard: React.FC = () => {
                           <span className="text-sm text-ashSecondary">({profile.wishlist_profileid || 'N/A'})</span>
                           <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />
                         </h5>
+                      </div> */}
+
+                      <div className="relative mb-2">
+                        <div className="flex items-center">
+                          <h5
+                            onClick={() => handleProfileClick(profile.wishlist_profileid)}
+                            className="text-[20px] text-secondary font-semibold cursor-pointer">
+                            {profile.wishlist_profile_name || 'Unknown'} {" "}
+                            <span className="text-sm text-ashSecondary">
+                              ({profile.wishlist_profileid || 'N/A'})
+                            </span>
+                          </h5>
+                          <MdVerifiedUser className=" text-[20px] text-checkGreen ml-2" />
+                        </div>
                       </div>
 
                       {/* Years & Height */}

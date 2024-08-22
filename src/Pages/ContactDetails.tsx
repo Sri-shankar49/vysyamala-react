@@ -8,7 +8,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../API";
-
+import {
+  ToastNotification,
+  NotifyError,
+  NotifySuccess,
+} from "../Components/Toast/ToastNotification";
 
 // API call URLs
 // const COUNTRY_API_URL = await apiClient.post(`/auth/Get_Country/`);
@@ -17,17 +21,27 @@ import apiClient from "../API";
 // const COUNTRY_DATA_API_URL = await apiClient.post(`/auth/Get_save_details/`);
 
 // ZOD Schema
-const schema = zod.object({
-  address: zod.string().min(3, "Address is required"),
-  country: zod.string().min(1, "Country is required"),
-  state: zod.string().min(1, "State is required"),
-  city: zod.string().min(3, "City is required"),
-  pincode: zod.string().min(6, "Pincode is required"),
-  alternatemobileNumber: zod.string().min(10, 'Mobile number must be exactly 10 characters').max(10, 'Mobile number must be exactly 10 characters').optional(),
-  whatsappNumber: zod.string().min(10, 'Whatsapp number must be exactly 10 characters').max(10, 'Whatsapp number must be exactly 10 characters').optional(),
-  daughterMobileNumber: zod.string().optional(),
-  daughterEmail: zod.string().optional(),
-}).required();
+const schema = zod
+  .object({
+    address: zod.string().min(3, "Address is required"),
+    country: zod.string().min(1, "Country is required"),
+    state: zod.string().min(1, "State is required"),
+    city: zod.string().min(3, "City is required"),
+    pincode: zod.string().min(6, "Pincode is required"),
+    alternatemobileNumber: zod
+      .string()
+      .min(10, "Mobile number must be exactly 10 characters")
+      .max(10, "Mobile number must be exactly 10 characters")
+      .optional(),
+    whatsappNumber: zod
+      .string()
+      .min(10, "Whatsapp number must be exactly 10 characters")
+      .max(10, "Whatsapp number must be exactly 10 characters")
+      .optional(),
+    daughterMobileNumber: zod.string().optional(),
+    daughterEmail: zod.string().optional(),
+  })
+  .required();
 
 interface FormInputs {
   address: string;
@@ -58,7 +72,15 @@ interface StateOption {
 
 const ContactDetails: React.FC<ContactDetailsProps> = () => {
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors }, watch, setValue, setError, clearErrors } = useForm<FormInputs>({ resolver: zodResolver(schema) });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    setError,
+    clearErrors,
+  } = useForm<FormInputs>({ resolver: zodResolver(schema) });
 
   const [countryOptions, setCountryOptions] = useState<CountryOption[]>([]);
   const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
@@ -74,14 +96,18 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
         try {
           const requestData = {
             profile_id: profileId,
-            page_id: 1
+            page_id: 1,
           };
 
-          const response = await apiClient.post(`/auth/Get_save_details/`, requestData, {
-            headers: {
-              'Content-Type': 'application/json'
+          const response = await apiClient.post(
+            `/auth/Get_save_details/`,
+            requestData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
-          });
+          );
 
           console.log("API Response:", response.data); // Log the entire API response
 
@@ -95,10 +121,12 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
           setValue("state", profileData.Profile_state);
           setValue("city", profileData.Profile_city);
           setValue("pincode", profileData.Profile_pincode);
-          setValue("alternatemobileNumber", profileData.Profile_alternate_mobile);
+          setValue(
+            "alternatemobileNumber",
+            profileData.Profile_alternate_mobile
+          );
           setValue("whatsappNumber", profileData.Profile_whatsapp);
           setValue("daughterMobileNumber", profileData.Profile_mobile_no);
-
         } catch (error) {
           console.error("Error fetching country data:", error);
         }
@@ -134,7 +162,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
     if (selectedCountryId) {
       const fetchStateStatus = async () => {
         try {
-          const response = await apiClient.post(`/auth/Get_State/`, { country_id: selectedCountryId });
+          const response = await apiClient.post(`/auth/Get_State/`, {
+            country_id: selectedCountryId,
+          });
           const options = Object.values(response.data) as StateOption[];
           setStateOptions(options);
         } catch (error) {
@@ -187,29 +217,41 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
         Profile_pincode: data.pincode,
         Profile_alternate_mobile: data.alternatemobileNumber,
         Profile_whatsapp: data.whatsappNumber,
-        Profile_mobile_no: data.whatsappNumber
+        Profile_mobile_no: data.whatsappNumber,
       };
 
-      const response = await apiClient.post(`/auth/Contact_registration/`, postData);
+      const response = await apiClient.post(
+        `/auth/Contact_registration/`,
+        postData
+      );
       if (response.data.Status === 1) {
-        navigate('/UploadImages');
+        NotifySuccess("Contact details saved successful");
+        setTimeout(() => {
+          navigate("/UploadImages");
+        }, 2000);
       } else {
         console.log("Registration unsuccessful:", response.data);
       }
     } catch (error) {
+      NotifyError("Error submitting contact details");
       console.error("Error submitting contact details:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
-
-
+  console.log("profileId", profileId, "lll");
 
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
+    window.scrollTo(0, 0);
+  }, []);
 
+  const token = sessionStorage.getItem("token");
+  const isIncognito =
+    navigator.userAgent.includes("Incognito") ||
+    navigator.userAgent.includes("Private");
 
+  console.log("Token:", token); // Debugging line
+  console.log("Is Incognito:", isIncognito); // Debugging line
 
   return (
     <div className="pb-20">
@@ -221,12 +263,10 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
       <div className="container mt-5 flex justify-between space-x-24">
         <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5">
           <div>
-            <InputField
-              label="Address"
-              {...register("address")}
-              required
-            />
-            {errors.address && <span className="text-red-500">{errors.address.message}</span>}
+            <InputField label="Address" {...register("address")} required />
+            {errors.address && (
+              <span className="text-red-500">{errors.address.message}</span>
+            )}
           </div>
 
           <div>
@@ -247,12 +287,15 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
                 </option>
               ))}
             </select>
-            {errors.country && <span className="text-red-500">{errors.country.message}</span>}
+            {errors.country && (
+              <span className="text-red-500">{errors.country.message}</span>
+            )}
           </div>
 
           <div>
             <label htmlFor="state" className="block mb-1">
-              State <span className="text-main">*</span> (Based on country selection)
+              State <span className="text-main">*</span> (Based on country
+              selection)
             </label>
             <select
               id="state"
@@ -268,16 +311,16 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
                 </option>
               ))}
             </select>
-            {errors.state && <span className="text-red-500">{errors.state.message}</span>}
+            {errors.state && (
+              <span className="text-red-500">{errors.state.message}</span>
+            )}
           </div>
 
           <div>
-            <InputField
-              label="City"
-              required
-              {...register("city")}
-            />
-            {errors.city && <span className="text-red-500">{errors.city.message}</span>}
+            <InputField label="City" required {...register("city")} />
+            {errors.city && (
+              <span className="text-red-500">{errors.city.message}</span>
+            )}
           </div>
 
           <div>
@@ -287,7 +330,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               required
               {...register("pincode")}
             />
-            {errors.pincode && <span className="text-red-500">{errors.pincode.message}</span>}
+            {errors.pincode && (
+              <span className="text-red-500">{errors.pincode.message}</span>
+            )}
           </div>
 
           <div>
@@ -296,7 +341,11 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               type="tel"
               {...register("alternatemobileNumber")}
             />
-            {errors.alternatemobileNumber && <span className="text-red-500">{errors.alternatemobileNumber.message}</span>}
+            {errors.alternatemobileNumber && (
+              <span className="text-red-500">
+                {errors.alternatemobileNumber.message}
+              </span>
+            )}
           </div>
 
           <div>
@@ -305,14 +354,17 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               type="tel"
               {...register("whatsappNumber")}
             />
-            {errors.whatsappNumber && <span className="text-red-500">{errors.whatsappNumber.message}</span>}
+            {errors.whatsappNumber && (
+              <span className="text-red-500">
+                {errors.whatsappNumber.message}
+              </span>
+            )}
           </div>
 
           <div className="!mt-12">
             <h1 className="font-bold text-xl text-primary mb-3">
               For Admin Verification
             </h1>
-
 
             <div className="space-y-5">
               <div>
@@ -324,7 +376,11 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
                     validateDaughterMobileNumber(e.target.value);
                   }}
                 />
-                {errors.daughterMobileNumber && <span className="text-red-500">{errors.daughterMobileNumber.message}</span>}
+                {errors.daughterMobileNumber && (
+                  <span className="text-red-500">
+                    {errors.daughterMobileNumber.message}
+                  </span>
+                )}
               </div>
 
               <div>
@@ -336,14 +392,20 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
                     validateDaughterEmail(e.target.value);
                   }}
                 />
-                {errors.daughterEmail && <span className="text-red-500">{errors.daughterEmail.message}</span>}
+                {errors.daughterEmail && (
+                  <span className="text-red-500">
+                    {errors.daughterEmail.message}
+                  </span>
+                )}
               </div>
             </div>
 
-
             <div className="mt-6 flex justify-end space-x-4">
-              <button className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : 'Next'}
+              <button
+                className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Next"}
                 <span>
                   <img src={arrow} alt="next arrow" className="ml-2" />
                 </span>
@@ -354,6 +416,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
 
         <SideContent />
       </div>
+      <ToastNotification />
     </div>
   );
 };

@@ -9,21 +9,22 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import MatchingStars from "../Components/PartnerPreference/MatchingStars";
-import axios from "axios";
+// import axios from "axios";
 import apiClient from "../API";
-
 
 // const PARTNER_API_URL = await apiClient.post(`/auth/Partner_pref_registration/`);
 
-const schema = zod.object({
-  age: zod.string().nonempty("Age is required"),
-  heightFrom: zod.string().min(1, "Height From is required"),
-  heightTo: zod.string().min(1, "Height To is required"),
-  // education: zod.array(zod.string()).min(1, "Education is required"),
-  // annualIncome: zod.array(zod.string()).min(1, "Annual Income is required"),
-  chevvai: zod.string().min(1, "Chevvai option is required"),
-  rehu: zod.string().min(1, "Rehu/Kethu option is required"),
-}).required();
+const schema = zod
+  .object({
+    age: zod.string().nonempty("Age is required"),
+    heightFrom: zod.string().min(1, "Height From is required"),
+    heightTo: zod.string().min(1, "Height To is required"),
+    // education: zod.array(zod.string()).min(1, "Education is required"),
+    // annualIncome: zod.array(zod.string()).min(1, "Annual Income is required"),
+    chevvai: zod.string().min(1, "Chevvai option is required"),
+    rehu: zod.string().min(1, "Rehu/Kethu option is required"),
+  })
+  .required();
 
 interface PartnerSettingsInputs {
   age: string;
@@ -80,24 +81,38 @@ const PartnerSettings: React.FC = () => {
   const [matchStars, setMatchStars] = useState<MatchingStar[][]>([]);
   const [maritalStatuses, setMaritalStatuses] = useState<MaritalStatus[]>([]);
   const [selectedStarIds, setSelectedStarIds] = useState<string[]>([]);
+  const [selectedStarId, setSelectedStarId] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<string[]>([]);
+  const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<
+    string[]
+  >([]);
   const [selectedProfessions, setSelectedProfessions] = useState<string[]>([]);
   const [selectedEducations, setSelectedEducations] = useState<string[]>([]);
-  const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>([]);
+  const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>(
+    []
+  );
   const [selectedBusiness, setSelectedBusiness] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(false);
   const [selectedNotWorking, setSelectedNotWorking] = useState(false);
   const [selectedNotMentioned, setSelectedNotMentioned] = useState(false);
+  const [selectedStarRasiPairs, setSelectedStarRasiPairs] = useState<string[]>(
+    []
+  );
 
-  const { register, handleSubmit, setValue, formState: { errors }, watch } = useForm<PartnerSettingsInputs>({
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    watch,
+  } = useForm<PartnerSettingsInputs>({
     resolver: zodResolver(schema),
     defaultValues: {
-      foreignInterest: 'both' // Set default value here
-    }
+      foreignInterest: "both", // Set default value here
+    },
   });
 
-  const [foreignInterestValue, setForeignInterestValue] = useState('both');
+  const [foreignInterestValue, setForeignInterestValue] = useState("both");
   const foreignInterest = watch("foreignInterest");
 
   useEffect(() => {
@@ -106,41 +121,36 @@ const PartnerSettings: React.FC = () => {
 
   const navigate = useNavigate();
 
+  // const handleMaritalStatusChange = (id: string, checked: boolean) => {
+  //   const updatedStatuses = checked
+  //     ? [...selectedMaritalStatuses, id]
+  //     : selectedMaritalStatuses.filter(statusId => statusId !== id);
 
+  //   setSelectedMaritalStatuses(updatedStatuses);
+  // };
 
+  // const handleEducationChange = (value: string, checked: boolean) => {
+  //   const updatedEducations = checked
+  //     ? [...selectedEducations, value]
+  //     : selectedEducations.filter(education => education !== value);
 
-  const handleMaritalStatusChange = (id: string, checked: boolean) => {
-    const updatedStatuses = checked
-      ? [...selectedMaritalStatuses, id]
-      : selectedMaritalStatuses.filter(statusId => statusId !== id);
+  //   setSelectedEducations(updatedEducations);
+  // };
 
-    setSelectedMaritalStatuses(updatedStatuses);
-  };
+  // const handleAnnualIncomeChange = (id: string, checked: boolean) => {
+  //   const updatedIncomes = checked
+  //     ? [...selectedAnnualIncomes, id]
+  //     : selectedAnnualIncomes.filter(incomeId => incomeId !== id);
 
-
-
-  const handleEducationChange = (value: string, checked: boolean) => {
-    const updatedEducations = checked
-      ? [...selectedEducations, value]
-      : selectedEducations.filter(education => education !== value);
-
-    setSelectedEducations(updatedEducations);
-  };
-
-  const handleAnnualIncomeChange = (id: string, checked: boolean) => {
-    const updatedIncomes = checked
-      ? [...selectedAnnualIncomes, id]
-      : selectedAnnualIncomes.filter(incomeId => incomeId !== id);
-
-    setSelectedAnnualIncomes(updatedIncomes);
-  };
+  //   setSelectedAnnualIncomes(updatedIncomes);
+  // };
 
   const handleProfessionChange = (value: string, checked: boolean) => {
-    setSelectedProfessions(prevProfessions => {
+    setSelectedProfessions((prevProfessions) => {
       if (checked && !prevProfessions.includes(value)) {
         return [...prevProfessions, value];
       } else {
-        return prevProfessions.filter(profession => profession !== value);
+        return prevProfessions.filter((profession) => profession !== value);
       }
     });
 
@@ -158,7 +168,24 @@ const PartnerSettings: React.FC = () => {
 
   const onSubmit: SubmitHandler<PartnerSettingsInputs> = async (data) => {
     setIsSubmitting(true);
-    console.log('Form data:', data);
+    console.log("Form data:", data);
+    const StarRasiString = selectedStarRasiPairs.join(",");
+    console.log(StarRasiString);
+    const StarString = selectedStarIds.join(",");
+    console.log(StarString);
+    const MaritalValues = selectedMaritalStatuses.join(",");
+    console.log(StarString);
+    const EducationalValues = selectedEducations.join(",");
+    console.log(EducationalValues);
+    const IncomeValues = selectedAnnualIncomes.join(",");
+    console.log(IncomeValues);
+    const prefProfessionString = [
+      ...(selectedProfessions.includes("employed") ? ["employed"] : []),
+      ...(selectedBusiness ? ["business"] : []),
+      ...(selectedStudent ? ["student"] : []),
+      ...(selectedNotWorking ? ["notWorking"] : []),
+      ...(selectedNotMentioned ? ["notMentioned"] : []),
+    ].join(",");
 
     try {
       const profileId = sessionStorage.getItem("profile_id_new");
@@ -171,29 +198,28 @@ const PartnerSettings: React.FC = () => {
         pref_age_differences: data.age,
         pref_height_from: data.heightFrom,
         pref_height_to: data.heightTo,
-        pref_marital_status1: selectedMaritalStatuses,
-        pref_profession1: [
-          ...(selectedProfessions.includes("employed") ? ["employed"] : []),
-          ...(selectedBusiness ? ["business"] : []),
-          ...(selectedStudent ? ["student"] : []),
-          ...(selectedNotWorking ? ["notWorking"] : []),
-          ...(selectedNotMentioned ? ["notMentioned"] : []),
-        ],
-        pref_education1: selectedEducations,
-        pref_anual_income1: selectedAnnualIncomes,
+        pref_marital_status: MaritalValues,
+        pref_profession: prefProfessionString,
+        pref_education: EducationalValues,
+        pref_anual_income: IncomeValues,
         pref_chevvai: data.chevvai,
         pref_ragukethu: data.rehu,
         pref_foreign_intrest: foreignInterestValue,
-        status: "1"
+        pref_porutham_star: StarString,
+        pref_porutham_star_rasi: StarRasiString,
+        status: "1",
       };
 
       console.log("Post Data:", postData);
 
-      const response = await apiClient.post(`/auth/Partner_pref_registration/`, postData);
+      const response = await apiClient.post(
+        `/auth/Partner_pref_registration/`,
+        postData
+      );
       console.log("Registration response:", response.data);
 
       if (response.data.Status === 1) {
-        navigate('/MembershipPlan');
+        navigate("/MembershipPlan");
       } else {
         setIsSubmitting(false);
         console.log("Registration unsuccessful:", response.data);
@@ -204,47 +230,58 @@ const PartnerSettings: React.FC = () => {
     }
   };
 
-
-
-
-
-
-
-  const profileId = sessionStorage.getItem('profile_id_new');
+  // const profileId = sessionStorage.getItem('profile_id_new');
 
   useEffect(() => {
     const fetchProfileData = async () => {
+      const profileId = sessionStorage.getItem("profile_id_new");
+
       if (profileId) {
         try {
           const requestData = {
             profile_id: profileId,
-            page_id: 6
+            page_id: 6,
           };
 
-          const response =  await apiClient.post(`/auth/Get_save_details/`, requestData, {
-            headers: {
-              'Content-Type': 'application/json'
+          const response = await apiClient.post(
+            `/auth/Get_save_details/`,
+            requestData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
-          });
+          );
 
           console.log("API Response:", response.data);
 
           const profileData = response.data.data;
 
-          console.log("Profile Data:", profileData);
+          // Parse and set form values
+          const maritalStatusArray = profileData.pref_marital_status.split(",");
+          const educationArray = profileData.pref_education.split(",");
+          const annualIncomeArray = profileData.pref_anual_income.split(",");
+          const poruthamStarIds = profileData.pref_porutham_star
+            .split(",")
+            .map((id: string) => id.trim());
 
-          // Set form values here after fetching data
+          // Set form values
           setValue("age", profileData.pref_age_differences);
           setValue("heightFrom", profileData.pref_height_from);
           setValue("heightTo", profileData.pref_height_to);
-          setValue("maritalStatus", profileData.pref_marital_status);
-          setValue("profession", profileData.pref_profession);
-          setValue("education", profileData.pref_education);
-          setValue("annualIncome", profileData.pref_anual_income);
+          setValue("maritalStatus", maritalStatusArray);
+          setValue("profession", profileData.pref_profession.split(","));
+          setValue("education", educationArray);
+          setValue("annualIncome", annualIncomeArray);
           setValue("chevvai", profileData.pref_chevvai);
           setValue("rehu", profileData.pref_ragukethu);
           setValue("foreignInterest", profileData.pref_foreign_intrest);
 
+          // Set selected values for checkboxes and other states
+          setSelectedMaritalStatuses(maritalStatusArray);
+          setSelectedEducations(educationArray);
+          setSelectedAnnualIncomes(annualIncomeArray);
+          setSelectedStarIds(poruthamStarIds); // Set selected stars for checkbox selection
         } catch (error) {
           console.error("Error fetching profile data:", error);
         }
@@ -254,16 +291,35 @@ const PartnerSettings: React.FC = () => {
     };
 
     fetchProfileData();
-  }, [profileId, setValue]);
+  }, [setValue]);
+
+  const handleMaritalStatusChange = (id: string, isChecked: boolean) => {
+    setSelectedMaritalStatuses((prev) =>
+      isChecked ? [...prev, id] : prev.filter((statusId) => statusId !== id)
+    );
+  };
+
+  const handleEducationChange = (id: string, isChecked: boolean) => {
+    setSelectedEducations((prev) =>
+      isChecked ? [...prev, id] : prev.filter((eduId) => eduId !== id)
+    );
+  };
+
+  const handleAnnualIncomeChange = (id: string, isChecked: boolean) => {
+    setSelectedAnnualIncomes((prev) =>
+      isChecked ? [...prev, id] : prev.filter((incId) => incId !== id)
+    );
+  };
 
   useEffect(() => {
     const fetchMaritalStatuses = async () => {
       try {
-        const response = await axios.post<{ [key: string]: MaritalStatus }>('/auth/Get_Marital_Status/');
-        const options = Object.values(response.data);
+        // const response = await axios.post<{ [key: string]: MaritalStatus }>('/auth/Get_Marital_Status/');
+        const response = await apiClient.post(`/auth/Get_Marital_Status/`);
+        const options = Object.values(response.data) as MaritalStatus[];
         setMaritalStatuses(options);
       } catch (error) {
-        console.error('Error fetching marital statuses:', error);
+        console.error("Error fetching marital statuses:", error);
       }
     };
 
@@ -273,12 +329,12 @@ const PartnerSettings: React.FC = () => {
   useEffect(() => {
     const fetchEduPref = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_Edu_Pref/`);
+        const response = await apiClient.post(`/auth/Get_Edu_Pref/`);
         const options = Object.values(response.data) as EduPref[];
         console.log(options);
         setEduPref(options);
       } catch (error) {
-        console.error('Error fetching Edu Pref options:', error);
+        console.error("Error fetching Edu Pref options:", error);
       }
     };
     fetchEduPref();
@@ -287,11 +343,11 @@ const PartnerSettings: React.FC = () => {
   useEffect(() => {
     const fetchAnnualIncome = async () => {
       try {
-        const response =  await apiClient.post(`/auth/Get_Annual_Income/`);
+        const response = await apiClient.post(`/auth/Get_Annual_Income/`);
         const options = Object.values(response.data) as AnnualIncome[];
         setAnnualIncome(options);
       } catch (error) {
-        console.error('Error fetching Annual Income options:', error);
+        console.error("Error fetching Annual Income options:", error);
       }
     };
     fetchAnnualIncome();
@@ -307,16 +363,18 @@ const PartnerSettings: React.FC = () => {
     if (storedBirthStar && storedGender) {
       const fetchMatchingStars = async () => {
         try {
-          const response =  await apiClient.post(`/auth/Get_Matchstr_Pref/`, {
+          const response = await apiClient.post(`/auth/Get_Matchstr_Pref/`, {
             birth_star_id: storedBirthStar,
             gender: storedGender,
           });
 
-          const matchCountArrays: MatchingStar[][] = Object.values(response.data).map((matchCount: any) => matchCount);
+          const matchCountArrays: MatchingStar[][] = Object.values(
+            response.data
+          ).map((matchCount: any) => matchCount);
           setMatchStars(matchCountArrays);
-          console.log('Response from server:', matchCountArrays);
+          console.log("Response from server:", matchCountArrays);
         } catch (error) {
-          console.error('Error fetching matching star options:', error);
+          console.error("Error fetching matching star options:", error);
         }
       };
       fetchMatchingStars();
@@ -327,7 +385,7 @@ const PartnerSettings: React.FC = () => {
     const storedHeight = sessionStorage.getItem("userHeight");
 
     if (storedHeight) {
-      if (storedGender === 'male') {
+      if (storedGender === "male") {
         setValue("heightTo", storedHeight);
       } else {
         setValue("heightFrom", storedHeight);
@@ -335,19 +393,64 @@ const PartnerSettings: React.FC = () => {
     }
   }, [setValue]);
 
-  const handleCheckboxChange = (updatedIds: string[]) => {
-    setSelectedStarIds(updatedIds);
+  const handleCheckboxChange = (
+    updatedIds: string[],
+    rasi: string,
+    star: string
+  ) => {
+    // Update the state with the new set of selected star IDs
+    setSelectedStarId((prevIds) => {
+      // Create a Set to remove duplicate star IDs
+      const allIds = new Set([
+        ...prevIds,
+        star, // Use `star` directly if it's a single ID
+      ]);
+
+      // Convert Set back to an array
+      return Array.from(allIds);
+    });
+
+    setSelectedStarIds((prevsIds) => {
+      // Create a Set to remove duplicate star IDs
+      const allIds = new Set([
+        ...prevsIds,
+        ...updatedIds, // Use `star` directly if it's a single ID
+      ]);
+
+      // Convert Set back to an array
+      return Array.from(allIds);
+    });
+
+    // Log the selected Rasi, Star, and Updated Star IDs for debugging
+    console.log("Selected Rasi:", rasi);
+    console.log("Selected Star:", star);
+    console.log("Updated Star IDs:", updatedIds);
+
+    // Create pairs of each star ID with the provided rasi and star
+    const newPairs = updatedIds.map(() => `${star}-${rasi}`);
+
+    // Update the state with the new set of star-rasi pairs
+    setSelectedStarRasiPairs((prevPairs) => {
+      // Create a Set to remove duplicate pairs
+      const allPairs = new Set([...prevPairs, ...newPairs]);
+
+      // Convert Set back to an array
+      return Array.from(allPairs);
+    });
   };
+
+  console.log(selectedStarRasiPairs);
+  console.log(selectedStarId);
+  console.log(selectedStarIds);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  // console.log(selectedStarIds);
+  //console.log(selectedStarIds);
   // console.log(selectedMaritalStatuses);
   // console.log(selectedProfessions);
   // console.log(selectedEducations);
   // console.log(selectedAnnualIncomes);
-
 
   return (
     <div className="pb-20">
@@ -357,11 +460,13 @@ const PartnerSettings: React.FC = () => {
       />
 
       <div className="container mt-5 flex justify-between space-x-24">
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5 mb-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full space-y-5 mb-5"
+        >
           <h5 className="text-[24px] font-semibold">Advanced Search</h5>
 
           <div className="flex justify-between items-center">
-
             <div>
               {/* <h5 className="text-[18px] text-primary font-semibold">Age</h5> */}
               <div className="flex items-center space-x-5">
@@ -391,12 +496,12 @@ const PartnerSettings: React.FC = () => {
                     <option value="9">9</option>
                     <option value="10">10</option>
                   </select>
-                  {errors.age && <span className="text-red-500">{errors.age.message}</span>}
+                  {errors.age && (
+                    <span className="text-red-500">{errors.age.message}</span>
+                  )}
                 </div>
               </div>
             </div>
-
-
 
             {/* 
             <div>
@@ -413,20 +518,32 @@ const PartnerSettings: React.FC = () => {
               </div>
             </div> */}
 
-
-
-
-
             <div>
               <h5 className="text-[18px] text-primary font-semibold">Height</h5>
               <div className="flex items-center space-x-5">
                 <div>
-                  <InputField label={""} placeholder="From" {...register("heightFrom")} />
-                  {errors.heightFrom && <span className="text-red-500">{errors.heightFrom.message}</span>}
+                  <InputField
+                    label={""}
+                    placeholder="From"
+                    {...register("heightFrom")}
+                  />
+                  {errors.heightFrom && (
+                    <span className="text-red-500">
+                      {errors.heightFrom.message}
+                    </span>
+                  )}
                 </div>
                 <div>
-                  <InputField label={""} placeholder="To" {...register("heightTo")} />
-                  {errors.heightTo && <span className="text-red-500">{errors.heightTo.message}</span>}
+                  <InputField
+                    label={""}
+                    placeholder="To"
+                    {...register("heightTo")}
+                  />
+                  {errors.heightTo && (
+                    <span className="text-red-500">
+                      {errors.heightTo.message}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -435,18 +552,29 @@ const PartnerSettings: React.FC = () => {
           {/* Marital Status */}
           {/* Marital Status */}
           <div>
-            <h5 className="text-[18px] text-primary font-semibold mb-2">Marital Status</h5>
+            <h5 className="text-[18px] text-primary font-semibold mb-2">
+              Marital Status
+            </h5>
             <div className="flex justify-between items-center">
-              {maritalStatuses.map(status => (
+              {maritalStatuses.map((status) => (
                 <div key={status.marital_sts_id}>
                   <input
                     type="checkbox"
                     id={`maritalStatus-${status.marital_sts_id}`}
                     value={status.marital_sts_id.toString()}
-                    checked={selectedMaritalStatuses.includes(status.marital_sts_id.toString())}
-                    onChange={(e) => handleMaritalStatusChange(status.marital_sts_id.toString(), e.target.checked)}
+                    checked={selectedMaritalStatuses.includes(
+                      status.marital_sts_id.toString()
+                    )}
+                    onChange={(e) =>
+                      handleMaritalStatusChange(
+                        status.marital_sts_id.toString(),
+                        e.target.checked
+                      )
+                    }
                   />
-                  <label htmlFor={`maritalStatus-${status.marital_sts_id}`}>{status.marital_sts_name}</label>
+                  <label htmlFor={`maritalStatus-${status.marital_sts_id}`}>
+                    {status.marital_sts_name}
+                  </label>
                 </div>
               ))}
             </div>
@@ -455,7 +583,9 @@ const PartnerSettings: React.FC = () => {
           {/* Profession */}
           {/* Profession */}
           <div>
-            <h5 className="text-[18px] text-primary font-semibold mb-2">Profession</h5>
+            <h5 className="text-[18px] text-primary font-semibold mb-2">
+              Profession
+            </h5>
             <div className="flex justify-between items-center">
               <div>
                 <input
@@ -463,9 +593,13 @@ const PartnerSettings: React.FC = () => {
                   id="employed"
                   value="employed"
                   checked={selectedProfessions.includes("employed")}
-                  onChange={(e) => handleProfessionChange("employed", e.target.checked)}
+                  onChange={(e) =>
+                    handleProfessionChange("employed", e.target.checked)
+                  }
                 />
-                <label htmlFor="employed" className="pl-1">Employed</label>
+                <label htmlFor="employed" className="pl-1">
+                  Employed
+                </label>
               </div>
 
               <div>
@@ -474,9 +608,13 @@ const PartnerSettings: React.FC = () => {
                   id="business"
                   value="business"
                   checked={selectedProfessions.includes("business")}
-                  onChange={(e) => handleProfessionChange("business", e.target.checked)}
+                  onChange={(e) =>
+                    handleProfessionChange("business", e.target.checked)
+                  }
                 />
-                <label htmlFor="business" className="pl-1">Business</label>
+                <label htmlFor="business" className="pl-1">
+                  Business
+                </label>
               </div>
 
               <div>
@@ -485,9 +623,13 @@ const PartnerSettings: React.FC = () => {
                   id="student"
                   value="student"
                   checked={selectedProfessions.includes("student")}
-                  onChange={(e) => handleProfessionChange("student", e.target.checked)}
+                  onChange={(e) =>
+                    handleProfessionChange("student", e.target.checked)
+                  }
                 />
-                <label htmlFor="student" className="pl-1">Student</label>
+                <label htmlFor="student" className="pl-1">
+                  Student
+                </label>
               </div>
 
               <div>
@@ -496,9 +638,13 @@ const PartnerSettings: React.FC = () => {
                   id="notWorking"
                   value="notWorking"
                   checked={selectedProfessions.includes("notWorking")}
-                  onChange={(e) => handleProfessionChange("notWorking", e.target.checked)}
+                  onChange={(e) =>
+                    handleProfessionChange("notWorking", e.target.checked)
+                  }
                 />
-                <label htmlFor="notWorking" className="pl-1">Not Working</label>
+                <label htmlFor="notWorking" className="pl-1">
+                  Not Working
+                </label>
               </div>
 
               <div>
@@ -507,9 +653,13 @@ const PartnerSettings: React.FC = () => {
                   id="notMentioned"
                   value="notMentioned"
                   checked={selectedProfessions.includes("notMentioned")}
-                  onChange={(e) => handleProfessionChange("notMentioned", e.target.checked)}
+                  onChange={(e) =>
+                    handleProfessionChange("notMentioned", e.target.checked)
+                  }
                 />
-                <label htmlFor="notMentioned" className="pl-1">Not Mentioned</label>
+                <label htmlFor="notMentioned" className="pl-1">
+                  Not Mentioned
+                </label>
               </div>
             </div>
             {errors.profession && (
@@ -517,22 +667,32 @@ const PartnerSettings: React.FC = () => {
             )}
           </div>
 
-
-
           {/* Education */}
           <div>
-            <label className="text-[18px] text-primary font-semibold mb-2">Education</label>
+            <label className="text-[18px] text-primary font-semibold mb-2">
+              Education
+            </label>
             <div className="flex flex-wrap gap-4">
               {eduPref.map((option) => (
                 <div key={option.Edu_Pref_id} className="flex items-center">
                   <input
                     type="checkbox"
                     id={`education-${option.Edu_Pref_id}`}
-                    value={option.Edu_name}
-                    checked={selectedEducations.includes(option.Edu_name)}
-                    onChange={(e) => handleEducationChange(option.Edu_name, e.target.checked)}
+                    value={option.Edu_Pref_id.toString()}
+                    checked={selectedEducations.includes(
+                      option.Edu_Pref_id.toString()
+                    )}
+                    onChange={(e) =>
+                      handleEducationChange(
+                        option.Edu_Pref_id.toString(),
+                        e.target.checked
+                      )
+                    }
                   />
-                  <label htmlFor={`education-${option.Edu_Pref_id}`} className="pl-1">
+                  <label
+                    htmlFor={`education-${option.Edu_Pref_id}`}
+                    className="pl-1"
+                  >
                     {option.Edu_name}
                   </label>
                 </div>
@@ -542,25 +702,36 @@ const PartnerSettings: React.FC = () => {
 
           {/* Annual Income */}
           <div>
-            <label className="text-[18px] text-primary font-semibold mb-2">Annual Income</label>
-            <div className="grid grid-rows-1 grid-cols-5">
+            <label className="text-[18px] text-primary font-semibold mb-2">
+              Annual Income
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {annualIncome.map((option) => (
-                <div key={option.income_id} className="mb-2">
+                <div key={option.income_id} className="mb-2 flex items-center">
                   <input
                     type="checkbox"
                     id={`annualIncome-${option.income_id}`}
                     value={option.income_id.toString()}
-                    checked={selectedAnnualIncomes.includes(option.income_id.toString())}
-                    onChange={(e) => handleAnnualIncomeChange(option.income_id.toString(), e.target.checked)}
+                    checked={selectedAnnualIncomes.includes(
+                      option.income_id.toString()
+                    )}
+                    onChange={(e) =>
+                      handleAnnualIncomeChange(
+                        option.income_id.toString(),
+                        e.target.checked
+                      )
+                    }
                   />
-                  <label htmlFor={`annualIncome-${option.income_id}`} className="pl-1">
+                  <label
+                    htmlFor={`annualIncome-${option.income_id}`}
+                    className="pl-1"
+                  >
                     {option.income_description}
                   </label>
                 </div>
               ))}
             </div>
           </div>
-
 
           {/* Dhosam */}
           {/* <div>
@@ -600,7 +771,9 @@ const PartnerSettings: React.FC = () => {
             )}
           </div>
           <div>
-            <label htmlFor="Rehu" className="block mb-1">  Rehu / Ketu
+            <label htmlFor="Rehu" className="block mb-1">
+              {" "}
+              Rehu / Ketu
             </label>
             <select
               id="Rehu"
@@ -608,7 +781,7 @@ const PartnerSettings: React.FC = () => {
               {...register("rehu")}
             >
               <option value="" selected disabled>
-                -- Select Rehu / Ketu  --
+                -- Select Rehu / Ketu --
               </option>
               {["UnKnown", "Yes", "No"].map((option) => (
                 <option key={option} value={option}>
@@ -622,19 +795,26 @@ const PartnerSettings: React.FC = () => {
           </div>
 
           <div>
-            <h5 className="text-[18px] text-primary font-semibold mb-2">Foreign Interest</h5>
+            <h5 className="text-[18px] text-primary font-semibold mb-2">
+              Foreign Interest
+            </h5>
             <select
               id="foreignInterest"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("foreignInterest", { required: "Foreign interest selection is required" })}
+              {...register("foreignInterest", {
+                required: "Foreign interest selection is required",
+              })}
             >
               <option value="yes">Yes</option>
               <option value="no">No</option>
               <option value="both">Both</option>
             </select>
-            {errors.foreignInterest && <span className="text-red-500">{errors.foreignInterest.message}</span>}
+            {errors.foreignInterest && (
+              <span className="text-red-500">
+                {errors.foreignInterest.message}
+              </span>
+            )}
           </div>
-
 
           {/* <div>
             <label htmlFor="birthStar" className="block mb-1">
@@ -678,8 +858,6 @@ const PartnerSettings: React.FC = () => {
             </select>
           </div> */}
 
-
-
           <div>
             <form onSubmit={handleSubmit(onSubmit)}>
               {/* Other input fields */}
@@ -687,10 +865,12 @@ const PartnerSettings: React.FC = () => {
                 {matchStars
                   .sort((a, b) => b[0].match_count - a[0].match_count)
                   .map((matchCountArray, index) => {
-                    const starAndRasi = matchCountArray.map(star => ({
+                    const starAndRasi = matchCountArray.map((star) => ({
                       id: star.id.toString(),
-                      star: star.matching_starname,
-                      rasi: star.matching_rasiname,
+                      matching_starId: star.dest_star_id.toString(), // Use star name instead of id
+                      matching_starname: star.matching_starname, // Use star name instead of id
+                      matching_rasiId: star.dest_rasi_id.toString(), // Use rasi name instead of id
+                      matching_rasiname: star.matching_rasiname, // Use rasi name instead of id
                     }));
 
                     const matchCountValue = matchCountArray[0].match_count;
@@ -700,20 +880,14 @@ const PartnerSettings: React.FC = () => {
                         key={index}
                         initialPoruthas={`No of porutham ${matchCountValue}`}
                         starAndRasi={starAndRasi}
-                        selectedStarIds={selectedStarIds} // Pass selectedStarIds state
-                        onCheckboxChange={handleCheckboxChange} // Pass the callback function
+                        selectedStarIds={selectedStarIds}
+                        onCheckboxChange={handleCheckboxChange} // Pass the updated function
                       />
                     );
                   })}
               </div>
-              {/* <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : 'Submit'}
-              </button> */}
             </form>
           </div>
-
-
-
 
           <div className="mt-7 flex justify-between">
             <div className="">
@@ -725,7 +899,6 @@ const PartnerSettings: React.FC = () => {
             </div>
 
             <div className="flex space-x-4">
-
               <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
                 Cancel
               </button>
@@ -736,13 +909,20 @@ const PartnerSettings: React.FC = () => {
                   <img src={arrow} alt="next arrow" className="ml-2" />
                 </span>
               </button> */}
-              <button type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : 'Find Match'}
-                {!isSubmitting && <span><img src={arrow} alt="next arrow" className="ml-2" /></span>}
+              <button
+                type="submit"
+                className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Find Match"}
+                {!isSubmitting && (
+                  <span>
+                    <img src={arrow} alt="next arrow" className="ml-2" />
+                  </span>
+                )}
               </button>
             </div>
           </div>
-
         </form>
         <SideContent />
       </div>
@@ -751,4 +931,3 @@ const PartnerSettings: React.FC = () => {
 };
 
 export default PartnerSettings;
-

@@ -1,20 +1,36 @@
-// import React, { useState, useEffect } from 'react';
-import Checkbox from './CheckBox';
+import React from "react";
+import Checkbox from "./CheckBox";
 
 interface MatchingStarsProps {
   initialPoruthas: string;
-  starAndRasi: { id: string; star: string; rasi: string }[];
-  selectedStarIds: string[]; // Add this prop to maintain selected state
-  onCheckboxChange: (updatedIds: string[]) => void; // Callback function
+  starAndRasi: {
+    id: string;
+    matching_starname: string;
+    matching_rasiname: string;
+    matching_starId: string;
+    matching_rasiId: string;
+  }[];
+  selectedStarIds: string[];
+  onCheckboxChange: (updatedIds: string[], rasi: string, star: string) => void;
 }
 
-const MatchingStars: React.FC<MatchingStarsProps> = ({ initialPoruthas, starAndRasi, selectedStarIds, onCheckboxChange }) => {
-  const handleCheckboxChange = (id: string, checked: boolean) => {
-    const updatedIds = checked 
-      ? [...selectedStarIds, id] 
-      : selectedStarIds.filter(itemId => itemId !== id);
-    
-    onCheckboxChange(updatedIds); // Call the callback function with updated IDs
+const MatchingStars: React.FC<MatchingStarsProps> = ({
+  initialPoruthas,
+  starAndRasi,
+  selectedStarIds,
+  onCheckboxChange,
+}) => {
+  const handleCheckboxChange = (
+    id: string,
+    rasi: string,
+    star: string,
+    checked: boolean
+  ) => {
+    const updatedIds = checked
+      ? [...selectedStarIds, id]
+      : selectedStarIds.filter((itemId) => itemId !== id);
+
+    onCheckboxChange(updatedIds, rasi, star); // Pass updated IDs along with rasi and star
   };
 
   return (
@@ -29,10 +45,17 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({ initialPoruthas, starAndR
               <Checkbox
                 id={item.id}
                 name={`star-${index}`}
-                value={`${item.star} - ${item.rasi}`}
-                label={`${item.star} - ${item.rasi}`}
-                checked={selectedStarIds.includes(item.id)} // Set checked state based on selectedStarIds
-                onChange={(e) => handleCheckboxChange(item.id, e.target.checked)}
+                value={`${item.matching_starId} - ${item.matching_rasiId}`}
+                label={`${item.matching_starname} - ${item.matching_rasiname}`}
+                checked={selectedStarIds.includes(item.id)}
+                onChange={(e) =>
+                  handleCheckboxChange(
+                    item.id,
+                    item.matching_rasiId,
+                    item.matching_starId,
+                    e.target.checked
+                  )
+                }
               />
             </div>
           ))}

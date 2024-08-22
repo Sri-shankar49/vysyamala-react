@@ -1,9 +1,11 @@
 import Thankyou from "../assets/images/Thankyou.png";
 import DetailedReg from "../assets/images/DetailedReg.png";
 import QuickReg from "../assets/images/QuickReg.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export const ThankYou = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="bg-gray py-20">
       <div className="container bg-white mx-auto rounded-[12px] shadow-md pt-24 pb-32 px-32">
@@ -63,7 +65,10 @@ export const ThankYou = () => {
                 </p>
 
                 <div className="mt-5">
-                  <button className="text-main px-5 py-2.5 border-2 border-main rounded-md font-semibold">
+                  <button
+                    onClick={() => navigate("/UploadImages")}
+                    className="text-main px-5 py-2.5 border-2 border-main rounded-md font-semibold"
+                  >
                     Upload Horoscope and Photo
                   </button>
                 </div>

@@ -18,6 +18,7 @@
 
 .heroSlickStyle .fade-bottom::after {
   left: 0.30rem;
+  /* left: 0rem; */
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }

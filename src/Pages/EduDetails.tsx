@@ -3,16 +3,22 @@ import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import apiClient from "../API";
-
+import {
+  ToastNotification,
+  NotifyError,
+  NotifySuccess,
+} from "../Components/Toast/ToastNotification";
 
 // Define validation schema with zod
 const schema = zod.object({
-  highestEducationLevel: zod.string().min(1, "Highest education level is required"),
+  highestEducationLevel: zod
+    .string()
+    .min(1, "Highest education level is required"),
   ugDegree: zod.string().optional(),
   aboutYourEducation: zod.string().min(3, "About your education is required"),
   profession: zod.string().min(1, "Profession count is required"),
@@ -22,8 +28,8 @@ const schema = zod.object({
   state: zod.string().min(1, "State is required"),
   pincode: zod.string().min(1, "Pincode is required"),
   careerPlans: zod.string().min(1, "Career plans are required"),
+  workCity: zod.string().min(1, "Work city is required"),
 });
-
 
 // API call
 // const COUNTRY_API_URL = await apiClient.post(`/auth/Get_Country/`);
@@ -40,10 +46,10 @@ interface EduDetailsInputs {
   state: string;
   pincode: string;
   careerPlans: string;
+  workCity: string;
 }
 
-interface EduDetailsProps { }
-
+interface EduDetailsProps {}
 
 interface HighesEducation {
   education_id: number;
@@ -71,27 +77,50 @@ interface StateOption {
 }
 
 const EduDetails: React.FC<EduDetailsProps> = () => {
-
   // Navigate to next page
   const navigate = useNavigate();
 
   // React Hook form
-  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<EduDetailsInputs>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    watch,
+  } = useForm<EduDetailsInputs>({
     resolver: zodResolver(schema),
   });
 
   // Profession State
-  const [selectedProfession, setSelectedProfession] = useState<string | null>(null);
+  const [selectedProfession, setSelectedProfession] = useState<string | null>(
+    null
+  );
   const [highestEdu, setHighestEdu] = useState<HighesEducation[]>([]);
   const [ugdegree, setUgdegree] = useState<Ugdegree[]>([]);
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
 
+  const professionRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // Function to handle scrolling and focusing
+    const handleFocus = (ref: React.RefObject<HTMLDivElement>, error: any) => {
+      if (error && ref.current) {
+        ref.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        const firstButton = ref.current.querySelector("button");
+        if (firstButton) {
+          firstButton.focus();
+        }
+      }
+    };
 
+    // Handle focus for each error condition
+    handleFocus(professionRef, errors.profession);
+  }, [errors.profession]);
 
-
-
-  const profileId = sessionStorage.getItem('profile_id_new');
+  const profileId = sessionStorage.getItem("profile_id_new");
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -99,14 +128,18 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
         try {
           const requestData = {
             profile_id: profileId,
-            page_id: 4
+            page_id: 4,
           };
 
-          const response = await apiClient.post(`/auth/Get_save_details/`, requestData, {
-            headers: {
-              'Content-Type': 'application/json'
+          const response = await apiClient.post(
+            `/auth/Get_save_details/`,
+            requestData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
             }
-          });
+          );
 
           console.log("API Response:", response.data); // Log the entire API response
 
@@ -128,7 +161,6 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
 
           // Set the initial state for selected profession
           setSelectedProfession(profileData.profession);
-
         } catch (error) {
           console.error("Error fetching profile data:", error);
         }
@@ -139,15 +171,6 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
 
     fetchProfileData();
   }, [profileId, setValue]);
-
-
-
-
-
-
-
-
-
 
   useEffect(() => {
     const fetchHighestEdu = async () => {
@@ -162,7 +185,6 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
     fetchHighestEdu();
   }, []);
 
-
   useEffect(() => {
     const fetchUgDegree = async () => {
       try {
@@ -175,7 +197,6 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
     };
     fetchUgDegree();
   }, []);
-
 
   useEffect(() => {
     const fetchAnnualIncome = async () => {
@@ -190,12 +211,8 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
     fetchAnnualIncome();
   }, []);
 
-
   const [countryOptions, setCountryOptions] = useState<CountryOption[]>([]);
   const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
-
-
-
 
   useEffect(() => {
     const fetchCountryStatus = async () => {
@@ -216,7 +233,9 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
     if (selectedCountry) {
       const fetchStateStatus = async () => {
         try {
-          const response = await apiClient.post(`/auth/Get_State/`, { country_id: selectedCountry });
+          const response = await apiClient.post(`/auth/Get_State/`, {
+            country_id: selectedCountry,
+          });
           const options = Object.values(response.data) as StateOption[];
           setStateOptions(options);
         } catch (error) {
@@ -227,9 +246,11 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
     }
   }, [selectedCountry]);
 
-
   // Background getting selected
-  const buttonClass = (isSelected: boolean) => isSelected ? "bg-secondary text-white" : "border-gray hover:bg-secondary hover:text-white";
+  const buttonClass = (isSelected: boolean) =>
+    isSelected
+      ? "bg-secondary text-white"
+      : "border-gray hover:bg-secondary hover:text-white";
 
   const handleProfessionChange = (value: string) => {
     setSelectedProfession(value);
@@ -237,7 +258,6 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   };
 
   const onSubmit: SubmitHandler<EduDetailsInputs> = async (data) => {
-
     try {
       // Format the data as expected by the backend
       const profileId = sessionStorage.getItem("profile_id_new");
@@ -256,30 +276,38 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
         work_state: data.state,
         work_pincode: data.pincode,
         career_plans: data.careerPlans,
-        status: "1"
+        status: "1",
+        work_city: data.workCity,
       };
 
       console.log("Formatted Data:", formattedData);
       setIsSubmitting(true);
-      const response = await apiClient.post(`/auth/Education_registration/`, formattedData);
+      const response = await apiClient.post(
+        `/auth/Education_registration/`,
+        formattedData
+      );
       setIsSubmitting(false);
 
       if (response.data.Status === 1) {
-        navigate("/HoroDetails");
+        NotifySuccess("Education details saved successfully");
+
+        setTimeout(() => {
+          navigate("/HoroDetails");
+        }, 2000);
       } else {
         // Handle error or show message to the user
         console.error("Error: Response status is not 1", response.data);
       }
     } catch (error) {
+      NotifyError("Failed to upload Education Details");
       console.error("Error submitting form data:", error);
       setIsSubmitting(false);
     }
   };
 
-
   useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [])
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="pb-20">
@@ -289,7 +317,10 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
       />
 
       <div className="container mt-5 flex justify-between space-x-24">
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5 mb-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full space-y-5 mb-5"
+        >
           <div>
             <label htmlFor="HighestEducationLevel" className="block mb-1">
               Highest Education Level <span className="text-main">*</span>
@@ -309,7 +340,9 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
               ))}
             </select>
             {errors.highestEducationLevel && (
-              <span className="text-red-500">{errors.highestEducationLevel.message}</span>
+              <span className="text-red-500">
+                {errors.highestEducationLevel.message}
+              </span>
             )}
           </div>
 
@@ -331,7 +364,9 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                 </option>
               ))}
             </select>
-            {errors.ugDegree && <span className="text-red-500">{errors.ugDegree.message}</span>}
+            {errors.ugDegree && (
+              <span className="text-red-500">{errors.ugDegree.message}</span>
+            )}
           </div>
 
           <div>
@@ -341,19 +376,29 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
               {...register("aboutYourEducation")}
             />
             {errors.aboutYourEducation && (
-              <span className="text-red-500">{errors.aboutYourEducation.message}</span>
+              <span className="text-red-500">
+                {errors.aboutYourEducation.message}
+              </span>
             )}
           </div>
 
           <div className="mt-3">
             <h1 className="mb-3">Profession</h1>
 
-            <div className="w-full inline-flex rounded">
-              {["Employed", "Business", "Student", "Not Working", "Not Mentioned"].map((type) => (
+            <div ref={professionRef} className="w-full inline-flex rounded">
+              {[
+                "Employed",
+                "Business",
+                "Student",
+                "Not Working",
+                "Not Mentioned",
+              ].map((type) => (
                 <button
                   key={type}
                   type="button"
-                  className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(selectedProfession === type)}`}
+                  className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(
+                    selectedProfession === type
+                  )}`}
                   onClick={() => handleProfessionChange(type)}
                   {...register("profession")}
                 >
@@ -361,7 +406,9 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                 </button>
               ))}
             </div>
-            {errors.profession && <span className="text-red-500">{errors.profession.message}</span>}
+            {errors.profession && (
+              <span className="text-red-500">{errors.profession.message}</span>
+            )}
           </div>
 
           <div>
@@ -383,19 +430,25 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
               ))}
             </select>
             {errors.annualIncome && (
-              <span className="text-red-500">{errors.annualIncome.message}</span>
+              <span className="text-red-500">
+                {errors.annualIncome.message}
+              </span>
             )}
           </div>
 
           <div>
             <InputField label={"Actual Income"} {...register("actualIncome")} />
             {errors.actualIncome && (
-              <span className="text-red-500">{errors.actualIncome.message}</span>
+              <span className="text-red-500">
+                {errors.actualIncome.message}
+              </span>
             )}
           </div>
 
           <div className="!mt-12">
-            <h1 className="font-bold text-xl text-primary mb-3">Work Location</h1>
+            <h1 className="font-bold text-xl text-primary mb-3">
+              Work Location
+            </h1>
 
             <div className="w-full space-y-5 mb-5">
               <div>
@@ -416,12 +469,15 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                     </option>
                   ))}
                 </select>
-                {errors.country && <span className="text-red-500">{errors.country.message}</span>}
+                {errors.country && (
+                  <span className="text-red-500">{errors.country.message}</span>
+                )}
               </div>
 
               <div>
                 <label htmlFor="state" className="block mb-1">
-                  State <span className="text-main">*</span> (Based on country selection)
+                  State <span className="text-main">*</span> (Based on country
+                  selection)
                 </label>
                 <select
                   id="state"
@@ -437,11 +493,35 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                     </option>
                   ))}
                 </select>
-                {errors.state && <span className="text-red-500">{errors.state.message}</span>}
+                {errors.state && (
+                  <span className="text-red-500">{errors.state.message}</span>
+                )}
               </div>
 
-              <InputField label={"Pincode (Based on Country Selection)"} {...register("pincode")} />
-              {errors.pincode && <span className="text-red-500">{errors.pincode.message}</span>}
+              <div>
+                <label htmlFor="workCity" className="block mb-1">
+                  Work City
+                  <span className="text-main">*</span>
+                </label>
+                <input
+                  id="workCity"
+                  className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                  {...register("workCity")}
+                />
+                {errors.workCity && (
+                  <span className="text-red-500">
+                    {errors.workCity.message}
+                  </span>
+                )}
+              </div>
+
+              <InputField
+                label={"Pincode (Based on Country Selection)"}
+                {...register("pincode")}
+              />
+              {errors.pincode && (
+                <span className="text-red-500">{errors.pincode.message}</span>
+              )}
 
               <div>
                 <label htmlFor="careerPlans" className="block mb-1">
@@ -454,10 +534,11 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                   placeholder=" Enter your message here..."
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                   {...register("careerPlans")}
-                >
-                </textarea>
+                ></textarea>
                 {errors.careerPlans && (
-                  <span className="text-red-500">{errors.careerPlans.message}</span>
+                  <span className="text-red-500">
+                    {errors.careerPlans.message}
+                  </span>
                 )}
               </div>
 
@@ -479,7 +560,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                     className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? 'Submitting...' : 'Next'}
+                    {isSubmitting ? "Submitting..." : "Next"}
 
                     <span>
                       <img src={arrow} alt="next arrow" className="ml-2" />
@@ -492,6 +573,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
         </form>
         <SideContent />
       </div>
+      <ToastNotification />
     </div>
   );
 };

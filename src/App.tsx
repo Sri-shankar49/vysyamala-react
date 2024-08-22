@@ -3,30 +3,31 @@ import MainLayout from "./Layout/MainLayout";
 import LoginLayout from "./Layout/LoginLayout";
 
 // Pages Components
-import { HomePage } from './Pages/HomePage';
-import { ThankYou } from './Pages/ThankYou';
-import ContactDetails from './Pages/ContactDetails';
-import UploadImages from './Pages/UploadImages';
-import FamilyDetails from './Pages/FamilyDetails';
-import EduDetails from './Pages/EduDetails';
-import HoroDetails from './Pages/HoroDetails';
-import PartnerSettings from './Pages/PartnerSettings';
-import { MembershipPlan } from './Pages/MembershipPlan';
-import { PayNow } from './Pages/PayNow';
-import { ThankYouReg } from './Pages/ThankYouReg';
-import { LoginHome } from './Pages/AfterLogin/LoginHome';
-import Search from './Pages/AfterLogin/Search';
-import { DashBoard } from './Pages/AfterLogin/DashBoard';
-import { Wishlist } from './Pages/AfterLogin/Wishlist';
-import { Notifications } from './Pages/AfterLogin/Notifications';
-import { Messages } from './Pages/AfterLogin/Messages';
-import { MyProfile } from './Pages/AfterLogin/MyProfile';
-import { ProfileDetails } from './Pages/AfterLogin/ProfileDetails';
-import { ProfileProvider } from './ProfileContext';
-import ProfileGrid from './Components/LoginHome/MatchingProfiles/GridView';
-import ListView from './Components/LoginHome/MatchingProfiles/ListView'; // Import ListView
-import GridListView from './Components/LoginHome/MatchingProfiles/GridListView'; // Import GridListView
-import ProtectedRoute from './Components/ProtectorRoute';
+import { HomePage } from "./Pages/HomePage";
+import { ThankYou } from "./Pages/ThankYou";
+import ContactDetails from "./Pages/ContactDetails";
+import UploadImages from "./Pages/UploadImages";
+import FamilyDetails from "./Pages/FamilyDetails";
+import EduDetails from "./Pages/EduDetails";
+import HoroDetails from "./Pages/HoroDetails";
+import PartnerSettings from "./Pages/PartnerSettings";
+import { MembershipPlan } from "./Pages/MembershipPlan";
+import { PayNow } from "./Pages/PayNow";
+import { ThankYouReg } from "./Pages/ThankYouReg";
+import { LoginHome } from "./Pages/AfterLogin/LoginHome";
+import Search from "./Pages/AfterLogin/Search";
+import { DashBoard } from "./Pages/AfterLogin/DashBoard";
+import { Wishlist } from "./Pages/AfterLogin/Wishlist";
+import { Notifications } from "./Pages/AfterLogin/Notifications";
+import { Messages } from "./Pages/AfterLogin/Messages";
+import { MyProfile } from "./Pages/AfterLogin/MyProfile";
+import { ProfileDetails } from "./Pages/AfterLogin/ProfileDetails";
+import { ProfileProvider } from "./ProfileContext";
+import ProfileGrid from "./Components/LoginHome/MatchingProfiles/GridView";
+import ListView from "./Components/LoginHome/MatchingProfiles/ListView"; // Import ListView
+import GridListView from "./Components/LoginHome/MatchingProfiles/GridListView"; // Import GridListView
+import ProtectedRoute from "./Components/ProtectorRoute";
+import RegistrationProtectedRoute from "./Components/RegistrationProtectedRoute";
 
 function App() {
   const token = sessionStorage.getItem("token");
@@ -43,18 +44,21 @@ function App() {
                 token ? <Navigate to="/LoginHome" replace /> : <HomePage />
               }
             />
-            <Route path="/ThankYou" element={<ThankYou />} />
-            <Route path="/ContactDetails" element={<ContactDetails />} />
-            <Route path="/UploadImages" element={<UploadImages />} />
-            <Route path="/FamilyDetails" element={<FamilyDetails />} />
-            <Route path="/EduDetails" element={<EduDetails />} />
-            <Route path="/HoroDetails" element={<HoroDetails />} />
-            <Route path="/PartnerSettings" element={<PartnerSettings />} />
-            <Route path="/MembershipPlan" element={<MembershipPlan />} />
-            <Route path="/PayNow" element={<PayNow />} />
-            <Route path="/ThankYouReg" element={<ThankYouReg />} />
-          </Route>
 
+            <Route element={<RegistrationProtectedRoute redirectTo="/" />}>
+              <Route path="/ContactDetails" element={<ContactDetails />} />
+              <Route path="/UploadImages" element={<UploadImages />} />
+              <Route path="/FamilyDetails" element={<FamilyDetails />} />
+              <Route path="/EduDetails" element={<EduDetails />} />
+              <Route path="/HoroDetails" element={<HoroDetails />} />
+              <Route path="/PartnerSettings" element={<PartnerSettings />} />
+              <Route path="/MembershipPlan" element={<MembershipPlan />} />
+              <Route path="/PayNow" element={<PayNow />} />
+              <Route path="/ThankYou" element={<ThankYou />} />
+              <Route path="/ThankYouReg" element={<ThankYouReg />} />
+            </Route>
+          </Route>
+       
           <Route element={<ProtectedRoute redirectTo="/" />}>
             <Route element={<LoginLayout />}>
               <Route path="/LoginHome" element={<LoginHome />} />

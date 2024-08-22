@@ -46,43 +46,78 @@ export const Header: React.FC = () => {
     console.log("Closing Login PopupModal popup"); // Debug log
   };
 
+  const handleLogout = () => {
+    // Clear token from sessionStorage
+    sessionStorage.removeItem("profile_completion");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("userImages");
+    sessionStorage.removeItem("profile_id");
+    window.location.href = "/";
+  };
 
+  // const profile_id = sessionStorage.getItem("profile_id");
+  const profile_completion = sessionStorage.getItem("profile_completion");
 
   return (
     <div>
       <header
         className={`fixed top-0 left-0 right-0 transition-all duration-300 z-[1]
-           ${isScrolled ? "bg-secondary backdrop-blur-lg bg-opacity-100" : "bg-transparent"
-          }`}
+           ${
+             isScrolled
+               ? "bg-secondary backdrop-blur-lg bg-opacity-100"
+               : "bg-transparent"
+           }`}
       >
         <div className="container mx-auto flex justify-between items-center py-5 bg-transparent">
           <div>
             <Link to="/" className="">
-              <img src={VysyamalaWhite} alt="" className="w-36 cursor-pointer" />
+              <img
+                src={VysyamalaWhite}
+                alt=""
+                className="w-36 cursor-pointer"
+              />
             </Link>
           </div>
 
           <nav>
             <ul className="flex justify-center items-center text-white">
-              <li className="text-[16px] cursor-pointer">Search</li>
-              <li
-                className="text-[16px] cursor-pointer px-10"
-                onClick={handleRegisterClick}
-              >
-                Register
-              </li>
-              <li className="bg-light-pink rounded-[6px] py-[8px] px-[24px] text-main text-[16px] font-semibold cursor-pointer"
-                onClick={handleLoginClick}
-              >
-                Login
-              </li>
+              {!profile_completion && (
+                <>
+                  <li className="text-[16px] cursor-pointer">Search</li>
+                  <li
+                    className="text-[16px] cursor-pointer px-10"
+                    onClick={handleRegisterClick}
+                  >
+                    Register
+                  </li>
+                </>
+              )}
+              {profile_completion != null ? (
+                <li
+                  className="bg-light-pink rounded-[6px] py-[8px] px-[24px] text-main text-[16px] font-semibold cursor-pointer"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </li>
+              ) : (
+                <li
+                  className="bg-light-pink rounded-[6px] py-[8px] px-[24px] text-main text-[16px] font-semibold cursor-pointer"
+                  onClick={handleLoginClick}
+                >
+                  Login
+                </li>
+              )}
+
               {isAccountSetupOpen && (
                 <PopupModal onClose={handleCloseAccountSetup} />
               )}
               {isLoginPopupOpen && (
-                <LoginPopupModal onClose={handleCloseLoginPopup} onForgetPassword={function (): void {
-                  throw new Error("Function not implemented.");
-                }} />
+                <LoginPopupModal
+                  onClose={handleCloseLoginPopup}
+                  onForgetPassword={function (): void {
+                    throw new Error("Function not implemented.");
+                  }}
+                />
               )}
             </ul>
           </nav>

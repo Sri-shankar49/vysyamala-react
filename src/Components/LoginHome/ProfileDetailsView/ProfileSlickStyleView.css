@@ -1,4 +1,4 @@
-/*** Profile Slick Style View ***/
+/** Profile Slick Style View **/
 .connectingSlick .slick-prev:before {
     color: #ff6666 !important;
 }
@@ -7,7 +7,7 @@
     color: #ff6666 !important;
 }
 
-/*** Image Hover Effect Style ***/
+/** Image Hover Effect Style **/
 .profile-slider-img-container {
     position: relative;
     overflow: hidden;
@@ -19,26 +19,26 @@
     width: 100%;
 }
 
+.profile-slider-img-container:hover .profile-slider-img {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+}
+
 .zoomed-image-container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 400px;
-    /* Adjust based on the size you need */
-    height: 400px;
-    /* Adjust based on the size you need */
+    width: 400px; /* Adjust based on the size you need */
+    height: 400px; /* Adjust based on the size you need */
     border: 1px solid #ccc;
     background-color: white;
     overflow: hidden;
     z-index: 100;
-    display: none;
-    /* Initially hidden */
+    display: none; /* Initially hidden */
 }
 
 .zoomed-image-container.zoomed-visible {
-    display: block;
-    /* Show when zoomed */
+    display: block; /* Show when zoomed */
 }
 
 .zoomed-image {
@@ -48,12 +48,11 @@
     transform: translate(-50%, -50%);
     width: auto;
     height: auto;
-    max-width: none;
-    max-height: none;
+    max-width: 100%;
+    max-height: 100%;
 }
 
-
-/*** Side bar ***/
+/** Side bar **/
 .sidebar {
     max-height: 100vh; /* Full viewport height */
     overflow-y: auto; /* Scrollable sidebar */
