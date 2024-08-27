@@ -23,6 +23,7 @@ import { RiAlertFill } from "react-icons/ri";
 import { MdManageAccounts } from "react-icons/md";
 import { ProfileContext } from "../../ProfileContext";
 import { TbPhotoShare } from "react-icons/tb";
+import ProfileImageGroup from "./DashBoardMatchingProfiles/ProfileImageGroup";
 
 
 interface DashBoardGridProps {
@@ -37,7 +38,7 @@ interface DashBoardGridProps {
   onInterestSent: () => void;
   onViewedProfiles: () => void;
   onMyVisitors: () => void;
-  onPhotoRequest:()=>void
+  onPhotoRequest: () => void
 
   // Optional Cards
   onPersonalNotes: () => void;
@@ -72,6 +73,18 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
     fetchDashboardDetails();
   }, []);
 
+
+  // Profile Rounded images
+  const profileImages = [
+    'https://randomuser.me/api/portraits/women/1.jpg',
+    'https://randomuser.me/api/portraits/men/2.jpg',
+    'https://randomuser.me/api/portraits/women/3.jpg',
+    'https://randomuser.me/api/portraits/men/4.jpg',
+    'https://randomuser.me/api/portraits/women/5.jpg',
+    'https://randomuser.me/api/portraits/men/6.jpg',
+  ];
+  const extraCount = 154; // Replace with your dynamic count
+
   return (
     <div className="container mx-auto">
       <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold mb-5">
@@ -100,7 +113,8 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
                     234
                   </p>
                   <div>
-                    <img src={ProfileImgRounded} alt="" />
+                    {/* <img src={ProfileImgRounded} alt="" /> */}
+                    <ProfileImageGroup images={profileImages} maxVisible={4} extraCount={extraCount} />
                   </div>
                 </div>
               </div>
@@ -276,7 +290,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
               />
 
               <IndicatorCard
-                onClick={ onPhotoRequest}
+                onClick={onPhotoRequest}
                 cardTitle="Photo Request"
                 cardCount={String(dashboardDetails?.myvisitor_count || 0)}
                 cardIcon={< TbPhotoShare />}

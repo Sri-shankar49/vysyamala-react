@@ -68,7 +68,7 @@ interface HoroDetailsInputs {
   minute: string;
 }
 
-interface HoroDetailsProps {}
+interface HoroDetailsProps { }
 
 interface BirthStar {
   birth_id: number;
@@ -86,9 +86,9 @@ interface Lagnam {
 }
 
 const HoroDetails: React.FC<HoroDetailsProps> = () => {
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
 
-  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -103,7 +103,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      const profileId = sessionStorage.getItem("profile_id_new");
+      const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
       if (profileId) {
         try {
           const requestData = {
@@ -245,7 +245,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       if (response.data.Status === 1) {
         NotifySuccess("Horoscope details saved successfully");
 
-        // navigate("/PartnerSettings");
+        setTimeout(() => {
+          navigate("/PartnerSettings");
+        }, 2000);
       } else {
         NotifyError("Failed to upload Horoscope details");
         // Handle error or show message to the user
@@ -410,7 +412,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           <div>
             <InputField
               label={"Place of Birth"}
-              {...register("placeOfBirth")}
+              {...register("placeOfBirth", { setValueAs: (value) => value.trim() })}
             />
             {errors.placeOfBirth && (
               <span className="text-red-500">
@@ -565,7 +567,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           </div>
 
           <div>
-            <InputField label={"Naalikai"} {...register("naalikai")} />
+            <InputField label={"Naalikai"} {...register("naalikai", { setValueAs: (value) => value.trim() })} />
             {errors.naalikai && (
               <span className="text-red-500">{errors.naalikai.message}</span>
             )}
@@ -587,7 +589,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                 <select
                   id="day"
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-                  {...register("day")}
+                  {...register("day", { setValueAs: (value) => value.trim() })}
                 >
                   <option value="" disabled>
                     Day
@@ -646,7 +648,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           <div>
             <InputField
               label={"Horoscope Hints"}
-              {...register("horoscopeHints")}
+              {...register("horoscopeHints", { setValueAs: (value) => value.trim() })}
             />
             {errors.horoscopeHints && (
               <span className="text-red-500">

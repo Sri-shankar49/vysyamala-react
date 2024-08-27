@@ -12,6 +12,7 @@ import {
 import { IoCalendar, IoSchool, IoEye } from "react-icons/io5";
 import { FaPersonArrowUpFromLine, FaSuitcase, FaLocationDot, FaUser } from "react-icons/fa6";
 import MatchingScore from "../ProfileDetails/MatchingScore";
+import { useNavigate } from "react-router-dom";
 
 interface GetProfListMatch {
   profile_id: string;
@@ -34,7 +35,7 @@ export const PersonalNotesCard = () => {
 
   const [statusMessage] = useState<string>(""); // State variable for the status message
   const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -78,7 +79,9 @@ export const PersonalNotesCard = () => {
     setIsBookmarked(!isBookmarked);
   };
 
-
+  const handleProfileClick = (profileId: string) => {
+    navigate(`/ProfileDetails?id=${profileId}`);
+  };
   return (
     <div className="space-y-5 rounded-xl shadow-md p-5 mb-5">
       {profileData ? (
@@ -105,7 +108,9 @@ export const PersonalNotesCard = () => {
               <div className="">
                 {/* Name & Profile ID */}
                 <div className="relative mb-2">
-                  <h5 className="text-[20px] text-secondary font-semibold cursor-pointer">
+                  <h5 className="text-[20px] text-secondary font-semibold cursor-pointer"
+                    onClick={() => handleProfileClick(profileData.profile_id)}
+                  >
                     {profileData.profile_name}
                     <span className="text-sm text-ashSecondary ml-2">
                       ({profileData.profile_id})

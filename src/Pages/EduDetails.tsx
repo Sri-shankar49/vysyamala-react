@@ -49,7 +49,7 @@ interface EduDetailsInputs {
   workCity: string;
 }
 
-interface EduDetailsProps {}
+interface EduDetailsProps { }
 
 interface HighesEducation {
   education_id: number;
@@ -260,7 +260,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   const onSubmit: SubmitHandler<EduDetailsInputs> = async (data) => {
     try {
       // Format the data as expected by the backend
-      const profileId = sessionStorage.getItem("profile_id_new");
+      const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
       if (!profileId) {
         throw new Error("ProfileId not found in sessionStorage");
       }
@@ -308,6 +308,17 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const careerPlansValue = watch("careerPlans", "");
+  const handleKeyDownTextArea = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+    value: any
+  ) => {
+    // Prevent space if input is empty
+    if (e.key === " " && value.trim() === "") {
+      e.preventDefault();
+    }
+  };
 
   return (
     <div className="pb-20">
@@ -373,7 +384,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
             <InputField
               label={"About your Education"}
               required
-              {...register("aboutYourEducation")}
+              {...register("aboutYourEducation", { setValueAs: (value) => value.trim() })}
             />
             {errors.aboutYourEducation && (
               <span className="text-red-500">
@@ -437,7 +448,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
           </div>
 
           <div>
-            <InputField label={"Actual Income"} {...register("actualIncome")} />
+            <InputField label={"Actual Income"} {...register("actualIncome", { setValueAs: (value) => value.trim() })} />
             {errors.actualIncome && (
               <span className="text-red-500">
                 {errors.actualIncome.message}
@@ -499,14 +510,16 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
               </div>
 
               <div>
-                <label htmlFor="workCity" className="block mb-1">
-                  Work City
-                  <span className="text-main">*</span>
-                </label>
-                <input
+
+
+
+
+                <InputField
                   id="workCity"
+                  label={" Work City"}
+                  required
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-                  {...register("workCity")}
+                  {...register("workCity", { setValueAs: (value) => value.trim() })}
                 />
                 {errors.workCity && (
                   <span className="text-red-500">
@@ -517,7 +530,7 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
 
               <InputField
                 label={"Pincode (Based on Country Selection)"}
-                {...register("pincode")}
+                {...register("pincode", { setValueAs: (value) => value.trim() })}
               />
               {errors.pincode && (
                 <span className="text-red-500">{errors.pincode.message}</span>
@@ -533,7 +546,8 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                   rows={5}
                   placeholder=" Enter your message here..."
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-                  {...register("careerPlans")}
+                  {...register("careerPlans", { setValueAs: (value) => value.trim() })}
+                  onKeyDown={(e) => handleKeyDownTextArea(e, careerPlansValue)}
                 ></textarea>
                 {errors.careerPlans && (
                   <span className="text-red-500">

@@ -11,6 +11,11 @@ import * as zod from "zod";
 import MatchingStars from "../Components/PartnerPreference/MatchingStars";
 // import axios from "axios";
 import apiClient from "../API";
+import {
+  ToastNotification,
+  NotifyError,
+  NotifySuccess,
+} from "../Components/Toast/ToastNotification";
 
 // const PARTNER_API_URL = await apiClient.post(`/auth/Partner_pref_registration/`);
 
@@ -188,7 +193,7 @@ const PartnerSettings: React.FC = () => {
     ].join(",");
 
     try {
-      const profileId = sessionStorage.getItem("profile_id_new");
+      const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
       if (!profileId) {
         throw new Error("ProfileId not found in sessionStorage");
       }
@@ -219,9 +224,13 @@ const PartnerSettings: React.FC = () => {
       console.log("Registration response:", response.data);
 
       if (response.data.Status === 1) {
-        navigate("/MembershipPlan");
+        NotifySuccess("Partner details updated successfully");
+        setTimeout(() => {
+          navigate("/MembershipPlan");
+        }, 2000);
       } else {
         setIsSubmitting(false);
+        NotifyError("Registration unsuccessful");
         console.log("Registration unsuccessful:", response.data);
       }
     } catch (error) {
@@ -525,7 +534,7 @@ const PartnerSettings: React.FC = () => {
                   <InputField
                     label={""}
                     placeholder="From"
-                    {...register("heightFrom")}
+                    {...register("heightFrom", { setValueAs: (value) => value.trim() })}
                   />
                   {errors.heightFrom && (
                     <span className="text-red-500">
@@ -537,7 +546,7 @@ const PartnerSettings: React.FC = () => {
                   <InputField
                     label={""}
                     placeholder="To"
-                    {...register("heightTo")}
+                    {...register("heightTo", { setValueAs: (value) => value.trim() })}
                   />
                   {errors.heightTo && (
                     <span className="text-red-500">
@@ -926,6 +935,7 @@ const PartnerSettings: React.FC = () => {
         </form>
         <SideContent />
       </div>
+      <ToastNotification />
     </div>
   );
 };

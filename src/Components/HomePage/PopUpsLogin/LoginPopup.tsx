@@ -52,6 +52,7 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    watch,
   } = useForm<FormInputs>({
     resolver: zodResolver(schema),
   });
@@ -72,10 +73,15 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
   // Handle form submission
 
   const onSubmit: SubmitHandler<FormInputs> = async (data) => {
+    const trimmedData = {
+      profileID: data.profileID.trim(),
+      password: data.password.trim(),
+    };
+
     try {
       const response = await apiClient.post(`/auth/login/`, {
-        username: data.profileID,
-        password: data.password,
+        username: trimmedData.profileID,
+        password: trimmedData.password,
       });
       sessionStorage.setItem(
         "profile_completion",
@@ -90,6 +96,8 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
       sessionStorage.setItem("loginuser_profile_id", response.data.profile_id);
       sessionStorage.setItem("plan_id", response.data.cur_plan_id);
       if (response.data.status === 1) {
+
+        sessionStorage.setItem("custom_message", response.data.custom_message)
         setErrorMessage(null); // Clear error message on success
         if (rememberMe) {
           localStorage.setItem("rememberMeProfileID", data.profileID);
@@ -109,6 +117,29 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
       );
     }
   };
+
+  // Type annotations for the handleKeyDown function
+  // const handleKeyDown = (
+  //   e: React.KeyboardEvent<HTMLInputElement>,
+  //   value: any
+  // ) => {
+  //   // Prevent space if input is empty
+  //   if (e.key === " " && value.trim() === "") {
+  //     e.preventDefault();
+  //   }
+  // };
+  const profileIDValue = watch("profileID", "");
+  const passwordValue = watch("password", "");
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    value: any
+  ) => {
+    // Prevent space if input is empty
+    if (e.key === " " && value.trim() === "") {
+      e.preventDefault();
+    }
+  };
+
   // useEffect(()=>{
   //     redirectToPage(profileCompletion)
   // },[profileCompletion])
@@ -127,7 +158,11 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
           id="profileID"
           className="w-full px-3 py-2 text-ash border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none"
           placeholder="Profile ID"
-          {...register("profileID", { required: true })}
+          {...register("profileID", {
+            required: true,
+            setValueAs: (value) => value.trim(),
+          })}
+          onKeyDown={(e) => handleKeyDown(e, profileIDValue)}
         />
         {errors.profileID && (
           <span className="text-red-500">{errors.profileID.message}</span>
@@ -141,7 +176,11 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
             id="password"
             className="w-full px-3 py-2 text-ash border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none"
             placeholder="Create Password"
-            {...register("password", { required: true })}
+            {...register("password", {
+              required: true,
+              setValueAs: (value) => value.trim(),
+            })}
+            onKeyDown={(e) => handleKeyDown(e, passwordValue)}
           />
           <div
             onClick={handleShowPassword}

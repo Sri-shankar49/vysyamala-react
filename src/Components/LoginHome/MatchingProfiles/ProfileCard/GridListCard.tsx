@@ -119,7 +119,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
         <div className="flex justify-between items-center space-x-5">
           {/* Profile Image */}
           <div className="relative">
-            <img src={profile_img || ProfileListImg} alt="Profile-image" className="w-[180px]" />
+            <img src={profile_img || ProfileListImg} alt="Profile-image" className="w-[180px] rounded-[6px]" />
             {isBookmarked ? (
               <MdBookmark
                 onClick={handleBookmark}

@@ -399,7 +399,7 @@ const FamilyDetails: React.FC = () => {
   const onSubmit: SubmitHandler<FamilyDetailsInputs> = async (data) => {
     try {
       // Format the data as expected by the backend
-      const profileId = sessionStorage.getItem("profile_id_new");
+      const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
       if (!profileId) {
         throw new Error("ProfileId not found in sessionStorage");
       }
@@ -455,10 +455,35 @@ const FamilyDetails: React.FC = () => {
       setIsSubmitting(false);
     }
   };
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  const owner = sessionStorage.getItem("profile_owner");
+  const ProfileName = owner === "Ownself" ? "MySelf" : owner;
+  console.log(owner, "owner");
+
+  const aboutmyselfValue = watch("aboutmyself", "");
+  const myhobbiesValue = watch("myhobbies", "");
+  const aboutMyFamilyValue = watch("aboutMyFamily", "");
+  // Type annotations for the handleKeyDown function
+  // const handleKeyDown = (
+  //   e: React.KeyboardEvent<HTMLInputElement>,
+  //   value: any
+  // ) => {
+  //   // Prevent space if input is empty
+  //   if (e.key === " " && value.trim() === "") {
+  //     e.preventDefault();
+  //   }
+  // };
+  const handleKeyDownTextArea = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+    value: any
+  ) => {
+    // Prevent space if input is empty
+    if (e.key === " " && value.trim() === "") {
+      e.preventDefault();
+    }
+  };
 
   return (
     <div className="pb-20">
@@ -477,7 +502,9 @@ const FamilyDetails: React.FC = () => {
             <InputField
               label="Father name"
               required
-              {...register("fathername")}
+              {...register("fathername", {
+                setValueAs: (value) => value.trim(),
+              })}
             />
             {errors.fathername && (
               <span className="text-red-500">{errors.fathername.message}</span>
@@ -517,7 +544,9 @@ const FamilyDetails: React.FC = () => {
             <InputField
               label="Mother name"
               required
-              {...register("mothername")}
+              {...register("mothername", {
+                setValueAs: (value) => value.trim(),
+              })}
             />
             {errors.mothername && (
               <span className="text-red-500">{errors.mothername.message}</span>
@@ -557,7 +586,9 @@ const FamilyDetails: React.FC = () => {
             <InputField
               label="Family name"
               required
-              {...register("familyname")}
+              {...register("familyname", {
+                setValueAs: (value) => value.trim(),
+              })}
             />
             {errors.familyname && (
               <span className="text-red-500">{errors.familyname.message}</span>
@@ -565,11 +596,14 @@ const FamilyDetails: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="aboutmyself">About Myself</label>
+            <label htmlFor="aboutmyself">About {ProfileName}</label>
             <textarea
               id="aboutmyself"
               className="outline-none px-3 py-2 w-full text-primary border border-footer-text-gray rounded"
-              {...register("aboutmyself")}
+              {...register("aboutmyself", {
+                setValueAs: (value) => value.trim(),
+              })}
+              onKeyDown={(e) => handleKeyDownTextArea(e, aboutmyselfValue)}
             />
             {errors.aboutmyself && (
               <span className="text-red-500">{errors.aboutmyself.message}</span>
@@ -577,11 +611,14 @@ const FamilyDetails: React.FC = () => {
           </div>
 
           <div>
-            <label htmlFor="myhobbies">My Hobbies</label>
+            <label htmlFor="myhobbies">
+              {owner === "Ownself" ? "My Hobbies" : `${owner} Hobbies`}
+            </label>
             <textarea
               id="myhobbies"
               className="outline-none px-3 py-2 w-full text-primary border border-footer-text-gray rounded"
               {...register("myhobbies")}
+              onKeyDown={(e) => handleKeyDownTextArea(e, myhobbiesValue)}
             />
             {errors.myhobbies && (
               <span className="text-red-500">{errors.myhobbies.message}</span>
@@ -592,7 +629,9 @@ const FamilyDetails: React.FC = () => {
             <InputField
               label="Blood Group"
               required
-              {...register("bloodGroup")}
+              {...register("bloodGroup", {
+                setValueAs: (value) => value.trim(),
+              })}
             />
             {errors.bloodGroup && (
               <span className="text-red-500">{errors.bloodGroup.message}</span>
@@ -851,7 +890,9 @@ const FamilyDetails: React.FC = () => {
           <div>
             <InputField
               label="Property Details"
-              {...register("propertyDetails")}
+              {...register("propertyDetails", {
+                setValueAs: (value) => value.trim(),
+              })}
               title="Enter details about the property here."
             />
           </div>
@@ -864,7 +905,9 @@ const FamilyDetails: React.FC = () => {
               id="propertyWorth"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
               defaultValue=""
-              {...register("propertyWorth")}
+              {...register("propertyWorth", {
+                setValueAs: (value) => value.trim(),
+              })}
             >
               <option value="" disabled>
                 -- Select Property Worth --
@@ -879,17 +922,29 @@ const FamilyDetails: React.FC = () => {
           </div>
 
           <div>
-            <InputField label="Suya Gothram" {...register("suyaGothram")} />
+            <InputField
+              label="Suya Gothram"
+              {...register("suyaGothram", {
+                setValueAs: (value) => value.trim(),
+              })}
+            />
           </div>
 
           <div>
-            <InputField label="Uncle Gothram" {...register("uncleGothram")} />
+            <InputField
+              label="Uncle Gothram"
+              {...register("uncleGothram", {
+                setValueAs: (value) => value.trim(),
+              })}
+            />
           </div>
 
           <div>
             <InputField
               label="Ancestor Origin"
-              {...register("ancestorOrigin")}
+              {...register("ancestorOrigin", {
+                setValueAs: (value) => value.trim(),
+              })}
               title="Enter details about the ancestorOrgin here."
             />
           </div>
@@ -902,7 +957,10 @@ const FamilyDetails: React.FC = () => {
               id="aboutMyFamily"
               rows={5}
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("aboutMyFamily")}
+              {...register("aboutMyFamily", {
+                setValueAs: (value) => value.trim(),
+              })}
+              onKeyDown={(e) => handleKeyDownTextArea(e, aboutMyFamilyValue)}
             />
           </div>
 

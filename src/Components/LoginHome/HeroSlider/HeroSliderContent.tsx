@@ -140,8 +140,10 @@ export const HeroSliderContent: React.FC<HeroSliderContentProps> = ({ settings }
         )
           :
           (
-            <div className="w-9/12 mx-auto flex justify-center items-center py-36">
-              <h4 className="text-4xl text-white font-semibold">No New Interest Received</h4>
+            <div>
+              <div className="w-9/12 mx-auto flex justify-center items-center py-36">
+                <h4 className="w-fit mx-auto text-4xl text-white font-semibold">No New Interest Received</h4>
+              </div>
             </div>
           )
         }

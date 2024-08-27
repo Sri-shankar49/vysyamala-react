@@ -9,12 +9,8 @@ import { Link, useNavigate } from "react-router-dom";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
 
-import {
-  ToastNotification,
-  NotifyError,
-  NotifySuccess,
-} from "../Components/Toast/ToastNotification";
-interface UploadImagesProps {}
+import { ToastNotification, NotifySuccess } from "../Components/Toast/ToastNotification";
+interface UploadImagesProps { }
 
 const UploadImages: React.FC<UploadImagesProps> = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -49,7 +45,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
     setProfileOwner(owner);
     window.scrollTo(0, 0);
   }, []);
-
+  const profileName = profileOwner === "Ownself" ? "Your" : profileOwner;
   const handleButtonClick = (inputRef: React.RefObject<HTMLInputElement>) => {
     inputRef.current?.click();
   };
@@ -158,7 +154,6 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
         console.log("UploadImageResponse", response.data);
       } catch (error) {
         console.error("Error uploading files:", error);
-        NotifyError("Error uploading files");
       }
     };
 
@@ -207,7 +202,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
           name={fieldName}
           onChange={(event) => handleFileUpload(event, setSelectedFiles)}
           onClick={() => handleButtonClick(fileInputRef)}
-          multiple={title === `Upload ${profileOwner} Images/Family Images`}
+          multiple={title === `Upload ${profileName} Images/Family Images`}
         />
       </div>
 
@@ -216,8 +211,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
           <div className="flex justify-between items-center">
             <h1 className="text-primary text-xl font-semibold">
               Files Uploaded ({selectedFiles.length}/
-              {title === `Upload ${profileOwner} Images/Family Images` ? 10 : 1}
-              )
+              {title === `Upload ${profileName} Images/Family Images` ? 10 : 1})
             </h1>
           </div>
           <div className="mt-10 space-y-6">
@@ -256,7 +250,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
       <div className="container mt-8 flex justify-between space-x-24 space-y-7">
         <div className="w-full">
           {renderFileUploadSection(
-            `Upload ${profileOwner} Images/Family Images`,
+            `Upload ${profileName} Images/Family Images`,
             fileInputRefs.images,
             selectedFiles,
             setSelectedFiles,
@@ -304,21 +298,21 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
 
           {maritalStatus === "2" &&
             renderFileUploadSection(
-              `Upload ${profileOwner} Divorce Proof`,
+              `Upload ${profileName} Divorce Proof`,
               fileInputRefs.divorceProof,
               selectedDivorceProofFiles,
               setSelectedDivorceProofFiles,
               "uploadDivorceProof"
             )}
           {renderFileUploadSection(
-            `Upload ${profileOwner} Horoscope Image`,
+            `Upload ${profileName} Horoscope Image`,
             fileInputRefs.horoscope,
             selectedHoroscopeFiles,
             setSelectedHoroscopeFiles,
             "uploadHoroscope"
           )}
           {renderFileUploadSection(
-            `Upload ${profileOwner} ID Proof Image`,
+            `Upload ${profileName} ID Proof Image`,
             fileInputRefs.idProof,
             selectedIDProofFiles,
             setSelectedIDProofFiles,
@@ -327,7 +321,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
 
           <div className="mt-7">
             <h1 className="font-semibold text-primary text-xl mb-4">
-              Upload Your Videos
+              Upload {profileName} Videos
             </h1>
 
             <div>

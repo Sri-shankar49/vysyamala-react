@@ -18,7 +18,7 @@ interface Package {
 
 export const PayNow: React.FC = () => {
   const [membershipPlane, setMemberShipPlane] = useState<Package[]>([]);
-  const profile_id = sessionStorage.getItem("profile_id");
+  const profile_id = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -57,10 +57,7 @@ export const PayNow: React.FC = () => {
     }
   };
 
-  const totalAmount = selectedValues.reduce(
-    (acc, val) => acc + val,
-    Number(price)
-  );
+  const totalAmount = selectedValues.reduce((acc, val) => acc + val, Number(price));
 
   console.log(profile_id, id, totalAmount);
   const Save_plan_package = async () => {
@@ -98,6 +95,7 @@ export const PayNow: React.FC = () => {
 
   return (
     <div>
+
       <div className="container mx-auto">
         <div className="w-1/3 mx-auto font-semibold rounded-2xl shadow-xl p-10 my-10">
           <h5 className="text-footer-gray mb-2">Selected Plan</h5>

@@ -11,7 +11,7 @@ import { IoEye } from "react-icons/io5";
 // import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import MatchingScore from "../ProfileDetails/MatchingScore";
 import { FaLocationDot, FaPersonArrowUpFromLine, FaSuitcase } from "react-icons/fa6";
-
+import { useNavigate } from "react-router-dom";
 // Define the profile and API response types
 interface Profile {
     viwed_profileid: string;
@@ -34,7 +34,7 @@ export const MyVisitorsCard = () => {
     const [profile, setProfile] = useState<Profile | null>(null);
     const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
     const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
-
+    const navigate = useNavigate();
 
     // Function to handle the bookmark toggle
     const handleBookmark = () => {
@@ -64,7 +64,9 @@ export const MyVisitorsCard = () => {
     if (!profile) {
         return <div>No Profile Viewer</div>;
     }
-
+    const handleProfileClick = (profileId: string) => {
+        navigate(`/ProfileDetails?id=${profileId}`);
+    };
     return (
         <div className="border-b-[1px] border-footer-text-gray">
             <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-sm py-5">
@@ -91,7 +93,9 @@ export const MyVisitorsCard = () => {
                         <div>
                             {/* Name & Profile ID */}
                             <div className="relative mb-2">
-                                <h5 className="text-[20px] text-secondary font-semibold cursor-pointer">
+                                <h5 className="text-[20px] text-secondary font-semibold cursor-pointer"
+                                    onClick={() => handleProfileClick(profile.viwed_profileid)}
+                                >
                                     {profile.viwed_profile_name || "Unknown Name"}{" "}
                                     <span className="text-sm text-ashSecondary">({profile.viwed_profileid || "ID"})</span>
                                     <MdVerifiedUser className="absolute top-1.5 left-[155px] text-checkGreen" />

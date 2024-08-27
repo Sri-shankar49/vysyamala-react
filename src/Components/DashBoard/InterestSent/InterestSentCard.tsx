@@ -6,6 +6,8 @@ import { IoCalendar, IoSchool, IoEye } from "react-icons/io5";
 import { FaPersonArrowUpFromLine, FaSuitcase, FaLocationDot, FaUser } from "react-icons/fa6";
 // import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import MatchingScore from "../ProfileDetails/MatchingScore";
+import { useNavigate } from "react-router-dom";
+
 
 // Define the Profile interface
 export interface Profile {
@@ -19,11 +21,14 @@ export const InterestSentCard = () => {
     // State to track if the card is bookmarked or not
     const [isBookmarked, setIsBookmarked] = useState<{ [key: string]: boolean }>({});
     // State to store the profile data fetched from the API
-    const [profiles, setProfiles] = useState<Profile[]>([]);
+    const [profile, setProfiles] = useState<Profile[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [noData, setNoData] = useState(false);
     const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+
+    const navigate = useNavigate();
+
 
     const handleBookmark = (profileId: string) => {
         setIsBookmarked((prev) => ({
@@ -91,15 +96,18 @@ export const InterestSentCard = () => {
         return <p>No data found.</p>;
     }
 
+    const handleProfileClick = (profileId: string) => {
+        navigate(`/ProfileDetails?id=${profileId}`);
+    };
     return (
         <div className="border-b-[1px] border-footer-text-gray">
-            {profiles.map(profile => (
+            {profile.map(profile => (
                 <div key={profile.myint_profileid} className="flex justify-start items-center space-x-5 relative rounded-xl shadow-sm py-5">
                     <div className="w-full flex justify-between items-center">
                         <div className="flex justify-between items-start space-x-5">
                             {/* Profile Image */}
                             <div className="relative">
-                                <img src={profile.myint_Profile_img || ProfileListImg} alt="Profile-image" />
+                                <img src={profile.myint_Profile_img || ProfileListImg} alt="Profile-image" className="rounded-[6px]" />
 
                                 {isBookmarked[profile.myint_profileid] ? (
                                     <MdBookmark
@@ -124,11 +132,15 @@ export const InterestSentCard = () => {
                             <div className="">
                                 {/* Name & Profile ID */}
                                 <div className="relative mb-2">
-                                    <h5 className="text-[20px] text-secondary font-semibold cursor-pointer">
-                                        {profile.myint_profile_name}{" "}
-                                        <span className="text-sm text-ashSecondary">({profile.myint_profileid})</span>
-                                        <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />
-                                    </h5>
+                                    <div className="flex items-center">
+                                        <h5 className="text-[20px] text-secondary font-semibold cursor-pointer">
+                                            {profile.myint_profile_name}{" "}
+                                            <span className="text-sm text-ashSecondary">
+                                                ({profile.myint_profileid})
+                                            </span>
+                                        </h5>
+                                        <MdVerifiedUser className="text-[20px] text-checkGreen ml-2" />
+                                    </div>
                                 </div>
 
                                 {/* Years & Height */}

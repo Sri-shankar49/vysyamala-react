@@ -99,7 +99,7 @@ export const ListCard: React.FC<ListCardProps> = ({ profile }) => {
 
           {/* Profile Image */}
           <div className="relative">
-            <img src={profile_img || ProfileListImg} alt="Profile-image" className="w-[200px]" />
+            <img src={profile_img || ProfileListImg} alt="Profile-image" className="w-[200px] rounded-[6px]" />
             {isBookmarked ? (
               <MdBookmark
                 onClick={handleBookmark}

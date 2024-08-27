@@ -89,17 +89,7 @@ export const WishlistCard: React.FC = () => {
                     {/* Profile Details */}
                     <div className="">
                       {/* Name & Profile ID */}
-
-                      {/* <div className="relative mb-2">
-                        <h5
-                          onClick={() => handleProfileClick(profile.wishlist_profileid)}
-                          className="text-[20px] text-secondary font-semibold cursor-pointer">
-                          {profile.wishlist_profile_name || 'Unknown'}{" "}
-                          <span className="text-sm text-ashSecondary">({profile.wishlist_profileid || 'N/A'})</span>
-                          <MdVerifiedUser className="absolute top-1.5 left-[135px] text-checkGreen" />
-                        </h5>
-                      </div> */}
-
+                      
                       <div className="relative mb-2">
                         <div className="flex items-center">
                           <h5

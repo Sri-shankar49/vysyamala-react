@@ -1,5 +1,5 @@
 // src/Components/LoginHome/LoginHome.tsx
-import React, { useEffect } from "react";
+import React, { useLayoutEffect } from "react";
 import { useSelector } from "react-redux";
 import { ProfileDetailsExpressInterest } from "../../Components/DashBoard/ProfileDetails/ProfileDetailsExpressInterest";
 import { HandleLogin } from "../../Components/LoginHome/HandleLogin";
@@ -40,7 +40,7 @@ export const LoginHome: React.FC = () => {
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     redirectToPage(storedProfileCompletion);
   }, [storedProfileCompletion]);
   return (

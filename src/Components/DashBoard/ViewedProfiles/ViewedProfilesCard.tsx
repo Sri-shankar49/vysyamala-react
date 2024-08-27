@@ -13,7 +13,7 @@ import { IoEye } from "react-icons/io5";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
 // import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import MatchingScore from "../ProfileDetails/MatchingScore";
-
+import { useNavigate } from "react-router-dom";
 // Define types for API response
 interface Profile {
     visited_profileid: string;
@@ -34,7 +34,7 @@ export const ViewedProfilesCard = () => {
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [isBookmarked, setIsBookmarked] = useState<Record<string, boolean>>({});
     const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
-
+    const navigate = useNavigate();
     useEffect(() => {
         // Fetch the data from the API
         axios.post<ApiResponse>("http://103.214.132.20:8000/auth/My_viewed_profiles/", {
@@ -56,7 +56,9 @@ export const ViewedProfilesCard = () => {
             [profileId]: !prevState[profileId]
         }));
     };
-
+    const handleProfileClick = (profileId: string) => {
+        navigate(`/ProfileDetails?id=${profileId}`);
+    };
     return (
         <div className="border-b-[1px] border-footer-text-gray">
             {profiles.map(profile => (
@@ -65,7 +67,7 @@ export const ViewedProfilesCard = () => {
                         <div className="flex justify-between items-center space-x-5">
                             {/* Profile Image */}
                             <div className="relative">
-                                <img src={profile.visited_Profile_img || ProfileListImg} alt="Profile-image" />
+                                <img src={profile.visited_Profile_img || ProfileListImg} alt="Profile-image" className="rounded-[6px]" />
 
                                 {isBookmarked[profile.visited_profileid] ? (
                                     <MdBookmark
@@ -85,13 +87,16 @@ export const ViewedProfilesCard = () => {
                                 {/* Name & Profile ID */}
                                 <div className="relative mb-2">
                                     <div className="flex items-center">
-                                        <h5 className="text-[20px] text-secondary font-semibold cursor-pointer mr-2">
-                                            {profile.visited_profile_name || "Unknown"}
+                                        <h5 className="text-[20px] text-secondary font-semibold cursor-pointer"
+                                            onClick={() => handleProfileClick(profile.visited_profileid)}
+                                        >
+                                            {profile.visited_profile_name || "Unknown"}{" "}
+                                            <span className="text-sm text-ashSecondary">
+                                                ({profile.visited_profileid || "N/A"})
+                                            </span>
                                         </h5>
-                                        <span className="text-sm text-ashSecondary mr-2">
-                                            ({profile.visited_profileid || "N/A"})
-                                        </span>
-                                        <MdVerifiedUser className="text-checkGreen" />
+
+                                        <MdVerifiedUser className="text-[20px] text-checkGreen ml-2" />
                                     </div>
                                 </div>
 

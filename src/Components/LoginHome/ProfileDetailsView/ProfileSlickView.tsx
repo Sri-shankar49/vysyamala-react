@@ -13,11 +13,7 @@ interface ProfileSlickViewProps {
   ProtectedImg: string;
 }
 
-export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({
-  profileId,
-  GetProfileDetMatch,
-  ProtectedImg,
-}) => {
+export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, GetProfileDetMatch, ProtectedImg }) => {
   const loginuser_profileId =
     sessionStorage.getItem("loginuser_profile_id") || "";
   const [userImages, setUserImages] = useState<UserImages>({});

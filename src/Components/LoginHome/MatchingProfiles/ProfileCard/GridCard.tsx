@@ -77,7 +77,7 @@ export const GridCard: React.FC<GridCardProps> = ({ profile }) => {
       {/* <Link to={`/ProfileDetails?id=${profile.profile_id}`} target="_blank"> */}
 
       <div className="mb-3">
-        <img src={profile.profile_img || GridProfileImg} alt={profile.profile_name || "default"} className="w-[275px]" />
+        <img src={profile.profile_img || GridProfileImg} alt={profile.profile_name || "default"} className="w-[275px] rounded-[6px]" />
       </div>
 
       <div>

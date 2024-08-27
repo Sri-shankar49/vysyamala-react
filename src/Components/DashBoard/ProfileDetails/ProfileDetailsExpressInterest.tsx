@@ -1,8 +1,8 @@
-import { useState, useEffect, MouseEvent } from "react";
+import { useState, useEffect } from "react";
 // import { useDispatch } from "react-redux";
 // import { hideInterest } from "../../../redux/slices/interestSlice";
 import axios from "axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import ProfileViewPassWordInput from "./ProfileViewPasswordInput";
 import { MdMessage, MdVerifiedUser } from "react-icons/md";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
@@ -28,6 +28,7 @@ import { MdArrowDropDown } from "react-icons/md";
 import MatchingScore from "./MatchingScore";
 import { FaCheckCircle } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
+import CustomMessagePopUp from "./CustomMessagePopup";
 import {
   ToastNotification,
   NotifySuccess,
@@ -83,6 +84,7 @@ import {
 } from "react-share";
 import { Get_profile_det_match } from "../../../commonapicall";
 import { Get_photo_bypassword } from "../../../commonapicall";
+
 // import { boolean } from "zod";
 
 // Define the interfaces for profile data
@@ -102,6 +104,7 @@ interface BasicDetails {
   express_int: string;
   about: string;
   user_profile_views: string;
+  matching_score: number;
 }
 
 interface PersonalDetails {
@@ -117,14 +120,14 @@ interface ProfileData {
   personal_details: PersonalDetails;
 }
 
-interface ProfileDetailsExpressInterestProps {}
+interface ProfileDetailsExpressInterestProps { }
 
 export const ProfileDetailsExpressInterest: React.FC<
   ProfileDetailsExpressInterestProps
 > = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  console.log(profileData);
-
+  console.log(profileData, "profileData");
+  const [hideExpresButton, setHideExpressButton] = useState<boolean>(true);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const interestParam = queryParams.get("interest");
@@ -134,7 +137,7 @@ export const ProfileDetailsExpressInterest: React.FC<
   const [PasswordModal, setPassWordModal] = useState<boolean>(false);
 
   const [response, setResponse] = useState<boolean>(false);
-
+  const custom_message = sessionStorage.getItem("custom_message");
   useEffect(() => {
     if (response === true) {
       NotifySuccess("Image Unlocked Successfully");
@@ -157,6 +160,38 @@ export const ProfileDetailsExpressInterest: React.FC<
       }
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const handleUpdateInterest = async (profileId: string, status: string) => {
+    try {
+      const response = await axios.post(
+        "http://103.214.132.20:8000/auth/Update_profile_intrests/",
+        {
+          profile_id: loginuser_profileId,
+          profile_from: profileId,
+          status: status,
+        }
+      );
+      if (response.data.Status === 1) {
+        // Remove the profile from the state if rejected
+        if (status === "2") {
+          NotifySuccess("Interest Accepted");
+          setHideExpressButton(false);
+        } else if (status === "3") {
+          NotifyError("Interest Declined");
+          setHideExpressButton(false);
+        } else {
+          console.error(
+            "Error updating profile interest:",
+            response.data.message
+          );
+          NotifyError("Error updating profile interest");
+        }
+      }
+    } catch (error) {
+      console.error("Error updating profile interest:", error);
+      NotifyError("Error updating profile interest");
     }
   };
 
@@ -367,9 +402,13 @@ export const ProfileDetailsExpressInterest: React.FC<
   // Declaration for Heart State
   const [isHeartMarked, setIsHeartMarked] = useState(false);
 
-  const handleHeartMark = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault(); // Prevent the Link navigation
+  const [openCustomMsgShow, setOpenCustomMsgShow] = useState<boolean>(false);
+  const [openCustomMsg, setOpenCustomMsg] = useState<string>("");
 
+  console.log(openCustomMsg, "openCustomMsg");
+  console.log(openCustomMsg, "setOpenCustomMsg");
+
+  const handleHeartMark = async () => {
     try {
       const response = await axios.post(
         "http://103.214.132.20:8000/auth/Send_profile_intrests/",
@@ -377,6 +416,7 @@ export const ProfileDetailsExpressInterest: React.FC<
           profile_id: loginuser_profileId,
           profile_to: id,
           status: !isHeartMarked ? "1" : "0",
+          to_express_message: openCustomMsg || "", // Use message if provided, otherwise use an empty string
         }
       );
 
@@ -401,6 +441,14 @@ export const ProfileDetailsExpressInterest: React.FC<
 
       console.error("Error updating express interest:", error);
     }
+  };
+  useEffect(() => {
+    if (openCustomMsg) {
+      handleHeartMark();
+    }
+  }, [openCustomMsg]);
+  const openMsgPopUp = () => {
+    setOpenCustomMsgShow(true);
   };
 
   // Declaration for Horoscope State
@@ -811,10 +859,19 @@ export const ProfileDetailsExpressInterest: React.FC<
                                         alt="Matching Score"
                                         className="w-full"
                                     /> */}
-                  <MatchingScore />
+                  <MatchingScore
+                    // matchingScore={profileData?.basic_details.matching_score}
+                  />
                 </div>
               </div>
-
+              {openCustomMsgShow ? (
+                <CustomMessagePopUp
+                  setOpenCustomMsgShow={setOpenCustomMsgShow}
+                  setOpenCustomMsg={setOpenCustomMsg}
+                />
+              ) : (
+                ""
+              )}
               <div className="flex justify-between items-center mt-10 mb-3">
                 <div>
                   {/* Buttons */}
@@ -822,13 +879,16 @@ export const ProfileDetailsExpressInterest: React.FC<
                   {interestParam !== "1" && loginuser_profileId && (
                     <div className="flex justify-start items-center space-x-5 my-5">
                       <button
-                        onClick={handleHeartMark}
+                        onClick={
+                          custom_message && !isHeartMarked
+                            ? openMsgPopUp
+                            : handleHeartMark
+                        }
                         className="bg-gradient text-white flex items-center rounded-md px-5 py-3 cursor-pointer"
                       >
                         <FaHeart
-                          className={`text-[22px] mr-2 ${
-                            isHeartMarked ? "text-red-500" : "text-gray-400"
-                          }`}
+                          className={`text-[22px] mr-2 ${isHeartMarked ? "text-red-500" : "text-gray-400"
+                            }`}
                         />
                         {isHeartMarked
                           ? "Remove from Interest"
@@ -846,19 +906,38 @@ export const ProfileDetailsExpressInterest: React.FC<
                   {interestParam === "1" && loginuser_profileId && (
                     <div className="flex justify-start items-center space-x-5 my-5">
                       {/* Accept button */}
-                      <button className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer">
-                        <FaCheckCircle className="text-[22px] mr-2" /> Accept
-                      </button>
-
-                      {/* Decline button */}
-                      <button className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer">
-                        <IoMdCloseCircle className="text-[26px] mr-2" /> Decline
-                      </button>
-
-                      {/* Message button */}
-                      <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
-                        <MdMessage className="text-[26px] mr-2" /> Message
-                      </button>
+                      {hideExpresButton ? (
+                        <>
+                          {" "}
+                          <button
+                            onClick={() =>
+                              handleUpdateInterest(loginuser_profileId, "2")
+                            }
+                            className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer"
+                          >
+                            <FaCheckCircle className="text-[22px] mr-2" />{" "}
+                            Accept
+                          </button>
+                          {/* Decline button */}
+                          <button
+                            onClick={() =>
+                              handleUpdateInterest(loginuser_profileId, "3")
+                            }
+                            className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer"
+                          >
+                            <IoMdCloseCircle className="text-[26px] mr-2" />{" "}
+                            Decline
+                          </button>
+                          {/* Message button */}
+                        </>
+                      ) : (
+                        ""
+                      )}
+                      <Link to="/Messages">
+                        <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
+                          <MdMessage className="text-[26px] mr-2" /> Message
+                        </button>
+                      </Link>
                     </div>
                   )}
                 </div>

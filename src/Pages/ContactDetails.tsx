@@ -87,7 +87,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profileowner, setProfileOwner] = useState<string | null>(null);
 
-  const profileId = sessionStorage.getItem("profile_id_new");
+  const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
   console.log(profileId);
 
   useEffect(() => {
@@ -142,7 +142,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
     const profileowner = sessionStorage.getItem("profile_owner");
     setProfileOwner(profileowner);
   }, []);
-
+  const profileName = profileowner === "Ownself" ? "Your" : profileowner;
   useEffect(() => {
     const fetchCountryStatus = async () => {
       try {
@@ -219,6 +219,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
         Profile_whatsapp: data.whatsappNumber,
         Profile_mobile_no: data.whatsappNumber,
       };
+      console.log(" postData:", postData);
 
       const response = await apiClient.post(
         `/auth/Contact_registration/`,
@@ -227,8 +228,8 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
       if (response.data.Status === 1) {
         NotifySuccess("Contact details saved successful");
         setTimeout(() => {
-          navigate("/UploadImages");
-        }, 2000);
+          navigate('/UploadImages');
+        }, 2000)
       } else {
         console.log("Registration unsuccessful:", response.data);
       }
@@ -239,7 +240,6 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
       setIsSubmitting(false);
     }
   };
-  console.log("profileId", profileId, "lll");
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -263,7 +263,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
       <div className="container mt-5 flex justify-between space-x-24">
         <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5">
           <div>
-            <InputField label="Address" {...register("address")} required />
+            <InputField label="Address" {...register("address", { setValueAs: (value) => value.trim() })} required />
             {errors.address && (
               <span className="text-red-500">{errors.address.message}</span>
             )}
@@ -317,7 +317,11 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
           </div>
 
           <div>
-            <InputField label="City" required {...register("city")} />
+            <InputField
+              label="City"
+              required
+              {...register("city", { setValueAs: (value) => value.trim() })}
+            />
             {errors.city && (
               <span className="text-red-500">{errors.city.message}</span>
             )}
@@ -326,9 +330,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
           <div>
             <InputField
               label="Pincode (Based on country selection)"
-              type="text"
+              type="number"
               required
-              {...register("pincode")}
+              {...register("pincode", { setValueAs: (value) => value.trim() })}
             />
             {errors.pincode && (
               <span className="text-red-500">{errors.pincode.message}</span>
@@ -339,7 +343,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
             <InputField
               label="Alternate Mobile Number"
               type="tel"
-              {...register("alternatemobileNumber")}
+              {...register("alternatemobileNumber", { setValueAs: (value) => value.trim() })}
             />
             {errors.alternatemobileNumber && (
               <span className="text-red-500">
@@ -352,7 +356,7 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
             <InputField
               label="Whatsapp Number"
               type="tel"
-              {...register("whatsappNumber")}
+              {...register("whatsappNumber", { setValueAs: (value) => value.trim() })}
             />
             {errors.whatsappNumber && (
               <span className="text-red-500">
@@ -369,9 +373,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
             <div className="space-y-5">
               <div>
                 <InputField
-                  label={`${profileowner} Mobile Number`}
+                  label={`${profileName} Mobile Number`}
                   type="text"
-                  {...register("daughterMobileNumber")}
+                  {...register("daughterMobileNumber", { setValueAs: (value) => value.trim() })}
                   onChange={(e) => {
                     validateDaughterMobileNumber(e.target.value);
                   }}
@@ -385,9 +389,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
 
               <div>
                 <InputField
-                  label={`${profileowner} Daughter Email`}
+                  label={`${profileName} Email`}
                   type="email"
-                  {...register("daughterEmail")}
+                  {...register("daughterEmail", { setValueAs: (value) => value.trim() })}
                   onChange={(e) => {
                     validateDaughterEmail(e.target.value);
                   }}

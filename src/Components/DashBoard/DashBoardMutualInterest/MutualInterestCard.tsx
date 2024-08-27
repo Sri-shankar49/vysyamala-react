@@ -7,7 +7,7 @@ import { FaUser, FaSuitcase } from "react-icons/fa";
 import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import { Link } from "react-router-dom";
 import { FaLocationDot } from "react-icons/fa6";
-
+import { useNavigate } from "react-router-dom";
 // Define the Profile interface
 export interface Profile {
   mutint_Profile_img: string;
@@ -94,8 +94,14 @@ interface ProfileCardProps {
 }
 
 const ProfileCard: React.FC<ProfileCardProps> = ({ profile, isBookmarked, onBookmarkToggle }) => {
+  const navigate = useNavigate();
+  const handleProfileClick = (profileId: string) => {
+    navigate(`/ProfileDetails?id=${profileId}`);
+  };
   return (
-    <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-sm py-5">
+    <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-sm py-5"
+      onClick={() => handleProfileClick(profile.mutint_profileid)}
+    >
       <Link to="/ProfileDetails" className="w-full flex justify-between items-center">
         <div className="flex justify-between items-center space-x-5">
           {/* Profile Image */}
@@ -122,16 +128,19 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ profile, isBookmarked, onBook
 
           {/* Profile Details */}
           <div>
+
             {/* Name & Profile ID */}
             <div className="relative mb-2">
               <div className="flex items-center">
-                <h5 className="text-[20px] text-secondary font-semibold cursor-pointer mr-2">
-                  {profile.mutint_profile_name || "Unknown"}
+                <h5 className="text-[20px] text-secondary font-semibold cursor-pointer">
+                  {profile.mutint_profile_name || "Unknown"}{" "}
+
+                  <span className="text-sm text-ashSecondary">
+                    ({profile.mutint_profileid || "N/A"})
+                  </span>
                 </h5>
-                <span className="text-sm text-ashSecondary mr-2">
-                  ({profile.mutint_profileid || "N/A"})
-                </span>
-                <MdVerifiedUser className="text-checkGreen" />
+
+                <MdVerifiedUser className="text-[20px] text-checkGreen ml-2" />
               </div>
             </div>
 
