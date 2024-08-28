@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import InputField from "../../Components/RegistrationForm/InputField";
 import { HiOutlineSearch } from "react-icons/hi";
+import { ProfileContext } from "../../ProfileContext";
 
 interface MaritalStatus {
     marital_sts_id: number;
@@ -31,20 +32,44 @@ interface Income {
 
 interface AdvancedSearchProps {
     onFindMatch: () => void;
+    handle_Get_advance_search: () => void;
 }
 
-export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) => {
+export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
+    handle_Get_advance_search,
+    onFindMatch,
+}) => {
     const [maritalStatuses, setMaritalStatuses] = useState<MaritalStatus[]>([]);
     const [professions, setProfessions] = useState<Profession[]>([]);
     const [educationOptions, setEducationOptions] = useState<Education[]>([]);
     const [birthStars, setBirthStars] = useState<BirthStar[]>([]);
     const [incomeOptions, setIncomeOptions] = useState<Income[]>([]);
 
+    const context = useContext(ProfileContext);
+
+    if (!context) {
+        throw new Error("MyComponent must be used within a ProfileProvider");
+    }
+
+    const { setFromAge, setToAge, setFromHeight, setToHeight, pageNumber } =
+        context;
+
+    useEffect(() => {
+        handle_Get_advance_search();
+    }, [pageNumber]); // Add pageNumber as a dependency
+
+    console.log(pageNumber, "pagenumber");
+    const handleSearch = () => {
+        handle_Get_advance_search();
+        onFindMatch();
+    };
 
     useEffect(() => {
         const fetchMaritalStatuses = async () => {
             try {
-                const response = await axios.post('http://103.214.132.20:8000/auth/Get_Marital_Status/');
+                const response = await axios.post(
+                    "http://103.214.132.20:8000/auth/Get_Marital_Status/"
+                );
                 const status = Object.values(response.data) as MaritalStatus[];
                 setMaritalStatuses(status);
             } catch (error) {
@@ -54,8 +79,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
 
         const fetchProfessions = async () => {
             try {
-                const response = await axios.post('http://103.214.132.20:8000/auth/Get_Profes_Pref/');
-                const professionList = Object.values(response.data) as Profession[] ;
+                const response = await axios.post(
+                    "http://103.214.132.20:8000/auth/Get_Profes_Pref/"
+                );
+                const professionList = Object.values(response.data) as Profession[];
                 setProfessions(professionList);
             } catch (error) {
                 console.error("Error fetching professions", error);
@@ -64,7 +91,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
 
         const fetchEducationOptions = async () => {
             try {
-                const response = await axios.post('http://103.214.132.20:8000/auth/Get_Highest_Education/');
+                const response = await axios.post(
+                    "http://103.214.132.20:8000/auth/Get_Highest_Education/"
+                );
                 const educationList = Object.values(response.data) as Education[];
                 setEducationOptions(educationList);
             } catch (error) {
@@ -73,24 +102,31 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
         };
         const fetchBirthStars = async () => {
             try {
-                const response = await axios.post('http://103.214.132.20:8000/auth/Get_Birth_Star/', {
-                    state_id: '' // or `null` depending on what the API expects
-                });
+                const response = await axios.post(
+                    "http://103.214.132.20:8000/auth/Get_Birth_Star/",
+                    {
+                        state_id: "", // or `null` depending on what the API expects
+                    }
+                );
                 const starList = Object.values(response.data) as BirthStar[];
                 setBirthStars(starList);
             } catch (error) {
                 if (axios.isAxiosError(error)) {
-                    console.error("Error fetching birth stars:", error.response?.data || error.message);
+                    console.error(
+                        "Error fetching birth stars:",
+                        error.response?.data || error.message
+                    );
                 } else {
                     console.error("Unexpected error:", error);
                 }
             }
         };
 
-
         const fetchIncomeOptions = async () => {
             try {
-                const response = await axios.post('http://103.214.132.20:8000/auth/Get_Annual_Income/');
+                const response = await axios.post(
+                    "http://103.214.132.20:8000/auth/Get_Annual_Income/"
+                );
                 const incomeList = Object.values(response.data) as Income[];
                 setIncomeOptions(incomeList);
             } catch (error) {
@@ -111,48 +147,89 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
             <div className="container mx-auto py-10">
                 <div className="w-8/12 mx-auto rounded-lg p-10 bg-white shadow-lg">
                     <div className="relative flex justify-center items-center rounded-lg p-1 border-2 border-footer-text-gray">
-                        <input type="text" placeholder="Search by Profile ID" className="w-full px-10 focus-visible:outline-none" />
+                        <input
+                            type="text"
+                            placeholder="Search by Profile ID"
+                            className="w-full px-10 focus-visible:outline-none"
+                        />
                         <HiOutlineSearch className="absolute left-3 top-4 text-[22px] text-ashSecondary" />
-                        <button className="w-fit bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3">Search</button>
+                        <button className="w-fit bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3">
+                            Search
+                        </button>
                     </div>
 
                     <hr className="text-footer-text-gray mt-10 mb-5" />
 
-                    <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold mb-5">Advanced Search</h4>
+                    <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold mb-5">
+                        Advanced Search
+                    </h4>
 
                     <form action="" method="post" className="space-y-5">
-                        {/* Age & Height */}
+                        {/* {/ Age & Height /} */}
                         <div className="flex justify-between items-center">
-                            {/* Age */}
+                            {/* {/ Age /} */}
                             <div>
-                                <label htmlFor="age" className="text-secondary font-semibold">Age</label>
+                                <label htmlFor="age" className="text-secondary font-semibold">
+                                    Age
+                                </label>
                                 <div className="flex justify-between items-center space-x-5 mt-2">
                                     <div>
-                                        <input type="text" id="age" name="age" placeholder="From" className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded" />
+                                        <input
+                                            type="number"
+                                            onChange={(e) => setFromAge(Number(e.target.value))}
+                                            id="age"
+                                            name="age"
+                                            placeholder="From"
+                                            className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                                        />
                                     </div>
                                     <div>
-                                        <input type="text" placeholder="To" className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded" />
+                                        <input
+                                            type="number"
+                                            onChange={(e) => setToAge(Number(e.target.value))}
+                                            placeholder="To"
+                                            className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                                        />
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Height */}
+                            {/* {/ Height /} */}
                             <div>
-                                <label htmlFor="height" className="text-secondary font-semibold">Height</label>
+                                <label
+                                    htmlFor="height"
+                                    className="text-secondary font-semibold"
+                                >
+                                    Height
+                                </label>
                                 <div className="flex justify-between items-center space-x-5 mt-2">
                                     <div>
-                                        <input type="text" id="height" name="height" placeholder="From" className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded" />
+                                        <input
+                                            type="text"
+                                            id="height"
+                                            onChange={(e) => setFromHeight(Number(e.target.value))}
+                                            name="height"
+                                            placeholder="From"
+                                            className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                                        />
                                     </div>
                                     <div>
-                                        <input type="text" placeholder="To" className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded" />
+                                        <input
+                                            type="text"
+                                            onChange={(e) => setToHeight(Number(e.target.value))}
+                                            placeholder="To"
+                                            className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                                        />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Marital Status */}
+                        {/* {/ Marital Status /} */}
                         <div>
-                            <h5 className="text-[18px] text-secondary font-semibold mb-2">Marital Status</h5>
+                            <h5 className="text-[18px] text-secondary font-semibold mb-2">
+                                Marital Status
+                            </h5>
                             <div className="flex flex-wrap gap-4">
                                 {maritalStatuses.map((status) => (
                                     <div key={status.marital_sts_id}>
@@ -161,7 +238,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                                             id={`maritalStatus-${status.marital_sts_id}`}
                                             value={status.marital_sts_name}
                                         />
-                                        <label htmlFor={`maritalStatus-${status.marital_sts_id}`} className="pl-1">
+                                        <label
+                                            htmlFor={`maritalStatus-${status.marital_sts_id}`}
+                                            className="pl-1"
+                                        >
                                             {status.marital_sts_name}
                                         </label>
                                     </div>
@@ -169,9 +249,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                             </div>
                         </div>
 
-                        {/* Profession */}
+                        {/* {/ Profession /} */}
                         <div>
-                            <h5 className="text-[18px] text-secondary font-semibold mb-2">Profession</h5>
+                            <h5 className="text-[18px] text-secondary font-semibold mb-2">
+                                Profession
+                            </h5>
                             <div className="flex flex-wrap gap-4">
                                 {professions.map((profession) => (
                                     <div key={profession.Profes_Pref_id}>
@@ -180,7 +262,10 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                                             id={`profession-${profession.Profes_Pref_id}`}
                                             value={profession.Profes_name}
                                         />
-                                        <label htmlFor={`profession-${profession.Profes_Pref_id}`} className="pl-1">
+                                        <label
+                                            htmlFor={`profession-${profession.Profes_Pref_id}`}
+                                            className="pl-1"
+                                        >
                                             {profession.Profes_name}
                                         </label>
                                     </div>
@@ -188,7 +273,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                             </div>
                         </div>
 
-                        {/* Education */}
+                        {/* {/ Education /} */}
                         <div>
                             <label htmlFor="education" className="block mb-1">
                                 Education
@@ -208,8 +293,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                             </select>
                         </div>
 
-
-                        {/* Annual Income */}
+                        {/* {/ Annual Income /} */}
                         <div>
                             <label htmlFor="income" className="block mb-1">
                                 Income
@@ -229,32 +313,29 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                             </select>
                         </div>
 
-
-                        {/* Dhosam */}
+                        {/* {/ Dhosam /} */}
                         <div>
-                            <h5 className="text-[18px] text-secondary font-semibold mb-2">Dhosam</h5>
+                            <h5 className="text-[18px] text-secondary font-semibold mb-2">
+                                Dhosam
+                            </h5>
                             <div className="w-1/4 flex justify-between items-center">
                                 <div>
-                                    <input
-                                        type="checkbox"
-                                        id="chevvai"
-                                        value="chevvai"
-                                    />
-                                    <label htmlFor="chevvai" className="pl-1">Chevvai</label>
+                                    <input type="checkbox" id="chevvai" value="chevvai" />
+                                    <label htmlFor="chevvai" className="pl-1">
+                                        Chevvai
+                                    </label>
                                 </div>
 
                                 <div>
-                                    <input
-                                        type="checkbox"
-                                        id="rehu"
-                                        value="rehu"
-                                    />
-                                    <label htmlFor="rehu" className="pl-1">Rehu / Ketu</label>
+                                    <input type="checkbox" id="rehu" value="rehu" />
+                                    <label htmlFor="rehu" className="pl-1">
+                                        Rehu / Ketu
+                                    </label>
                                 </div>
                             </div>
                         </div>
-                        
-                        {/* Birth Star */}
+
+                        {/* {/ Birth Star /} */}
                         <div>
                             <label htmlFor="birthStar" className="block mb-1">
                                 Birth Star
@@ -274,9 +355,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                             </select>
                         </div>
 
-                        {/* Native State */}
+                        {/* {/ Native State /} */}
                         <div>
-                            <h5 className="text-[18px] text-primary font-semibold mb-2">Native State</h5>
+                            <h5 className="text-[18px] text-primary font-semibold mb-2">
+                                Native State
+                            </h5>
                             <div className="flex flex-wrap gap-4">
                                 <div>
                                     <input
@@ -285,7 +368,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                                         name="tamilNadu"
                                         value="tamilNadu"
                                     />
-                                    <label htmlFor="tamilNadu" className="pl-1">TamilNadu and Pondhicherry</label>
+                                    <label htmlFor="tamilNadu" className="pl-1">
+                                        TamilNadu and Pondhicherry
+                                    </label>
                                 </div>
 
                                 <div>
@@ -295,7 +380,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                                         name="karnataka"
                                         value="karnataka"
                                     />
-                                    <label htmlFor="karnataka" className="pl-1">Karnataka</label>
+                                    <label htmlFor="karnataka" className="pl-1">
+                                        Karnataka
+                                    </label>
                                 </div>
 
                                 <div>
@@ -305,7 +392,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                                         name="andhraPradesh"
                                         value="andhraPradesh"
                                     />
-                                    <label htmlFor="andhraPradesh" className="pl-1">Andhra Pradesh</label>
+                                    <label htmlFor="andhraPradesh" className="pl-1">
+                                        Andhra Pradesh
+                                    </label>
                                 </div>
 
                                 <div>
@@ -315,7 +404,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                                         name="telangana"
                                         value="telangana"
                                     />
-                                    <label htmlFor="telangana" className="pl-1">Telangana</label>
+                                    <label htmlFor="telangana" className="pl-1">
+                                        Telangana
+                                    </label>
                                 </div>
 
                                 <div>
@@ -325,7 +416,9 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                                         name="kerala"
                                         value="kerala"
                                     />
-                                    <label htmlFor="kerala" className="pl-1">Kerala</label>
+                                    <label htmlFor="kerala" className="pl-1">
+                                        Kerala
+                                    </label>
                                 </div>
 
                                 <div>
@@ -335,37 +428,45 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({ onFindMatch }) =
                                         name="others"
                                         value="others"
                                     />
-                                    <label htmlFor="others" className="pl-1">Others</label>
+                                    <label htmlFor="others" className="pl-1">
+                                        Others
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Work Location */}
+                        {/* {/ Work Location /} */}
                         <InputField label={"Work Location"} name={"workLocation"} />
 
-                        {/* Profile Photo */}
+                        {/* {/ Profile Photo /} */}
                         <div>
                             <h5 className="text-[18px] text-primary font-semibold mb-2">
                                 Profile Photo
                             </h5>
-                            <input type="checkbox"
+                            <input
+                                type="checkbox"
                                 id="profilePhoto"
                                 value="profilePhoto"
-                            // {...register("profilePhoto")} 
+                            // {...register("profilePhoto")}
                             />
                             <label htmlFor="profilePhoto" className="pl-1">
                                 People only with photo
                             </label>
                         </div>
 
-
-                        {/* Buttons */}
+                        {/* {/ Buttons /} */}
                         <div className="flex justify-end space-x-4">
-                            <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">Cancel</button>
-                            <button onClick={onFindMatch} type="submit" className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2">Find Match</button>
+                            <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSearch}
+                                type="submit"
+                                className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2"
+                            >
+                                Find Match
+                            </button>
                         </div>
-
-
                     </form>
                 </div>
             </div>

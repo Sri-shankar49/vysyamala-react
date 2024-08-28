@@ -1,12 +1,23 @@
 import { useEffect, useState } from "react";
 import { fetchProfiles } from "../../../commonapicall";
 import { GridCard } from "./ProfileCard/GridCard";
+import { Profile } from "../../../ProfileContext";
 
 
 export const GridView = () => {
   const [profiles, setProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+
+  const advanceSearchData = sessionStorage.getItem("advance_search_data")
+    ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
+    : null;
+
+  // useEffect(()=>{
+  //   if(advanceSearchData){
+  //    setProfiles(advanceSearchData)
+  //   }
+  //  },[advanceSearchData])
 
   useEffect(() => {
     const loadProfiles = async () => {
@@ -36,9 +47,19 @@ export const GridView = () => {
   return (
     <div>
       <div className="grid grid-rows-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 my-5">
-        {profiles.map(profile => (
-          <GridCard key={profile.profile_id} profile={profile} />
-        ))}
+        {advanceSearchData && advanceSearchData.length > 0 ? (
+          advanceSearchData.map((profile: Profile) => (
+            <GridCard key={profile.profile_id} profile={profile} />
+          ))
+        ) : (
+          profiles.length > 0 ? (
+            profiles.map(profile => (
+              <GridCard key={profile.profile_id} profile={profile} />
+            ))
+          ) : (
+            <p>No profiles available</p>
+          )
+        )}
       </div>
     </div>
   );

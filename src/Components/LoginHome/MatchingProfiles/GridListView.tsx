@@ -17,10 +17,24 @@ interface Profile {
 }
 
 export const GridListView: React.FC = () => {
+
+
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+  const advanceSearchData = sessionStorage.getItem("advance_search_data")
+    ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
+    : null;
+
+
+  // useEffect(()=>{
+  //   if(advanceSearchData){
+  //    setProfiles(advanceSearchData)
+  //   }
+
+  //  },[advanceSearchData])
+
 
   useEffect(() => {
     const loadProfiles = async () => {
@@ -52,17 +66,25 @@ export const GridListView: React.FC = () => {
     loadProfiles();
   }, [loginuser_profileId]);
 
+
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <div className="grid grid-rows-1 md:grid-cols-3 gap-5 my-5">
-      {profiles.length > 0 ? (
-        profiles.map(profile => (
+      {advanceSearchData && advanceSearchData.length > 0 ? (
+        advanceSearchData.map((profile: Profile) => (
           <GridListCard key={profile.profile_id} profileId={profile.profile_id} />
         ))
       ) : (
-        <p>No profiles available</p>
+        profiles.length > 0 ? (
+          profiles.map((profile: Profile) => (
+            <GridListCard key={profile.profile_id} profileId={profile.profile_id} />
+          ))
+        ) : (
+          <p>No profiles available</p>
+        )
       )}
     </div>
   );

@@ -8,6 +8,18 @@ export const ListView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+
+  const advanceSearchData = sessionStorage.getItem("advance_search_data")
+    ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
+    : null;
+
+
+  // useEffect(()=>{
+  //   if(advanceSearchData){
+  //    setProfiles(advanceSearchData)
+  //   }
+  //  },[])
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,8 +47,12 @@ export const ListView: React.FC = () => {
 
   return (
     <div className="list-view">
-      {profiles.length > 0 ? (
-        profiles.map((profile) => (
+      {advanceSearchData && advanceSearchData.length > 0 ? (
+        advanceSearchData.map((profile: Profile) => (
+          <ListCard key={profile.profile_id} profile={profile} />
+        ))
+      ) : profiles.length > 0 ? (
+        profiles.map((profile: Profile) => (
           <ListCard key={profile.profile_id} profile={profile} />
         ))
       ) : (

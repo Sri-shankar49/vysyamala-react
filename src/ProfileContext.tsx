@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, Dispatch, SetStateAction } from 'react';
 import axios from 'axios';
 
 export interface Profile {
@@ -14,7 +14,7 @@ export interface Profile {
   location?: string;
   profile_image?: string;
   wish_list?: string;
-  user_profile_views?:string;
+  user_profile_views?: string;
 }
 
 export interface DashboardDetails {
@@ -46,7 +46,22 @@ interface ProfileContextType {
   setSelectedProfiles: (profiles: Profile[]) => void;
   dashboardDetails: DashboardDetails | null;
   fetchDashboardDetails: () => void;
+  perPage: number;
+  pageNumber: number;
+  totalCount: number;
+  setPerPage: Dispatch<SetStateAction<number>>;
+  setPageNumber: Dispatch<SetStateAction<number>>;
+  setTotalCount: Dispatch<SetStateAction<number>>;
+  fromAge: number;
+  fromHeight: number;
+  toHeight: number;
+  ToAge: number;
+  setFromAge: Dispatch<SetStateAction<number>>;
+  setToAge: Dispatch<SetStateAction<number>>;
+  setFromHeight: Dispatch<SetStateAction<number>>;
+  setToHeight: Dispatch<SetStateAction<number>>;
 }
+
 
 export const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
 
@@ -60,6 +75,14 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
     const savedSelectedProfiles = localStorage.getItem('selectedProfiles');
     return savedSelectedProfiles ? JSON.parse(savedSelectedProfiles) : [];
   });
+
+  const [perPage, setPerPage] = useState<number>(10);
+  const [pageNumber, setPageNumber] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [fromAge, setFromAge] = useState<number>(0);
+  const [ToAge, setToAge] = useState<number>(0);
+  const [fromHeight, setFromHeight] = useState<number>(0);
+  const [toHeight, setToHeight] = useState<number>(0);
 
   const [error, setError] = useState<string | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
@@ -161,7 +184,22 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({ children })
       removeBookmark,
       setSelectedProfiles,
       dashboardDetails,
-      fetchDashboardDetails
+      fetchDashboardDetails,
+      perPage,
+      pageNumber,
+      totalCount,
+      setPerPage,
+      setPageNumber,
+      setTotalCount,
+
+      fromAge,
+      fromHeight,
+      toHeight,
+      ToAge,
+      setFromAge,
+      setToAge,
+      setFromHeight,
+      setToHeight,
     }}>
       {children}
     </ProfileContext.Provider>

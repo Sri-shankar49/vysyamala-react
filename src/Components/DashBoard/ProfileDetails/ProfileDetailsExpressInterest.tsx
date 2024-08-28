@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import ProfileViewPassWordInput from "./ProfileViewPasswordInput";
 import { MdMessage, MdVerifiedUser } from "react-icons/md";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
-import { IoDocumentText } from "react-icons/io5";
+import { IoClose, IoDocumentText } from "react-icons/io5";
 import { RiAlertFill } from "react-icons/ri";
 import { BiSolidUserVoice } from "react-icons/bi";
 import { IoShareSocialSharp } from "react-icons/io5";
@@ -84,6 +84,7 @@ import {
 } from "react-share";
 import { Get_profile_det_match } from "../../../commonapicall";
 import { Get_photo_bypassword } from "../../../commonapicall";
+import { Share } from "./Share";
 
 // import { boolean } from "zod";
 
@@ -134,7 +135,7 @@ export const ProfileDetailsExpressInterest: React.FC<
   const id = queryParams.get("id");
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
   const [GetProfileDetMatchData, SetGetProfileDetMatchData] = useState<any>({});
-  const [PasswordModal, setPassWordModal] = useState<boolean>(false);
+  // const [PasswordModal, setPassWordModal] = useState<boolean>(false);
 
   const [response, setResponse] = useState<boolean>(false);
   const custom_message = sessionStorage.getItem("custom_message");
@@ -145,7 +146,10 @@ export const ProfileDetailsExpressInterest: React.FC<
   }, [response]);
 
   const storedPlanId = sessionStorage.getItem("plan_id");
+  console.log("vysya", storedPlanId)
   const { photo_protection } = GetProfileDetMatchData;
+  console.log("vysya", photo_protection)
+
 
   const GetProfileDetMatch = async () => {
     try {
@@ -156,7 +160,9 @@ export const ProfileDetailsExpressInterest: React.FC<
 
       if (response.status === 200) {
         SetGetProfileDetMatchData(response.data);
-        setPassWordModal(true);
+        const xyz = sessionStorage.setItem("photo_protection", response.data)
+        console.log("asdsas", xyz)
+        console.log("message", response.data);
       }
     } catch (error) {
       console.log(error);
@@ -195,28 +201,28 @@ export const ProfileDetailsExpressInterest: React.FC<
     }
   };
 
-  const GetPhotoByPassword = async (Password: string) => {
-    try {
-      const response = await axios.post(Get_photo_bypassword, {
-        profile_id: loginuser_profileId,
-        profile_to: id,
-        photo_password: Password,
-      });
+  // const GetPhotoByPassword = async (Password: string) => {
+  //   try {
+  //     const response = await axios.post(Get_photo_bypassword, {
+  //       profile_id: loginuser_profileId,
+  //       profile_to: id,
+  //       photo_password: Password,
+  //     });
 
-      if (response.status === 200) {
-        const userImages = response.data.data.user_images;
-        setResponse(true);
-        // NotifySuccess("Image Unlocked Successfully");
-        // Set the user images to the state
-        // setProtectedImg(userImages);
+  //     if (response.status === 200) {
+  //       const userImages = response.data.data.user_images;
+  //       setResponse(true);
+  //       // NotifySuccess("Image Unlocked Successfully");
+  //       // Set the user images to the state
+  //       // setProtectedImg(userImages);
 
-        sessionStorage.setItem(`userImages_${id}`, JSON.stringify(userImages));
-        // sessionStorage.setItem("userImages", JSON.stringify(userImages));
-      }
-    } catch (error) {
-      NotifyError("Please Enter Correct Password");
-    }
-  };
+  //       sessionStorage.setItem(`userImages_${id}`, JSON.stringify(userImages));
+  //       // sessionStorage.setItem("userImages", JSON.stringify(userImages));
+  //     }
+  //   } catch (error) {
+  //     NotifyError("Please Enter Correct Password");
+  //   }
+  // };
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -408,6 +414,8 @@ export const ProfileDetailsExpressInterest: React.FC<
   console.log(openCustomMsg, "openCustomMsg");
   console.log(openCustomMsg, "setOpenCustomMsg");
 
+  const [selectValue, setSelectValue] = useState<string>("");
+
   const handleHeartMark = async () => {
     try {
       const response = await axios.post(
@@ -416,7 +424,7 @@ export const ProfileDetailsExpressInterest: React.FC<
           profile_id: loginuser_profileId,
           profile_to: id,
           status: !isHeartMarked ? "1" : "0",
-          to_express_message: openCustomMsg || "", // Use message if provided, otherwise use an empty string
+          to_express_message: openCustomMsg || selectValue, // Use message if provided, otherwise use an empty string
         }
       );
 
@@ -440,13 +448,18 @@ export const ProfileDetailsExpressInterest: React.FC<
       NotifyError("Error updating express interest");
 
       console.error("Error updating express interest:", error);
+    } finally {
+      setOpenCustomMsg("")
+      setSelectValue("")
     }
   };
+
   useEffect(() => {
-    if (openCustomMsg) {
+    if (openCustomMsg || selectValue) {
       handleHeartMark();
     }
-  }, [openCustomMsg]);
+  }, [openCustomMsg, selectValue]);
+  
   const openMsgPopUp = () => {
     setOpenCustomMsgShow(true);
   };
@@ -502,29 +515,17 @@ export const ProfileDetailsExpressInterest: React.FC<
   };
 
   const [isShareVisible, setIsShareVisible] = useState(false);
-  const shareUrl = window.location.href;
-  const title = "Check out this profile!";
 
   const toggleShareVisibility = () => {
     setIsShareVisible(!isShareVisible);
   };
 
-  const copyLinkToClipboard = () => {
-    navigator.clipboard
-      .writeText(shareUrl)
-      .then(() => {
-        alert("Link copied to clipboard!");
-      })
-      .catch((err) => {
-        console.error("Failed to copy the link: ", err);
-      });
-  };
-
-  const closeModal = (e: React.MouseEvent<HTMLDivElement>) => {
+  const closeShareModal = (e: React.MouseEvent<HTMLDivElement>) => {
     if ((e.target as HTMLElement).className.includes("modal-overlay")) {
       setIsShareVisible(false);
     }
   };
+
 
   useEffect(() => {
     if (storedPlanId === "0") {
@@ -552,7 +553,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                 profileId={profileData?.basic_details.profile_id}
               />
 
-              <div>
+              {/* <div>
                 {photo_protection && (
                   <ProfileViewPassWordInput
                     PasswordModal={PasswordModal}
@@ -560,7 +561,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                     GetPhotoByPassword={GetPhotoByPassword}
                   />
                 )}
-              </div>
+              </div> */}
             </div>
 
             {/* Profile Details */}
@@ -581,120 +582,12 @@ export const ProfileDetailsExpressInterest: React.FC<
                       className="text-[22px] text-vysyamalaBlack cursor-pointer"
                       onClick={toggleShareVisibility}
                     />
-                    {isShareVisible && (
-                      <div
-                        className="modal-overlay fixed inset-0 flex justify-center items-center bg-gray-800 bg-opacity-50 z-50"
-                        onClick={closeModal}
-                      >
-                        <div className="modal-container w-60 bg-white border rounded shadow-lg p-4 relative">
-                          <button
-                            className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
-                            onClick={() => setIsShareVisible(false)}
-                          >
-                            &times; {/* Close button */}
-                          </button>
-                          <div className="flex flex-wrap justify-center gap-4">
-                            <FacebookShareButton
-                              url={shareUrl}
-                              title="Check out this profile!"
-                            >
-                              <FacebookIcon size={32} round />
-                            </FacebookShareButton>
-                            <TwitterShareButton
-                              url={shareUrl}
-                              title="Check out this profile!"
-                            >
-                              <TwitterIcon size={32} round />
-                            </TwitterShareButton>
-                            <WhatsappShareButton
-                              url={shareUrl}
-                              title="Check out this profile!"
-                            >
-                              <WhatsappIcon size={32} round />
-                            </WhatsappShareButton>
-                            <EmailShareButton
-                              url={shareUrl}
-                              title="Check out this profile!"
-                            >
-                              <EmailIcon size={32} round />
-                            </EmailShareButton>
-                            <GabShareButton url={shareUrl} title={title}>
-                              <GabIcon size={32} round />
-                            </GabShareButton>
-                            <HatenaShareButton url={shareUrl} title={title}>
-                              <HatenaIcon size={32} round />
-                            </HatenaShareButton>
-                            <InstapaperShareButton url={shareUrl} title={title}>
-                              <InstapaperIcon size={32} round />
-                            </InstapaperShareButton>
-                            <LineShareButton url={shareUrl} title={title}>
-                              <LineIcon size={32} round />
-                            </LineShareButton>
-                            <LinkedinShareButton url={shareUrl} title={title}>
-                              <LinkedinIcon size={32} round />
-                            </LinkedinShareButton>
 
-                            <LivejournalShareButton
-                              url={shareUrl}
-                              title={title}
-                            >
-                              <LivejournalIcon size={32} round />
-                            </LivejournalShareButton>
-                            <MailruShareButton url={shareUrl} title={title}>
-                              <MailruIcon size={32} round />
-                            </MailruShareButton>
-                            <OKShareButton url={shareUrl} title={title}>
-                              <OKIcon size={32} round />
-                            </OKShareButton>
-                            {/* <PinterestShareButton url={shareUrl} title={title}>
-                                    < PinterestIcon size={32} round />
-                                </ PinterestShareButton> */}
-                            <PocketShareButton url={shareUrl} title={title}>
-                              <PocketIcon size={32} round />
-                            </PocketShareButton>
-                            <RedditShareButton url={shareUrl} title={title}>
-                              <RedditIcon size={32} round />
-                            </RedditShareButton>
-                            <TelegramShareButton url={shareUrl} title={title}>
-                              <TelegramIcon size={32} round />
-                            </TelegramShareButton>
-                            <TumblrShareButton url={shareUrl} title={title}>
-                              <TumblrIcon size={32} round />
-                            </TumblrShareButton>
-                            <ViberShareButton url={shareUrl} title={title}>
-                              <ViberIcon size={32} round />
-                            </ViberShareButton>
-                            <VKShareButton url={shareUrl} title={title}>
-                              <VKIcon size={32} round />
-                            </VKShareButton>
-                            <WorkplaceShareButton url={shareUrl} title={title}>
-                              <WorkplaceIcon size={32} round />
-                            </WorkplaceShareButton>
-                            {/* <FacebookMessengerShareButton url={shareUrl} title={title}>
-                                    <FacebookMessengerIcon size={32} round />
-                                </FacebookMessengerShareButton> */}
-                            <WeiboShareButton url={shareUrl} title={title}>
-                              <WeiboIcon size={32} round />
-                            </WeiboShareButton>
-                            {/* <  XShareButton url={shareUrl} title={title}>
-                                    < XIcon size={32} round />
-                                </ XShareButton> */}
-                            <div className="mt-4 w-full flex flex-col items-center">
-                              <p className="text-sm text-gray-600 mb-2 text-center">
-                                {window.location.href}
-                              </p>
-                              <button
-                                className="px-4 py-2 bg-blue-500 text-white rounded"
-                                onClick={copyLinkToClipboard}
-                              >
-                                Copy Link
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                    {/* Share Component here */}
+                    {isShareVisible && (<Share closePopup={toggleShareVisibility} />)}
+
                   </div>
+
                   <div>
                     {/* <MdBookmarkBorder title="Bookmark Profile" className="text-[22px] text-vysyamalaBlack cursor-pointer" /> */}
                     {isBookmarked ? (
@@ -711,6 +604,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                       />
                     )}
                   </div>
+
                   <div>
                     <IoDocumentText
                       onClick={handlePersonalNotesPopup}
@@ -725,6 +619,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                       />
                     )}
                   </div>
+
                   <div>
                     <RiAlertFill
                       onClick={() => sendPhotoRequest()}
@@ -732,12 +627,14 @@ export const ProfileDetailsExpressInterest: React.FC<
                       className="text-[22px] text-vysyamalaBlack cursor-pointer"
                     />
                   </div>
+
                   <div>
                     <BiSolidUserVoice
                       title="Vys Assist"
                       className="text-[22px] text-vysyamalaBlack cursor-pointer"
                     />
                   </div>
+
                 </div>
               </div>
 
@@ -860,14 +757,16 @@ export const ProfileDetailsExpressInterest: React.FC<
                                         className="w-full"
                                     /> */}
                   <MatchingScore
-                    // matchingScore={profileData?.basic_details.matching_score}
+                  // matchingScore={profileData?.basic_details.matching_score}
                   />
                 </div>
               </div>
               {openCustomMsgShow ? (
                 <CustomMessagePopUp
+                  custom_message={custom_message}
                   setOpenCustomMsgShow={setOpenCustomMsgShow}
                   setOpenCustomMsg={setOpenCustomMsg}
+                  setSelect={setSelectValue}
                 />
               ) : (
                 ""

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { IoArrowBackOutline } from "react-icons/io5";
 import { HiOutlineSearch } from "react-icons/hi";
 import { HiMiniViewColumns } from "react-icons/hi2";
@@ -13,6 +13,8 @@ import { GridListView } from '../LoginHome/MatchingProfiles/GridListView';
 import { IoChevronBackOutline } from "react-icons/io5";
 import { IoChevronForwardOutline } from "react-icons/io5";
 import { SuggestedProfiles } from '../LoginHome/SuggestedProfiles';
+import { ProfileContext } from "../../ProfileContext";
+
 
 interface SearchResultsProps {
   onSearchAgain: () => void; // Call back function to trigger search again when user clicks on search again button
@@ -22,6 +24,24 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
 
   // View state changed
   const [currentView, setCurrentView] = useState("gridlist");
+
+  const context = useContext(ProfileContext);
+
+  if (!context) {
+    throw new Error("MyComponent must be used within a ProfileProvider");
+  }
+
+  const { setPageNumber, perPage, totalCount, pageNumber } = context;
+
+  const noOfPages = Math.ceil(totalCount / perPage);
+
+  const handlePrevious = () => {
+    setPageNumber((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNext = () => {
+    setPageNumber((prev) => Math.min(prev + 1, noOfPages));
+  };
 
 
   return (
@@ -122,9 +142,15 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-primary">
-                Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">10</span> of{" "}
-                <span className="font-medium">97</span> results
+                Showing{" "}
+                <span className="font-medium">
+                  {(pageNumber - 1) * perPage + 1}
+                </span>{" "}
+                to{" "}
+                <span className="font-medium">
+                  {Math.min(pageNumber * perPage, totalCount)}
+                </span>{" "}
+                of <span className="font-medium">{totalCount}</span> results
               </p>
             </div>
             <div>
@@ -132,41 +158,40 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
                 className="isolate inline-flex -space-x-px rounded-md shadow-sm"
                 aria-label="Pagination"
               >
-                <a
-                  href="#"
-                  className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                <button
+                  onClick={handlePrevious}
+                  disabled={pageNumber === 1} // Disable if on the first page
+                  className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${pageNumber === 1 ? "cursor-not-allowed" : ""
+                    }`}
                 >
                   <span className="sr-only">Previous</span>
-                  <IoChevronBackOutline
-                    className="h-5 w-5 text-primary"
-                    aria-hidden="true"
-                  />
-                </a>
+                  <IoChevronBackOutline className="h-5 w-5 text-primary" aria-hidden="true" />
+                </button>
                 {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                <a
-                  href="#"
-                  aria-current="page"
-                  className="relative z-10 inline-flex items-center bg-secondary px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  1
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-primary hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  2
-                </a>
 
-                <a
-                  href="#"
-                  className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                {/* {/ Generate Page Numbers Dynamically /} */}
+                {[...Array(noOfPages)].map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setPageNumber(index + 1)}
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${pageNumber === index + 1
+                      ? "bg-secondary text-white"
+                      : "text-primary hover:bg-gray-50"
+                      }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={handleNext}
+                  disabled={pageNumber === noOfPages} // Disable if on the last page
+                  className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${pageNumber === noOfPages ? "cursor-not-allowed" : ""
+                    }`}
                 >
                   <span className="sr-only">Next</span>
-                  <IoChevronForwardOutline
-                    className="h-5 w-5 text-primary"
-                    aria-hidden="true"
-                  />
-                </a>
+                  <IoChevronForwardOutline className="h-5 w-5 text-primary" aria-hidden="true" />
+                </button>
               </nav>
             </div>
           </div>

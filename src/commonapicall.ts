@@ -49,3 +49,5 @@ export const Get_addon_packages =
   " http://103.214.132.20:8000/auth/Get_addon_packages/";
 export const Save_plan_package =
   " http://103.214.132.20:8000/auth/Save_plan_package/";
+export const Get_advance_search =
+  "http://103.214.132.20:8000/auth/Get_advance_search/";

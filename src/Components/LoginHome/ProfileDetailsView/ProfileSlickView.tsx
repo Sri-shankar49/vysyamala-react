@@ -1,7 +1,11 @@
 import { useState, useEffect, useRef } from "react";
+import { IoMdLock } from "react-icons/io";
 import Slider from "react-slick";
 import { fetchProfilesDetails } from "../../../commonapicall"; // Adjust the path as needed
 import "./ProfileSlickStyleView.css";
+import ProfileViewPassWordInput from "../../DashBoard/ProfileDetails/ProfileViewPasswordInput";
+import { Get_photo_bypassword } from "../../../commonapicall";
+import axios from "axios";
 
 interface UserImages {
   [key: string]: string;
@@ -83,6 +87,33 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, G
 
   const images = Object.values(ShowImage);
 
+
+  // Photo Password Popup
+  const [GetProfileDetMatchData, SetGetProfileDetMatchData] = useState<any>({});
+
+  const queryParams = new URLSearchParams(location.search);
+  const id = queryParams.get("id");
+
+  const { photo_protection } = GetProfileDetMatchData;
+
+  const GetPhotoByPassword = async (Password: string) => {
+    try {
+      const response = await axios.post(Get_photo_bypassword, {
+        profile_id: loginuser_profileId,
+        profile_to: id,
+        photo_password: Password,
+      });
+
+      if (response.status === 200) {
+        const userImages = response.data.data.user_images;
+        sessionStorage.setItem(`userImages_${id}`, JSON.stringify(userImages));
+        // sessionStorage.setItem("userImages", JSON.stringify(userImages));
+      }
+    } catch (error) {
+      // NotifyError("Please Enter Correct Password");
+    }
+  };
+
   return (
     <div>
       {loading && <div>Loading...</div>}
@@ -111,20 +142,36 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, G
           {images.map((image, index) => (
             <div
               key={index}
-              className="profile-slider-img-container"
+              className="profile-slider-img-container fade-img-effect"
               onMouseEnter={() => handleMouseEnter(image)}
               onMouseLeave={handleMouseLeave}
             >
               <img
-                onClick={() => {
-                  if (!ProtectedImg) {
-                    GetProfileDetMatch();
-                  }
-                }}
                 src={image}
                 className="w-full rounded-lg profile-slider-img"
                 alt={`Slide ${index + 1}`}
               />
+
+              {/* Lock & fade Effect */}
+              <div onClick={() => {
+                if (!ProtectedImg) {
+                  GetProfileDetMatch();
+                }
+              }} className="text-center lock-style">
+                <IoMdLock className="w-fit mx-auto text-secondary text-[50px]" />
+                <p className="text-sm text-white font-semibold">Click here to request password to view profile photo</p>
+              </div>
+
+              {/* Password Popup */}
+              <div className="absolute top-0 left-0">
+                {photo_protection && (
+                  <ProfileViewPassWordInput
+                    // PasswordModal={PasswordModal}
+                    // setPassWordModal={setPassWordModal}
+                    GetPhotoByPassword={GetPhotoByPassword}
+                  />
+                )}
+              </div>
             </div>
           ))}
         </Slider>
