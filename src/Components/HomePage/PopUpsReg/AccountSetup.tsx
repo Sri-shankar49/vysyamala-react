@@ -13,8 +13,9 @@ const schema = zod
         profileFor: zod.string().min(1, "Profile for is required"),
         mobile: zod
             .string()
-            .min(10, "Mobile number must be exactly 10 characters")
-            .max(10, "Mobile number must be exactly 10 characters"),
+            .refine((value) => /^[0-9]{10}$/.test(value), {
+                message: "Mobile number must be exactly 10 digits",
+            }),
         email: zod
             .string()
             .email("Invalid email address")

@@ -162,12 +162,15 @@ export const ProfileDetailsExpressInterest: React.FC<
         SetGetProfileDetMatchData(response.data);
         const xyz = sessionStorage.setItem("photo_protection", response.data)
         console.log("asdsas", xyz)
-        console.log("message", response.data);
+        console.log("messagexsxsxsxsxsx", response.data);
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+
+
 
   const handleUpdateInterest = async (profileId: string, status: string) => {
     try {
@@ -459,7 +462,7 @@ export const ProfileDetailsExpressInterest: React.FC<
       handleHeartMark();
     }
   }, [openCustomMsg, selectValue]);
-  
+
   const openMsgPopUp = () => {
     setOpenCustomMsgShow(true);
   };

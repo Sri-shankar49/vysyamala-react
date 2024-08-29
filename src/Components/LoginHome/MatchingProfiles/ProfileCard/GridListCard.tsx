@@ -14,6 +14,16 @@ interface GridListCardProps {
 }
 
 export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
+
+  const context = useContext(ProfileContext);
+
+
+  if (!context) {
+    throw new Error("MyComponent must be used within a ProfileProvider");
+  }
+
+  const { MatchingProfilepageNumber, MatchingProfileperPage, sortOrder } = context;
+
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const { addBookmark, removeBookmark, setSelectedProfiles } = useContext(ProfileContext) || {
@@ -32,7 +42,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
       }
 
       try {
-        const data = await fetchProfiles(loginuser_profileId);
+        const data = await fetchProfiles(loginuser_profileId, MatchingProfilepageNumber, MatchingProfileperPage, sortOrder);
         console.log('Fetched profile data:', data);
         if (data && data.profiles) {
           const profileData = data.profiles.find((profile: Profile) => profile.profile_id === profileId);
@@ -46,7 +56,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
     };
 
     loadProfile();
-  }, [loginuser_profileId, profileId]);
+  }, [loginuser_profileId, profileId, MatchingProfilepageNumber, sortOrder]);
 
   useEffect(() => {
     if (profile) {
@@ -88,7 +98,8 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
       try {
         const response = await axios.post('http://103.214.132.20:8000/auth/Create_profile_visit/', {
           profile_id: loginuser_profileId,
-          viewed_profile: profileId
+          viewed_profile: profileId,
+
         });
 
         if (response.data.Status === 1) {
@@ -117,7 +128,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
     <div className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3" onClick={handleCardClick}>
       <div className="w-full flex justify-between items-center">
         <div className="flex justify-between items-center space-x-5">
-          {/* Profile Image */}
+          {/* {/ Profile Image /} */}
           <div className="relative">
             <img src={profile_img || ProfileListImg} alt="Profile-image" className="w-[180px] rounded-[6px]" />
             {isBookmarked ? (
@@ -133,9 +144,9 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
             )}
           </div>
 
-          {/* Profile Details */}
+          {/* {/ Profile Details /} */}
           <div>
-            {/* Name & Profile ID */}
+            {/* {/ Name & Profile ID /} */}
             <div className="relative mb-2">
               <Link to={`/ProfileDetails?id=${profile_id}`}>
                 <div className="flex items-center">
@@ -149,7 +160,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
               </Link>
             </div>
 
-            {/* Years & Height */}
+            {/* {/ Years & Height /} */}
             <div className="flex items-center space-x-3 mb-2">
               <p className="flex items-center text-ashSecondary">
                 <IoCalendar className="mr-2" />
@@ -162,7 +173,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
               </p>
             </div>
 
-            {/* Degree */}
+            {/* {/ Degree /} */}
             <div className="mb-2">
               <p className="flex items-center text-ashSecondary">
                 <IoSchool className="mr-2" />
@@ -170,7 +181,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
               </p>
             </div>
 
-            {/* Profession */}
+            {/* {/ Profession /} */}
             <div className="mb-2">
               <p className="flex items-center text-ashSecondary">
                 <FaSuitcase className="mr-2" />
@@ -178,7 +189,7 @@ export const GridListCard: React.FC<GridListCardProps> = ({ profileId }) => {
               </p>
             </div>
 
-            {/* Location */}
+            {/* {/ Location /} */}
             <div className="mb-2">
               <p className="flex items-center text-ashSecondary">
                 <FaLocationDot className="mr-2" />

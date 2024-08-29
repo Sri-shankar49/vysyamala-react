@@ -1,14 +1,15 @@
+
 import React, { useEffect, useState } from "react";
 import { AddOns } from "../Components/PayNow/AddOns";
 import { Link, useNavigate } from "react-router-dom";
 import { Get_addon_packages } from "../commonapicall";
 import axios from "axios";
-
 import {
   ToastNotification,
   NotifyError,
   NotifySuccess,
 } from "../Components/Toast/ToastNotification";
+
 interface Package {
   package_id: number;
   name: string;
@@ -18,7 +19,7 @@ interface Package {
 
 export const PayNow: React.FC = () => {
   const [membershipPlane, setMemberShipPlane] = useState<Package[]>([]);
-  const profile_id = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
+  const profile_id = sessionStorage.getItem("profile_id");
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -31,6 +32,7 @@ export const PayNow: React.FC = () => {
       console.log(error);
     }
   };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -40,40 +42,39 @@ export const PayNow: React.FC = () => {
   const price = queryParams.get("price");
 
   const [selectedValues, setSelectedValues] = useState<number[]>([]);
+  const [selectedPackageIds, setSelectedPackageIds] = useState<number[]>([]);
 
-  const handleAddOnChange = (rate: number, checked: boolean) => {
+  const handleAddOnChange = (rate: number, checked: boolean, packageId: number) => {
     if (checked) {
       setSelectedValues([...selectedValues, rate]);
+      setSelectedPackageIds([...selectedPackageIds, packageId]);
     } else {
-      // Create a copy of the array
-      const updatedValues = [...selectedValues];
-      // Find the index of the first occurrence of the rate
-      const index = updatedValues.indexOf(rate);
-      if (index !== -1) {
-        // Remove that single occurrence
-        updatedValues.splice(index, 1);
-      }
+      // Remove rate and package ID from the respective arrays
+      const updatedValues = selectedValues.filter((val) => val !== rate);
+      const updatedPackageIds = selectedPackageIds.filter((id) => id !== packageId);
+
       setSelectedValues(updatedValues);
+      setSelectedPackageIds(updatedPackageIds);
     }
   };
 
   const totalAmount = selectedValues.reduce((acc, val) => acc + val, Number(price));
 
-  console.log(profile_id, id, totalAmount);
   const Save_plan_package = async () => {
     try {
+      const addonPackageIdsString = selectedPackageIds.join(",");
+
       const response = await axios.post(
         "http://103.214.132.20:8000/auth/Save_plan_package/",
         {
           profile_id: profile_id,
           plan_id: id,
-          addon_package_id: "1,2,3", // Ensure this is the correct format the API expects
+          addon_package_id: addonPackageIdsString,
           total_amount: totalAmount,
         }
       );
 
       if (response.status === 200) {
-        // Handle the successful response here
         NotifySuccess("Plans and packages updated successfully");
         sessionStorage.setItem(
           "Save_plan_package_message",
@@ -83,11 +84,8 @@ export const PayNow: React.FC = () => {
         setTimeout(() => {
           navigate("/ThankYouReg");
         }, 2000);
-      } else {
-        // Handle cases where the response is not successful but still received
       }
     } catch (error) {
-      // Handle the error here
       NotifyError("Something went wrong.");
       console.error("Error saving the package:", error);
     }
@@ -95,7 +93,6 @@ export const PayNow: React.FC = () => {
 
   return (
     <div>
-
       <div className="container mx-auto">
         <div className="w-1/3 mx-auto font-semibold rounded-2xl shadow-xl p-10 my-10">
           <h5 className="text-footer-gray mb-2">Selected Plan</h5>
@@ -107,7 +104,7 @@ export const PayNow: React.FC = () => {
               </h4>
               <Link to="/MembershipPlan">
                 <p className="text-main underline font-normal">Change Plan</p>
-              </Link>{" "}
+              </Link>
             </div>
 
             <div>
@@ -128,7 +125,9 @@ export const PayNow: React.FC = () => {
               desc={packageItem.description}
               name={packageItem.name}
               rate={packageItem.amount}
-              onChange={handleAddOnChange}
+              onChange={(rate, checked) =>
+                handleAddOnChange(rate, checked, packageItem.package_id)
+              }
             />
           ))}
           <hr className="text-footer-text-gray my-5" />
@@ -153,3 +152,4 @@ export const PayNow: React.FC = () => {
     </div>
   );
 };
+

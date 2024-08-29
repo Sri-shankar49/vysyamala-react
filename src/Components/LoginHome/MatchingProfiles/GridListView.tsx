@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { GridListCard } from './ProfileCard/GridListCard'; // Named import
-import { fetchProfiles } from '../../../commonapicall'; // Import the API function
+import React, { useState, useEffect, useContext } from "react";
+
+import { GridListCard } from "./ProfileCard/GridListCard"; // Named import
+import { fetchProfiles } from "../../../commonapicall"; // Import the API function
+import { ProfileContext } from "../../../ProfileContext";
 
 // Define the Profile type if not defined
 interface Profile {
@@ -17,16 +18,22 @@ interface Profile {
 }
 
 export const GridListView: React.FC = () => {
+  const context = useContext(ProfileContext);
+  const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
 
+  if (!context) {
+    throw new Error("MyComponent must be used within a ProfileProvider");
+  }
+
+  const { MatchingProfilepageNumber, MatchingProfileperPage, sortOrder } = context;
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+
   const advanceSearchData = sessionStorage.getItem("advance_search_data")
     ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
     : null;
-
 
   // useEffect(()=>{
   //   if(advanceSearchData){
@@ -35,38 +42,30 @@ export const GridListView: React.FC = () => {
 
   //  },[advanceSearchData])
 
-
   useEffect(() => {
-    const loadProfiles = async () => {
-      if (!loginuser_profileId) {
-        setError('Login user profile ID is not available');
-        setLoading(false);
-        return;
-      }
-
+    const fetchData = async () => {
       try {
-        const data = await fetchProfiles(loginuser_profileId);
-        console.log('Fetched profile data:', data);
-        if (data && data.profiles) {
-          setProfiles(data.profiles);
-        } else {
-          setError('No profile data found');
+        if (!loginuser_profileId) {
+          throw new Error("Profile ID is missing.");
         }
+
+        const data = await fetchProfiles(
+          loginuser_profileId,
+          MatchingProfilepageNumber,
+          MatchingProfileperPage,
+          sortOrder
+        );
+        setProfiles(data.profiles); // Adjust based on the actual response structure
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          setError(error.response ? error.response.data.message : error.message);
-        } else {
-          setError('Unexpected error occurred');
-        }
+        console.error("Error fetching profiles:", error);
+        setError("Failed to fetch profiles.");
       } finally {
         setLoading(false);
       }
     };
 
-    loadProfiles();
-  }, [loginuser_profileId]);
-
-
+    fetchData();
+  }, [loginuser_profileId, MatchingProfilepageNumber, MatchingProfileperPage, sortOrder]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -75,16 +74,20 @@ export const GridListView: React.FC = () => {
     <div className="grid grid-rows-1 md:grid-cols-3 gap-5 my-5">
       {advanceSearchData && advanceSearchData.length > 0 ? (
         advanceSearchData.map((profile: Profile) => (
-          <GridListCard key={profile.profile_id} profileId={profile.profile_id} />
+          <GridListCard
+            key={profile.profile_id}
+            profileId={profile.profile_id}
+          />
+        ))
+      ) : profiles.length > 0 ? (
+        profiles.map((profile: Profile) => (
+          <GridListCard
+            key={profile.profile_id}
+            profileId={profile.profile_id}
+          />
         ))
       ) : (
-        profiles.length > 0 ? (
-          profiles.map((profile: Profile) => (
-            <GridListCard key={profile.profile_id} profileId={profile.profile_id} />
-          ))
-        ) : (
-          <p>No profiles available</p>
-        )
+        <p>No profiles available</p>
       )}
     </div>
   );

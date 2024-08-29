@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from "react";
 import { FiFilter } from "react-icons/fi";
 import { HiOutlineSearch } from "react-icons/hi";
 import { FaSuitcase } from "react-icons/fa";
@@ -16,7 +16,8 @@ import { GridListView } from "./MatchingProfiles/GridListView";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { IoChevronForwardOutline } from "react-icons/io5";
 import { AdvancedSearchPopup } from "./MatchingProfiles/FilterPopup/AdvancedSearchPopup";
-
+import { ProfileContext } from "../../ProfileContext";
+import { fetchProfiles } from "../../commonapicall";
 // const items = [
 //     { id: 1, title: 'Back End Developer', department: 'Engineering', type: 'Full-time', location: 'Remote' },
 //     { id: 2, title: 'Front End Developer', department: 'Engineering', type: 'Full-time', location: 'Remote' },
@@ -24,9 +25,39 @@ import { AdvancedSearchPopup } from "./MatchingProfiles/FilterPopup/AdvancedSear
 //   ];
 
 export const MatchingProfiles = () => {
+  const context = useContext(ProfileContext);
+
+  const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
+  if (!context) {
+    throw new Error("MyComponent must be used within a ProfileProvider");
+  }
+
+  const {
+    MatchingProfileperPage,
+    MatchingProfilepageNumber,
+    MatchingProfiletotalCount,
+    setMatchingProfilePageNumber,
+    setMatchingProfileTotalCount,
+    toggleSortOrder,
+    sortOrder
+  } = context;
+  const startResult =
+    (MatchingProfilepageNumber - 1) * MatchingProfileperPage + 1;
+  const endResult = Math.min(
+    MatchingProfilepageNumber * MatchingProfileperPage,
+    MatchingProfiletotalCount
+  );
+
+  const noOfPages = Math.ceil(
+    MatchingProfiletotalCount / MatchingProfileperPage
+  );
 
   // View state changed
   const [currentView, setCurrentView] = useState("gridlist");
+
+
+  // Function to sort profiles by name and toggle order
+
 
   // Advanced Popup Show
   const [showAdvancedSearchPopup, setShowAdvancedSearchPopup] = useState(false);
@@ -34,7 +65,7 @@ export const MatchingProfiles = () => {
 
   const handleAdvancedSearchPopup = () => {
     setShowAdvancedSearchPopup(!showAdvancedSearchPopup);
-  }
+  };
 
   const closeAdvancedSearchPopup = () => {
     setShowAdvancedSearchPopup(false);
@@ -46,18 +77,47 @@ export const MatchingProfiles = () => {
     }
   };
 
-
   useEffect(() => {
     if (showAdvancedSearchPopup) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showAdvancedSearchPopup]);
+  const handlePrevious = () => {
+    setMatchingProfilePageNumber((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNext = () => {
+    setMatchingProfilePageNumber((prev) => Math.min(prev + 1, noOfPages));
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (loginuser_profileId) {
+        try {
+          const data = await fetchProfiles(
+            loginuser_profileId,
+            MatchingProfilepageNumber,
+            MatchingProfileperPage,
+            sortOrder
+          );
+
+          setMatchingProfileTotalCount(data.total_count);
+        } catch (error) {
+          console.error("Error fetching profiles:", error);
+        }
+      } else {
+        console.log("Failed to fetch: No profile ID found");
+      }
+    };
+
+    fetchData();
+  }, [MatchingProfilepageNumber, MatchingProfileperPage, sortOrder]);
 
   return (
     <div className="">
@@ -85,7 +145,9 @@ export const MatchingProfiles = () => {
               id=""
               className="w-full bg-white pl-10 py-3 cursor-pointer focus-visible:outline-0"
             >
-              <option value="" selected disabled>Profession</option>
+              <option value="" selected disabled>
+                Profession
+              </option>
               <option value="doctor">Doctor</option>
               <option value="engineer">Engineer</option>
               <option value="it">IT Professional</option>
@@ -99,7 +161,9 @@ export const MatchingProfiles = () => {
               id=""
               className="w-full bg-white pl-10 py-3 cursor-pointer focus-visible:outline-0"
             >
-              <option value="" selected disabled>Age</option>
+              <option value="" selected disabled>
+                Age
+              </option>
               <option value="two">Twenty Five</option>
               <option value="three">Twenty Six</option>
               <option value="four">Twenty Six</option>
@@ -115,7 +179,9 @@ export const MatchingProfiles = () => {
               id=""
               className="w-full bg-white pl-10 py-3 cursor-pointer focus-visible:outline-0"
             >
-              <option value="" selected disabled>Location</option>
+              <option value="" selected disabled>
+                Location
+              </option>
               <option value="two">Andhra Pradesh</option>
               <option value="three">Telangana</option>
               <option value="four">Karnataka</option>
@@ -129,7 +195,11 @@ export const MatchingProfiles = () => {
           <div onClick={handleAdvancedSearchPopup} className="w-fit">
             <FiFilter className="text-[22px] text-secondary mx-5 my-3 cursor-pointer" />
             {showAdvancedSearchPopup && (
-              <div ref={popupRef} onClick={(e) => e.stopPropagation()} className="relative">
+              <div
+                ref={popupRef}
+                onClick={(e) => e.stopPropagation()}
+                className="relative"
+              >
                 <AdvancedSearchPopup closePopup={closeAdvancedSearchPopup} />
               </div>
             )}
@@ -168,8 +238,8 @@ export const MatchingProfiles = () => {
             >
               <ImMenu
                 className={`text-[22px] ${currentView === "list"
-                  ? "text-secondary"
-                  : "text-ashSecondary"
+                    ? "text-secondary"
+                    : "text-ashSecondary"
                   } hover:text-secondary}`}
               />
             </div>
@@ -181,19 +251,19 @@ export const MatchingProfiles = () => {
             >
               <BsFillGrid3X3GapFill
                 className={`text-[22px] ${currentView === "grid"
-                  ? "text-secondary"
-                  : "text-ashSecondary"
+                    ? "text-secondary"
+                    : "text-ashSecondary"
                   } hover:text-secondary}`}
               />
             </div>
           </div>
 
           {/* Sort my date */}
-          <div className="flex justify-start items-center">
+          <button onClick={toggleSortOrder} className="flex justify-start items-center">
             <BsSortDown className="text-[22px] text-ashSecondary cursor-pointer hover:text-secondary mr-2" />
             {/* <BsSortUp /> */}
             <p className="text-vysyamalaBlack font-semibold">Sort by date</p>
-          </div>
+          </button>
         </div>
 
         <div>
@@ -222,9 +292,10 @@ export const MatchingProfiles = () => {
           <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-primary">
-                Showing <span className="font-medium">1</span> to{" "}
-                <span className="font-medium">10</span> of{" "}
-                <span className="font-medium">97</span> results
+                Showing <span className="font-medium">{startResult}</span> to{" "}
+                <span className="font-medium">{endResult}</span> of{" "}
+                <span className="font-medium">{MatchingProfiletotalCount}</span>{" "}
+                results
               </p>
             </div>
             <div>
@@ -232,8 +303,9 @@ export const MatchingProfiles = () => {
                 className="isolate inline-flex -space-x-px rounded-md shadow-sm"
                 aria-label="Pagination"
               >
-                <a
-                  href="#"
+                <button
+                  onClick={handlePrevious}
+                  disabled={MatchingProfilepageNumber === 1}
                   className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                 >
                   <span className="sr-only">Previous</span>
@@ -241,24 +313,30 @@ export const MatchingProfiles = () => {
                     className="h-5 w-5"
                     aria-hidden="true"
                   />
-                </a>
+                </button>
                 {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                <a
-                  href="#"
+                <button
                   aria-current="page"
                   className="relative z-10 inline-flex items-center bg-secondary px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  1
-                </a>
-                <a
-                  href="#"
-                  className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                >
-                  2
-                </a>
+                  {/* {/ Generate Page Numbers Dynamically /} */}
+                  {[...Array(noOfPages)].map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setMatchingProfilePageNumber(index + 1)}
+                      className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${MatchingProfilepageNumber === index + 1
+                          ? "bg-secondary text-white"
+                          : "text-primary hover:bg-gray-50"
+                        }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </button>
 
-                <a
-                  href="#"
+                <button
+                  onClick={handleNext}
+                  disabled={MatchingProfilepageNumber === noOfPages}
                   className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
                 >
                   <span className="sr-only">Next</span>
@@ -266,7 +344,7 @@ export const MatchingProfiles = () => {
                     className="h-5 w-5"
                     aria-hidden="true"
                   />
-                </a>
+                </button>
               </nav>
             </div>
           </div>
