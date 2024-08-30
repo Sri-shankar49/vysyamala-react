@@ -61,7 +61,7 @@ const CustomMessagePopup: React.FC<CustomMessagePopupProps> = ({
                                     </div>
                                 )}
 
-                                <div className="flex items-center">
+                                <div className="">
                                     {message.length <= 0 && (
                                         <div>
                                             <select onChange={handleChange} name="" id="" className="w-full px-2 py-2 border-[1px] border-primary rounded-md focus-within:outline-none">
@@ -74,7 +74,7 @@ const CustomMessagePopup: React.FC<CustomMessagePopupProps> = ({
                                         </div>
                                     )}
 
-                                    {selectValue && (
+                                    {/* {selectValue && (
                                         <button
                                             type="button"
                                             onClick={clearSelectValue}
@@ -82,7 +82,7 @@ const CustomMessagePopup: React.FC<CustomMessagePopupProps> = ({
                                         >
                                             <IoClose />
                                         </button>
-                                    )}
+                                    )} */}
                                 </div>
 
                             </div>

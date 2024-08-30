@@ -20,6 +20,7 @@ import { FaTableList } from "react-icons/fa6";
 import { ProfileSlickView } from "../../LoginHome/ProfileDetailsView/ProfileSlickView";
 import { MdLocalPrintshop } from "react-icons/md";
 import { MdArrowDropDown } from "react-icons/md";
+import { TbPhotoHeart } from "react-icons/tb";
 // import { ProfileDetailsSettings } from "./ProfileDetailsSettings"
 // import { ProfileDetailsSettingsView } from "../../LoginHome/ProfileDetailsView/ProfileDetailsSettingsView";
 // import { FeaturedProfiles } from "../../LoginHome/FeaturedProfiles";
@@ -150,6 +151,7 @@ export const ProfileDetailsExpressInterest: React.FC<
   const { photo_protection } = GetProfileDetMatchData;
   console.log("vysya", photo_protection)
 
+  const [photoLock, setPhotoLock] = useState<number>(0);
 
   const GetProfileDetMatch = async () => {
     try {
@@ -160,9 +162,9 @@ export const ProfileDetailsExpressInterest: React.FC<
 
       if (response.status === 200) {
         SetGetProfileDetMatchData(response.data);
-        const xyz = sessionStorage.setItem("photo_protection", response.data)
-        console.log("asdsas", xyz)
-        console.log("messagexsxsxsxsxsx", response.data);
+        setPhotoLock(response.data.photo_protection);
+
+
       }
     } catch (error) {
       console.log(error);
@@ -503,6 +505,7 @@ export const ProfileDetailsExpressInterest: React.FC<
 
   const handleSelectLanguage = (language: string) => {
     setSelectedLanguage(language);
+    handleDownloadPdf();
     setIsOpen(false);
   };
 
@@ -536,6 +539,14 @@ export const ProfileDetailsExpressInterest: React.FC<
     }
   }, [storedPlanId]);
 
+  // Horoscope Download Function
+  const handleDownloadPdf = () => {
+    const link = document.createElement("a");
+    link.href = `https://apiupg.rainyseasun.com/auth/generate-pdf/${id}`;
+    link.download = `pdf_${id}.pdf`; // Customize the file name
+    link.click();
+  };
+
   return (
     <div>
       <div className="bg-grayBg pt-10">
@@ -554,6 +565,7 @@ export const ProfileDetailsExpressInterest: React.FC<
               <ProfileSlickView
                 GetProfileDetMatch={GetProfileDetMatch}
                 profileId={profileData?.basic_details.profile_id}
+                photoLock={photoLock}
               />
 
               {/* <div>
@@ -624,7 +636,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                   </div>
 
                   <div>
-                    <RiAlertFill
+                    <TbPhotoHeart
                       onClick={() => sendPhotoRequest()}
                       title="Spot on Error"
                       className="text-[22px] text-vysyamalaBlack cursor-pointer"

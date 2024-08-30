@@ -1,14 +1,17 @@
 import apiClient from "./API"; // Ensure correct import
 
 export const fetchProfiles = async (
+  loginuser_profileId: string | null,
+  MatchingProfilepageNumber: number,
+  MatchingProfileperPage: number,
   profileId: string,
+  matchingProfileSearchId: string,
   pageNo?: number,
   perPage?: number,
-  sortOrder?: string
-): Promise<any> => {
+  sortOrder?: string): Promise<any> => {
   try {
     const response = await apiClient.post("/auth/Get_prof_list_match/", {
-      profile_id: profileId,
+      profile_id: loginuser_profileId,
       per_page: perPage,
       page_number: pageNo,
       order_by: sortOrder

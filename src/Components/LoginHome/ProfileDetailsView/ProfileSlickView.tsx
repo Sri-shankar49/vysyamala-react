@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { IoMdLock } from "react-icons/io";
 import Slider from "react-slick";
-import { fetchProfilesDetails } from "../../../commonapicall"; // Adjust the path as needed
+import { fetchProfilesDetails, Get_photo_bypassword } from "../../../commonapicall"; // Adjust the path as needed
 import "./ProfileSlickStyleView.css";
-import ProfileViewPassWordInput from "../../DashBoard/ProfileDetails/ProfileViewPasswordInput";
-import { Get_photo_bypassword } from "../../../commonapicall";
 import axios from "axios";
+import { GoAlertFill } from "react-icons/go";
 
 interface UserImages {
   [key: string]: string;
@@ -13,37 +12,33 @@ interface UserImages {
 
 interface ProfileSlickViewProps {
   profileId?: string;
+  photoLock?: string;
   GetProfileDetMatch: () => void;
-  ProtectedImg: string;
 }
 
-export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, GetProfileDetMatch, ProtectedImg }) => {
-  const loginuser_profileId =
-    sessionStorage.getItem("loginuser_profile_id") || "";
+export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, GetProfileDetMatch, photoLock }) => {
+  const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id") || "";
   const [userImages, setUserImages] = useState<UserImages>({});
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [nav1, setNav1] = useState<Slider | null>(null);
   const [nav2, setNav2] = useState<Slider | null>(null);
+  const [popupPassword, setPopPassword] = useState<boolean>(false);
+  const [photoPassword, setPhotoPassword] = useState<string>("");
   const sliderRef1 = useRef<Slider | null>(null);
   const sliderRef2 = useRef<Slider | null>(null);
 
   // Image Zoom Effect
   const [zoomImage, setZoomImage] = useState<string | null>(null);
 
-  // Retrieve the stored image data from sessionStorage
-  const storedProtectedImg = sessionStorage.getItem("userImages");
-  const sessionImage: string[] = storedProtectedImg
-    ? JSON.parse(storedProtectedImg)
-    : [];
+  // State for images that have had the fade effect removed
+  const [accessGrantedImages, setAccessGrantedImages] = useState<Set<string>>(new Set());
 
   const handleMouseEnter = (image: string) => {
-    // Debounce to prevent flickering
     setTimeout(() => setZoomImage(image), 100);
   };
 
   const handleMouseLeave = () => {
-    // Debounce to prevent flickering
     setTimeout(() => setZoomImage(null), 100);
   };
 
@@ -61,10 +56,7 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, G
         }
       } catch (error: any) {
         setError("Error fetching profiles");
-        console.error(
-          "Error fetching profiles:",
-          error.response ? error.response.data : error.message
-        );
+        console.error("Error fetching profiles:", error.response ? error.response.data : error.message);
       } finally {
         setLoading(false);
       }
@@ -80,21 +72,9 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, G
     setNav2(sliderRef2.current);
   }, []);
 
-  // Determine which images to display
-
-  const ShowImage = storedProtectedImg ? sessionImage : userImages;
-
-
-  const images = Object.values(ShowImage);
-
-
   // Photo Password Popup
-  const [GetProfileDetMatchData, SetGetProfileDetMatchData] = useState<any>({});
-
   const queryParams = new URLSearchParams(location.search);
   const id = queryParams.get("id");
-
-  const { photo_protection } = GetProfileDetMatchData;
 
   const GetPhotoByPassword = async (Password: string) => {
     try {
@@ -107,18 +87,32 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, G
       if (response.status === 200) {
         const userImages = response.data.data.user_images;
         sessionStorage.setItem(`userImages_${id}`, JSON.stringify(userImages));
-        // sessionStorage.setItem("userImages", JSON.stringify(userImages));
+        // Add all images to the access granted set
+        setAccessGrantedImages(new Set(Object.values(userImages)));
       }
     } catch (error) {
-      // NotifyError("Please Enter Correct Password");
+      console.error("Please Enter Correct Password");
+    } finally {
+      setPopPassword(false);
     }
   };
+
+  const handleSubmitPassword = async () => {
+    await GetPhotoByPassword(photoPassword);
+    setPopPassword(false);
+  };
+
+  // Determine which images to display
+  const storedProtectedImg = sessionStorage.getItem(`userImages_${id}`);
+  const sessionImage: string[] = storedProtectedImg ? JSON.parse(storedProtectedImg) : [];
+
+  const images = Object.values(storedProtectedImg ? sessionImage : userImages);
 
   return (
     <div>
       {loading && <div>Loading...</div>}
       {error && <div className="error-message">{error}</div>}
-      <div className="slider-container profileSliderStyle">
+      <div className="slider-container relative profileSliderStyle">
         <Slider
           customPaging={(i: number) => (
             <a>
@@ -142,7 +136,7 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, G
           {images.map((image, index) => (
             <div
               key={index}
-              className="profile-slider-img-container fade-img-effect"
+              className={`profile-slider-img-container ${photoLock && !accessGrantedImages.has(image) ? 'fade-img-effect' : ''}`}
               onMouseEnter={() => handleMouseEnter(image)}
               onMouseLeave={handleMouseLeave}
             >
@@ -151,30 +145,19 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, G
                 className="w-full rounded-lg profile-slider-img"
                 alt={`Slide ${index + 1}`}
               />
-
-              {/* Lock & fade Effect */}
-              <div onClick={() => {
-                if (!ProtectedImg) {
-                  GetProfileDetMatch();
-                }
-              }} className="text-center lock-style">
-                <IoMdLock className="w-fit mx-auto text-secondary text-[50px]" />
-                <p className="text-sm text-white font-semibold">Click here to request password to view profile photo</p>
-              </div>
-
-              {/* Password Popup */}
-              <div className="absolute top-0 left-0">
-                {photo_protection && (
-                  <ProfileViewPassWordInput
-                    // PasswordModal={PasswordModal}
-                    // setPassWordModal={setPassWordModal}
-                    GetPhotoByPassword={GetPhotoByPassword}
-                  />
-                )}
-              </div>
+              {photoLock && !accessGrantedImages.has(image) && (
+                <div
+                  onClick={() => setPopPassword(true)}
+                  className="text-center lock-style"
+                >
+                  <IoMdLock className="w-fit mx-auto text-secondary text-[50px]" />
+                  <p className="text-sm text-white font-semibold">Click here to request password to view profile photo</p>
+                </div>
+              )}
             </div>
           ))}
         </Slider>
+
         <Slider
           dots={false}
           slidesToShow={5}
@@ -199,6 +182,55 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({ profileId, G
             </div>
           ))}
         </Slider>
+
+        {/* Password Input Popup */}
+        {popupPassword && (
+          <div className="absolute left-10 top-40 w-10/12 rounded-lg">
+            <div aria-labelledby="modal-headline" role="dialog" aria-modal="true">
+              <div className="w-full bg-white rounded-lg px-4 py-4">
+                <div className="space-y-3">
+                  {/* Label Text & Icon */}
+                  <div className="flex items-start space-x-2">
+                    <GoAlertFill className="text-[22px] text-secondary" />
+                    <label
+                      htmlFor="password"
+                      className="block text-sm font-medium leading-6 text-gray-900"
+                    >
+                      Enter Password to View Photo
+                    </label>
+                  </div>
+                  <div>
+                    <input
+                      required
+                      onChange={(e) => setPhotoPassword(e.target.value)}
+                      type="text"
+                      placeholder="Enter The Password"
+                      className="w-full bg-gray rounded-md px-2 py-2 focus-within:outline-none"
+                    />
+                  </div>
+                  {/* Buttons */}
+                  <div className="flex items-center justify-end">
+                    <button
+                      type="button"
+                      className="text-secondary flex items-center rounded-lg font-semibold px-5 py-2.5 cursor-pointer"
+                      onClick={() => setPopPassword(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="text-white font-semibold bg-secondary rounded-md px-5 py-2.5 cursor-pointer"
+                      onClick={handleSubmitPassword}
+                      disabled={!photoPassword}
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       {zoomImage && (
         <div className="zoomed-image-container zoomed-visible">

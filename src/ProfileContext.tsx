@@ -74,9 +74,12 @@ interface ProfileContextType {
   setMatchingProfilePerPage: Dispatch<SetStateAction<number>>;
   setMatchingProfilePageNumber: Dispatch<SetStateAction<number>>;
   setMatchingProfileTotalCount: Dispatch<SetStateAction<number>>;
-  sortOrder: 'asc' | 'dec';
+  sortOrder: "asc" | "desc";
   toggleSortOrder: () => void;
-
+  setSearchProfileData: Dispatch<SetStateAction<string>>;
+  searchProfileData: any;
+  setMatchingProfileSearchId: Dispatch<SetStateAction<string>>;
+  matchingProfileSearchId: string
 }
 
 export const ProfileContext = createContext<ProfileContextType | undefined>(
@@ -98,13 +101,13 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
     return savedSelectedProfiles ? JSON.parse(savedSelectedProfiles) : [];
   });
 
-  const [sortOrder, setSortOrder] = useState<'asc' | 'dec'>('asc');
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Function to toggle the sort order
   const toggleSortOrder = () => {
-    setSortOrder(prevOrder => (prevOrder === 'asc' ? 'dec' : 'asc'));
+    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
-
+  const [searchProfileData, setSearchProfileData] = useState<any>([]); //advance search page search by id
 
   const [perPage, setPerPage] = useState<number>(10);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -121,6 +124,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
     useState<number>(1);
   const [MatchingProfiletotalCount, setMatchingProfileTotalCount] =
     useState<number>(0);
+  const [matchingProfileSearchId, setMatchingProfileSearchId] = useState<string>("")
 
   const [error, setError] = useState<string | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
@@ -251,7 +255,6 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
         setPerPage,
         setPageNumber,
         setTotalCount,
-
         fromAge,
         fromHeight,
         toHeight,
@@ -267,7 +270,11 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
         setMatchingProfilePageNumber,
         setMatchingProfileTotalCount,
         sortOrder,
-        toggleSortOrder
+        toggleSortOrder,
+        searchProfileData,
+        setSearchProfileData,
+        setMatchingProfileSearchId,
+        matchingProfileSearchId,
       }}
     >
       {children}

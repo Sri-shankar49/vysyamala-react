@@ -9,7 +9,7 @@ import { InterestSent } from "../../Components/DashBoard/InterestSent";
 import { ViewedProfiles } from "../../Components/DashBoard/ViewedProfiles";
 import { MyVisitors } from "../../Components/DashBoard/MyVisitors";
 import { PersonalNotes } from "../../Components/DashBoard/PersonalNotes";
-import PhotoRequest  from "../../Components/DashBoard/PhotoRequest/PhotoRequest";
+import PhotoRequest  from "../../Components/DashBoard/PhotoRequest";
 
 
 

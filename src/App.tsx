@@ -24,10 +24,13 @@ import { MyProfile } from "./Pages/AfterLogin/MyProfile";
 import { ProfileDetails } from "./Pages/AfterLogin/ProfileDetails";
 import { ProfileProvider } from "./ProfileContext";
 import ProfileGrid from "./Components/LoginHome/MatchingProfiles/GridView";
-import ListView from "./Components/LoginHome/MatchingProfiles/ListView"; // Import ListView
+import ListView from "./Components/LoginHome/MatchingProfiles/ListView";         // Import ListView
 import GridListView from "./Components/LoginHome/MatchingProfiles/GridListView"; // Import GridListView
 import ProtectedRoute from "./Components/ProtectorRoute";
 import RegistrationProtectedRoute from "./Components/RegistrationProtectedRoute";
+import { UpgradePlan } from "./Pages/AfterLogin/UpgradePlan";
+import { UpgradePayNow } from "./Pages/AfterLogin/UpgradePayNow";
+import { UpgradeThankYouReg } from "./Pages/AfterLogin/UpgradeThankYouReg";
 
 function App() {
   const token = sessionStorage.getItem("token");
@@ -58,7 +61,7 @@ function App() {
               <Route path="/ThankYouReg" element={<ThankYouReg />} />
             </Route>
           </Route>
-       
+
           <Route element={<ProtectedRoute redirectTo="/" />}>
             <Route element={<LoginLayout />}>
               <Route path="/LoginHome" element={<LoginHome />} />
@@ -72,6 +75,9 @@ function App() {
               <Route path="/ProfileGrid" element={<ProfileGrid />} />
               <Route path="/ListView" element={<ListView />} />
               <Route path="/GridListView" element={<GridListView />} />
+              <Route path="/UpgradePlan" element={<UpgradePlan />} />
+              <Route path="/UpgradePayNow" element={<UpgradePayNow />} />
+              <Route path="/UpgradeThankYouReg" element={<UpgradeThankYouReg />} />
             </Route>
           </Route>
 

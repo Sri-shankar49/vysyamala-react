@@ -18,6 +18,7 @@ import { IoChevronForwardOutline } from "react-icons/io5";
 import { AdvancedSearchPopup } from "./MatchingProfiles/FilterPopup/AdvancedSearchPopup";
 import { ProfileContext } from "../../ProfileContext";
 import { fetchProfiles } from "../../commonapicall";
+import axios from 'axios';
 // const items = [
 //     { id: 1, title: 'Back End Developer', department: 'Engineering', type: 'Full-time', location: 'Remote' },
 //     { id: 2, title: 'Front End Developer', department: 'Engineering', type: 'Full-time', location: 'Remote' },
@@ -39,7 +40,9 @@ export const MatchingProfiles = () => {
     setMatchingProfilePageNumber,
     setMatchingProfileTotalCount,
     toggleSortOrder,
-    sortOrder
+    sortOrder,
+    setMatchingProfileSearchId,
+    matchingProfileSearchId
   } = context;
   const startResult =
     (MatchingProfilepageNumber - 1) * MatchingProfileperPage + 1;
@@ -104,7 +107,8 @@ export const MatchingProfiles = () => {
             loginuser_profileId,
             MatchingProfilepageNumber,
             MatchingProfileperPage,
-            sortOrder
+            sortOrder,
+            matchingProfileSearchId
           );
 
           setMatchingProfileTotalCount(data.total_count);
@@ -117,7 +121,73 @@ export const MatchingProfiles = () => {
     };
 
     fetchData();
-  }, [MatchingProfilepageNumber, MatchingProfileperPage, sortOrder]);
+  }, [MatchingProfilepageNumber, MatchingProfileperPage, sortOrder, matchingProfileSearchId]);
+  console.log(matchingProfileSearchId, "matchingProfileSearchId")
+
+  interface ProfesPrefType {
+    Profes_Pref_id: number;
+    Profes_name: string;
+  }
+
+
+  const [Get_Profes_Pref, setGet_Profes_Pref] = useState<ProfesPrefType[]>([]);
+  const [selectedGet_Profes_Pref, setSelectedGet_Profes_Pref] = useState<string>("");
+
+
+  useEffect(() => {
+    const fetchProfesPref = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_Profes_Pref/");
+
+        // Assuming response.data is an object, transform it to an array
+        const profesPrefArray = Object.values(response.data) as ProfesPrefType[];
+
+        setGet_Profes_Pref(profesPrefArray);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error("Axios error:", error.message);
+        } else {
+          console.error("Unexpected error:", error);
+        }
+      }
+    };
+
+    fetchProfesPref();
+  }, []);
+
+
+
+  interface State {
+    State_id: string; // Adjust the type if it's a number or another type
+    State_name: string;
+  }
+
+
+  //state
+  const [states, setStates] = useState<State[]>([]); // Adjust the State type according to the response structure
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
+
+  useEffect(() => {
+    const fetchStates = async () => {
+      try {
+        const response = await axios.post("http://103.214.132.20:8000/auth/Get_State_Pref/");
+
+        // Assuming response.data is an object, transform it to an array of State
+        const statesArray = Object.values(response.data) as State[];
+
+        setStates(statesArray);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error("Axios error:", error.message);
+        } else {
+          console.error("Unexpected error:", error);
+        }
+      }
+    };
+
+
+    fetchStates();
+  }, []);
 
   return (
     <div className="">
@@ -133,6 +203,7 @@ export const MatchingProfiles = () => {
           <div className="relative md:w-[150rem] sm:w-full">
             <input
               type="text"
+              onChange={(e) => setMatchingProfileSearchId(e.target.value)}
               placeholder="Search Profile ID on Matching Profiles"
               className="w-full bg-white border-r-2 border-gray pl-10 py-3 focus-visible:outline-0"
             />
@@ -141,16 +212,20 @@ export const MatchingProfiles = () => {
 
           <div className="relative md:w-[100rem] sm:w-full">
             <select
-              name=""
-              id=""
+              name="profession"
+              id="profession"
               className="w-full bg-white pl-10 py-3 cursor-pointer focus-visible:outline-0"
+              value={selectedGet_Profes_Pref}
+              onChange={(e) => setSelectedGet_Profes_Pref(e.target.value)}
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 Profession
               </option>
-              <option value="doctor">Doctor</option>
-              <option value="engineer">Engineer</option>
-              <option value="it">IT Professional</option>
+              {Get_Profes_Pref.map((profession) => (
+                <option key={profession.Profes_Pref_id} value={profession.Profes_Pref_id}>
+                  {profession.Profes_name}
+                </option>
+              ))}
             </select>
             <FaSuitcase className="absolute top-3 text-[22px] text-ashSecondary" />
           </div>
@@ -161,12 +236,18 @@ export const MatchingProfiles = () => {
               id=""
               className="w-full bg-white pl-10 py-3 cursor-pointer focus-visible:outline-0"
             >
-              <option value="" selected disabled>
-                Age
-              </option>
-              <option value="two">Twenty Five</option>
-              <option value="three">Twenty Six</option>
-              <option value="four">Twenty Six</option>
+              <option value="" selected disabled>Age</option>
+              <option value="one">1</option>
+              <option value="two">2</option>
+              <option value="three">3</option>
+              <option value="four">4</option>
+              <option value="five">5</option>
+              <option value="six">6</option>
+              <option value="seven">7</option>
+              <option value="eight">8</option>
+              <option value="nine">9</option>
+              <option value="ten">10</option>
+              {/* {/ <option value="eleven">Twenty Six</option > /} */}
             </select>
             <IoCalendar className="absolute top-3 text-[22px] text-ashSecondary" />
             <div className="absolute top-0 left-[-12px]  w-0.5 h-full bg-gray"></div>
@@ -175,18 +256,20 @@ export const MatchingProfiles = () => {
 
           <div className="relative w-full">
             <select
-              name=""
-              id=""
+              name="location"
+              id="location"
               className="w-full bg-white pl-10 py-3 cursor-pointer focus-visible:outline-0"
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
             >
-              <option value="" selected disabled>
+              <option value="" disabled>
                 Location
               </option>
-              <option value="two">Andhra Pradesh</option>
-              <option value="three">Telangana</option>
-              <option value="four">Karnataka</option>
-              <option value="five">Pondicherry</option>
-              <option value="six">TamilNadu</option>
+              {states.map((state) => (
+                <option key={state.State_id} value={state.State_id}>
+                  {state.State_name}
+                </option>
+              ))}
             </select>
             <FaLocationDot className="absolute top-3 text-[22px] text-ashSecondary" />
             <div className="absolute top-0 right-[-12px]  w-0.5 h-full bg-gray"></div>
@@ -206,15 +289,16 @@ export const MatchingProfiles = () => {
           </div>
 
           <div className="w-full">
-            <button className="w-full bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3">
+            <button onClick={() => fetchProfiles(loginuser_profileId, MatchingProfilepageNumber,
+              MatchingProfileperPage, sortOrder, matchingProfileSearchId)} className="w-full bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3">
               Find Match
             </button>
           </div>
         </div>
 
-        {/* Icon Sort */}
+        {/* {/ Icon Sort /} */}
         <div className="flex justify-between items-center">
-          {/* View icons */}
+          {/* {/ View icons /} */}
           <div className="flex justify-start items-start">
             <div
               className={`border-[1px] border-ashSecondary rounded-l-md p-2 cursor-pointer
@@ -238,8 +322,8 @@ export const MatchingProfiles = () => {
             >
               <ImMenu
                 className={`text-[22px] ${currentView === "list"
-                    ? "text-secondary"
-                    : "text-ashSecondary"
+                  ? "text-secondary"
+                  : "text-ashSecondary"
                   } hover:text-secondary}`}
               />
             </div>
@@ -251,29 +335,29 @@ export const MatchingProfiles = () => {
             >
               <BsFillGrid3X3GapFill
                 className={`text-[22px] ${currentView === "grid"
-                    ? "text-secondary"
-                    : "text-ashSecondary"
+                  ? "text-secondary"
+                  : "text-ashSecondary"
                   } hover:text-secondary}`}
               />
             </div>
           </div>
 
-          {/* Sort my date */}
+          {/* {/ Sort my date /} */}
           <button onClick={toggleSortOrder} className="flex justify-start items-center">
             <BsSortDown className="text-[22px] text-ashSecondary cursor-pointer hover:text-secondary mr-2" />
-            {/* <BsSortUp /> */}
+            {/* {/ <BsSortUp / > /} */}
             <p className="text-vysyamalaBlack font-semibold">Sort by date</p>
           </button>
         </div>
 
         <div>
-          {/* Conditionally render views based on currentView state */}
+          {/* {/ Conditionally render views based on currentView state /} */}
           {currentView === "gridlist" && <GridListView />}
           {currentView === "list" && <ListView />}
           {currentView === "grid" && <GridView />}
         </div>
 
-        {/* Pagination */}
+        {/* {/ Pagination /} */}
         <div className="flex items-center justify-between border-t border-gray bg-white px-4 py-3 sm:px-6">
           <div className="flex flex-1 justify-between sm:hidden">
             <a
@@ -314,19 +398,19 @@ export const MatchingProfiles = () => {
                     aria-hidden="true"
                   />
                 </button>
-                {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
+                {/* {/ Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" /} */}
                 <button
                   aria-current="page"
                   className="relative z-10 inline-flex items-center bg-secondary px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  {/* {/ Generate Page Numbers Dynamically /} */}
+                  {/* {/ {/ Generate Page Numbers Dynamically /} /} */}
                   {[...Array(noOfPages)].map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setMatchingProfilePageNumber(index + 1)}
                       className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${MatchingProfilepageNumber === index + 1
-                          ? "bg-secondary text-white"
-                          : "text-primary hover:bg-gray-50"
+                        ? "bg-secondary text-white"
+                        : "text-primary hover:bg-gray-50"
                         }`}
                     >
                       {index + 1}
