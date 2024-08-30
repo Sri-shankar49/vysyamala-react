@@ -5,6 +5,8 @@ import { AiOutlineClose } from "react-icons/ai";
 
 interface AmsamGridProps {
   centerLabel: string;
+  data: string;
+  onChange: (newData: string) => void;
 }
 
 interface Label {
@@ -12,7 +14,7 @@ interface Label {
   name: string;
 }
 
-const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
+const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel, data, onChange }) => {
   const initialLabels: Label[] = useMemo(() => [
     { id: 1, name: "Raghu/Rahu" },
     { id: 2, name: "Mars/Chevai" },
@@ -31,26 +33,21 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const formattedDatamsamval = sessionStorage.getItem('formattedDatamsam');
-    if (formattedDatamsamval) {
-      console.log("Retrieved formattedDatamsam from sessionStorage:", formattedDatamsamval);
-
-      // Parse the formatted data
-      const data = formattedDatamsamval.slice(1, -1).split(', ').map((grid) => {
+    if (data) {
+      const formattedDatamsamval = data.slice(1, -1).split(', ').map((grid) => {
         const match = grid.match(/Grid \d+: (.+)/);
         return match ? match[1].split(',').map(id => parseInt(id, 10)) : [];
       });
 
-      // Map ids to labels and set the amsam contents
-      const newAmsamContents = data.map((ids) => {
+      const newAmsamContents = formattedDatamsamval.map((ids) => {
         return ids.map(id => initialLabels.find(label => label.id === id)?.name).filter(Boolean) as string[];
       });
 
       setAmsamContents(newAmsamContents);
-    } else {
-      console.log("No formattedDatamsam found in sessionStorage");
+      const usedIds = formattedDatamsamval.flat();
+      setLabels(prevLabels => prevLabels.filter(label => !usedIds.includes(label.id)));
     }
-  }, [location, initialLabels]);
+  }, [location, initialLabels, data]);
 
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>, label: Label) => {
     e.dataTransfer.setData("labelId", label.id.toString());
@@ -72,8 +69,8 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
         const newContents = [...amsamContents];
         newContents[index] = [...newContents[index], draggedLabel.name];
         setAmsamContents(newContents);
-
         setLabels((prevLabels) => prevLabels.filter((label) => label.id !== draggedLabel.id));
+        onChange(formatGridData(newContents));
       }
     }
   };
@@ -88,10 +85,12 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
     if (removedLabelObj) {
       setLabels((prevLabels) => [...prevLabels, removedLabelObj]);
     }
+
+    onChange(formatGridData(newContents));
   };
 
-  const formatGridData = () => {
-    const formattedData = amsamContents.map((contents, index) => {
+  const formatGridData = (gridContents: string[][]) => {
+    const formattedData = gridContents.map((contents, index) => {
       const boxNumber = index + 1;
       const ids = contents.map(label => initialLabels.find(l => l.name === label)?.id).filter(id => id !== undefined);
       return `Grid ${boxNumber}: ${ids.length > 0 ? ids.join(",") : "empty"}`;
@@ -99,18 +98,8 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
     return `{${formattedData}}`;
   };
 
-  useEffect(() => {
-    const formattedData = formatGridData();
-    console.log("Amsam Contents:");
-    console.log(formattedData);
-
-    // Store formattedData in sessionStorage
-    sessionStorage.setItem('formattedData1', JSON.stringify(formattedData));
-  }, [amsamContents]);
-
   return (
     <div className="flex justify-start items-start bg-gray-200 space-x-16">
-      {/* Labels */}
       <div className="flex flex-col space-y-2">
         {labels.map((label, index) => (
           <div
@@ -125,11 +114,8 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
         ))}
       </div>
 
-      {/* Amsam Grid */}
       <div className="">
-        {/* Top Row */}
         <div className="col-span-3 grid grid-cols-4 gap-2">
-          {/* Define positions for the grid in a clockwise manner */}
           {[
             { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 },
             { row: 2, col: 4 }, { row: 3, col: 4 }, { row: 4, col: 4 },
@@ -155,9 +141,6 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
                   />
                 </div>
               ))}
-              {/* <div className="absolute top-0 left-0 m-1 text-xs font-bold text-gray-500">
-                {index + 1}
-              </div> */}
             </div>
           ))}
 

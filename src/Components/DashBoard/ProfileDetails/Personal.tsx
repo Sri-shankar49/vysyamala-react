@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MdModeEdit } from "react-icons/md";
 import axios from "axios";
-
+import { useNavigate } from "react-router-dom";
 
 interface PersonalDetails {
   personal_profile_name: string;
@@ -23,10 +23,7 @@ interface PersonalDetails {
   height_id: number;
   complexion_id: number;
   owner_id: number;
-  // marital_sts_name: string;
 }
-
-
 
 interface MaritalStatus {
   marital_sts_id: number;
@@ -48,7 +45,6 @@ interface ProfileHolder {
   owner_description: string;
 }
 
-
 export const Personal = () => {
   const [personalDetails, setPersonalDetails] = useState<PersonalDetails | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -65,8 +61,8 @@ export const Personal = () => {
   const [profileHolders, setProfileHolders] = useState<ProfileHolder[]>([]);
   const [selectedProfileHolder, setSelectedProfileHolder] = useState<number | string>('');
 
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch data and set states
   useEffect(() => {
     const fetchPersonalDetails = async () => {
       try {
@@ -77,31 +73,23 @@ export const Personal = () => {
         const data = response.data.data;
         setPersonalDetails(data);
 
-        // Map the height value to height_id
         const matchedHeight = heights.find(height => height.height_description.includes(data.personal_profile_height));
         if (matchedHeight) {
           setSelectedHeight(matchedHeight.height_id);
         }
 
-        // Find the matching marital status and set the selected status
         const matchedStatus = maritalStatuses.find(status =>
           status.marital_sts_name.includes(data.personal_profile_marital_status_name)
         );
         if (matchedStatus) {
           setSelectedMaritalStatusId(matchedStatus.marital_sts_id);
         }
-        // const matchedStatus = maritalStatuses.find(status =>
-        //     status.marital_sts_name.includes(data.personal_profile_marital_status_name)
-        // );
-        // if (matchedStatus) {
-        //     setSelectedMaritalStatusId(matchedStatus.marital_sts_id);
-        // }
-        // Map the complexion value to complexion_id
+
         const matchedComplexion = complexions.find(complexion => complexion.complexion_description.includes(data.personal_profile_complexion_name));
         if (matchedComplexion) {
           setSelectedComplexion(matchedComplexion.complexion_id);
         }
-        // Map the profile holder value to owner_id
+
         const matchedProfileHolder = profileHolders.find(holder => holder.owner_description.includes(data.personal_profile_for_name));
         if (matchedProfileHolder) {
           setSelectedProfileHolder(matchedProfileHolder.owner_id);
@@ -112,10 +100,6 @@ export const Personal = () => {
     };
     fetchPersonalDetails();
   }, [loginuser_profileId, heights, maritalStatuses, complexions, profileHolders]);
-
-
-
-
 
   useEffect(() => {
     const fetchMaritalStatuses = async () => {
@@ -161,18 +145,13 @@ export const Personal = () => {
     fetchMaritalStatuses();
   }, []);
 
-
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-
-    setSelectedMaritalStatusId(e.target.value); // Update the selected marital status ID in state
-
-    // Update the formData with the selected marital status ID
+    setSelectedMaritalStatusId(e.target.value);
     setFormData(prevState => ({
       ...prevState,
       personal_profile_marital_status_name: e.target.value
     }));
   };
-
 
   const handleHeightChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedHeight(e.target.value);
@@ -191,26 +170,40 @@ export const Personal = () => {
   };
 
   const handleProfileHolderChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-
-    setSelectedProfileHolder(e.target.value); // Update the selected profile holder in state
-
-    // Update the formData with the selected profile holder ID
+    setSelectedProfileHolder(e.target.value);
     setFormData(prevState => ({
       ...prevState,
       personal_profile_for_name: e.target.value
     }));
   };
 
-
-
+  // const handleEditClick = () => {
+  //     if (personalDetails) {
+  //         setFormData(personalDetails);
+  //     }
+  //     setIsEditing(true);
+  // };
 
   const handleEditClick = () => {
-    if (personalDetails) {
-      setFormData(personalDetails);
+    if (isEditing) {
+      // Reset form data to an empty object if exiting edit mode
+      setFormData({});
+    } else {
+      if (personalDetails) {
+        setFormData(personalDetails);
+      }
     }
-    setIsEditing(true);
+    setIsEditing(!isEditing); // Toggle editing state
   };
 
+  const navigate = useNavigate(); // Initialize navigate
+  const handleEditClick1 = () => {
+    if (isEditing) {
+      setIsEditing(false);
+    } else {
+      navigate(-1); // Navigate back to the previous page
+    }
+  };
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -219,14 +212,44 @@ export const Personal = () => {
     }));
   };
 
+  const calculateAge = (dob: string) => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDifference = today.getMonth() - birthDate.getMonth();
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  useEffect(() => {
+    if (formData.personal_profile_dob) {
+      const age = calculateAge(formData.personal_profile_dob);
+      if (age >= 18) {
+        setError(null);
+        setFormData(prevState => ({
+          ...prevState,
+          personal_age: age
+        }));
+      } else {
+        setError("Age must be 18 years or older.");
+        setFormData(prevState => ({
+          ...prevState,
+          personal_profile_dob: "",
+          personal_age: undefined
+        }));
+      }
+    }
+  }, [formData.personal_profile_dob]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (error) {
+      alert(error);
+      return;
+    }
     try {
-      console.log('stsId', formData.marital_sts_id);
-      console.log('selectedHeight', selectedHeight);
-      console.log('heightId', formData.height_id);
-
-      // Send the update request
       const response = await axios.post("http://103.214.132.20:8000/auth/update_myprofile_personal/", {
         profile_id: loginuser_profileId,
         Profile_name: formData.personal_profile_name,
@@ -247,16 +270,14 @@ export const Personal = () => {
 
       if (response.data.status === "success") {
         alert(response.data.message);
-        window.location.reload(); // Reload the page
+        window.location.reload();
 
-        // Fetch updated personal details
         const getResponse = await axios.post("http://103.214.132.20:8000/auth/get_myprofile_personal/", {
           profile_id: "VY240003"
         });
 
         const updatedDetails = getResponse.data.data;
 
-        // Update personal details state with the new data
         setPersonalDetails(prevState => ({
           ...prevState!,
           personal_profile_name: updatedDetails.personal_profile_name,
@@ -283,11 +304,9 @@ export const Personal = () => {
     }
   };
 
-
   if (!personalDetails) {
     return <div>Loading...</div>;
   }
-
 
   return (
     <div>
@@ -328,7 +347,6 @@ export const Personal = () => {
                     />
                     <span className="ml-2">Male</span>
                   </label>
-
                   <label className="inline-flex items-center">
                     <input
                       type="radio"
@@ -351,6 +369,23 @@ export const Personal = () => {
                   value={formData.personal_profile_dob || ""}
                   onChange={handleInputChange}
                   className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+                  max={new Date().toISOString().split("T")[0]}
+                />
+              </label>
+
+              {error && (
+                <p className="text-red-500 text-sm">{error}</p>
+              )}
+
+              <label className="block mb-2 text-[20px] text-ash font-semibold">
+                Age:
+                <input
+                  type="text"
+                  name="personal_age"
+                  value={formData.personal_age || ""}
+                  onChange={handleInputChange}
+                  className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+                  disabled
                 />
               </label>
 
@@ -376,7 +411,6 @@ export const Personal = () => {
                 />
               </label>
 
-
               <label className="block mb-2 text-[20px] text-ash font-semibold">
                 Height:
                 <select
@@ -394,8 +428,6 @@ export const Personal = () => {
                 </select>
               </label>
 
-
-
               <label className="block mb-2 text-[20px] text-ash font-semibold">
                 Marital Status:
                 <select
@@ -412,7 +444,6 @@ export const Personal = () => {
                   ))}
                 </select>
               </label>
-
             </div>
 
             <div>
@@ -437,7 +468,6 @@ export const Personal = () => {
                 />
               </label>
 
-              {/* Complexion */}
               <label className="block mb-2 text-[20px] text-ash font-semibold">
                 Complexion:
                 <select
@@ -479,8 +509,6 @@ export const Personal = () => {
                     />
                     <span className="ml-2">Yes</span>
                   </label>
-
-
                   <label className="inline-flex items-center">
                     <input
                       type="radio"
@@ -495,13 +523,10 @@ export const Personal = () => {
                 </div>
               </label>
 
-
-              {/* Profile Holder */}
-
               <label className="block mb-2 text-[20px] text-ash font-semibold">
                 Profile For:
                 <select
-                  value={selectedProfileHolder} // Control the selected option here
+                  value={selectedProfileHolder}
                   onChange={handleProfileHolderChange}
                   className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                 >
@@ -523,7 +548,7 @@ export const Personal = () => {
             <div className="flex justify-end items-center space-x-5">
               <button
                 type="button"
-                onClick={handleEditClick}
+                onClick={handleEditClick1}
                 className="text-main flex items-center rounded-lg font-semibold px-5 py-2.5 cursor-pointer"
               >
                 Cancel
@@ -564,9 +589,10 @@ export const Personal = () => {
 
               <h5 className="text-[20px] text-ash font-semibold mb-2">
                 Marital Status :
-                <span className="font-normal"> {personalDetails.personal_profile_marital_status_name}</span>
+                <span className="font-normal">
+                  {personalDetails.personal_profile_marital_status_name}
+                </span>
               </h5>
-
             </div>
 
             <div>
