@@ -178,7 +178,7 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({
               {images.map((image, index) => (
                 <div
                   key={index}
-                  className={`profile-slider-img-container ${photoLock === 0 || PhotoPasswordlock === 0 ? "" : "fade-img-effect"}`}
+                  className={`profile-slider-img-container ${photoLock === "0" || PhotoPasswordlock === 0 ? "" : "fade-img-effect"}`}
                   onMouseEnter={() => handleMouseEnter(image)}
                   onMouseLeave={handleMouseLeave}
                 >

@@ -31,7 +31,6 @@ import { FaCheckCircle } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import CustomMessagePopUp from "./CustomMessagePopup";
 import {
-  ToastNotification,
   NotifySuccess,
   NotifyError,
 } from "../../Toast/ToastNotification";
@@ -39,7 +38,7 @@ import { toast } from "react-toastify";
 import { PersonalNotesPopup } from "../PersonalNotes/PersonalNotesPopup";
 
 import { Share } from "./Share";
-import { Get_profile_det_match } from "../../../commonapicall";
+// import { Get_profile_det_match } from "../../../commonapicall";
 import { VysAssistPopup } from "../VysAssist/VysAssistPopup";
 
 

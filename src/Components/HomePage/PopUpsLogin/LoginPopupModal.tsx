@@ -16,7 +16,7 @@ import { OtpVerification } from '../PopUpsReg/OtpVerification';
 interface LoginPopupModalProps {
     onClose: () => void;
     onForgetPassword: () => void;
-    isopen:()=>boolean;
+    isopen:boolean;
 }
 
 export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => {

@@ -5,7 +5,7 @@ import MarriedSlick from "./HappyStories/MarriedSlick";
 
 // import Couple from "../../assets/images/Couple.png";
 import { FaArrowRightLong } from "react-icons/fa6";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import axios from "axios";
 // import { FaCirclePlay } from "react-icons/fa6";

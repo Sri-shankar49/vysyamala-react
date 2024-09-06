@@ -211,7 +211,7 @@ export const DashBoardMatchingProfiles: React.FC<
                 profile_id={undefined}
                 profile_age={undefined}
                 height={undefined}
-                searchResult={undefined}
+                // searchResult={undefined}
               />
             )}
             {currentView === "grid" && (

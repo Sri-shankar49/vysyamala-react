@@ -214,8 +214,7 @@ export const FeaturedBride: React.FC = () => {
           onClose={handleCloseLoginPopup}
           onForgetPassword={() => {
             console.log("Forgot password clicked.");
-          }}
-        />
+          } } isopen={false}        />
       )}
     </div>
   );

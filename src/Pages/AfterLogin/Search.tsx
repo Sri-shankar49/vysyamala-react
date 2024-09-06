@@ -5,8 +5,8 @@ import { Get_advance_search } from "../../commonapicall";
 import { ProfileContext } from "../../ProfileContext";
 import AdvanceSearchCard from "../../Components/AdvanceSearchCard";
 import axios from "axios";
-import { Console } from "console";
-import React from "react";
+// import { Console } from "console";
+// import React from "react";
 const Search = () => {
   // Toggle the showResults state when the user finds a match
   const [showResults, setShowResults] = useState(false);
@@ -39,7 +39,7 @@ const Search = () => {
     pageNumber,
     searchProfileData,
     setSearchProfileData,
-    setAdvanceSelectedProfessions,
+    // setAdvanceSelectedProfessions,
     AdvanceselectedProfessions,
     selectedAdvanceEducation,
     selectedIncomes,
@@ -51,10 +51,9 @@ const Search = () => {
     peopleOnlyWithPhoto,
     maritial_Status,
     setAdvanceSearchData,
-    advanceSearchData
+    // advanceSearchData
   } = context;
-  const [responseRecord, setNoRecordsFound] = useState(false);
-  console.log()
+  const [ ,setNoRecordsFound] = useState(false);
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
   const handle_Get_advance_search = async () => {
     try {

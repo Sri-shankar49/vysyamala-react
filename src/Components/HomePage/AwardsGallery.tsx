@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import Award from "../../assets/icons/Award.png";
 import { AwardCard } from "./AwardGallery/AwardCard";
 

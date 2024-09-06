@@ -139,7 +139,7 @@ export const Footer = () => {
               <h3 className="text-white font-semibold mb-4">Help</h3>
               <ul className="text-footer-text-gray">
                 <li className="mb-2">
-                  {/ Trigger API call and navigation when clicked /}
+                  {/* {/ Trigger API call and navigation when clicked /} */}
                   <p onClick={() => { handleFooterContent("1") }} className="hover:underline cursor-pointer">
                     FAQs
                   </p>

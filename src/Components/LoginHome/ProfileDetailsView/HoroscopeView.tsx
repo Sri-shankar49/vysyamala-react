@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import RasiGrid from '../../HoroDetails/RasiGrid';
 import AmsamGrid from '../../HoroDetails/AmsamGrid';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 
 interface HoroscopeDetails {
     rasi: string;
@@ -22,7 +22,7 @@ export const HoroscopeView: React.FC = () => {
     const [horoscopeDetails, setHoroscopeDetails] = useState<HoroscopeDetails | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const { user_profile_id } = useParams<{ user_profile_id: string }>();
+    // const { user_profile_id } = useParams<{ user_profile_id: string }>();
     const queryParams = new URLSearchParams(location.search);
     const id = queryParams.get('id');
     const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");

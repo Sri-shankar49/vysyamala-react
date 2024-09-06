@@ -1,5 +1,6 @@
 import React from "react";
 import Checkbox from "./CheckBox";
+import { SelectedStarIdItem } from "../../Pages/PartnerSettings";
 
 interface MatchingStarsProps {
   initialPoruthas: string;
@@ -10,8 +11,12 @@ interface MatchingStarsProps {
     matching_starId: string;
     matching_rasiId: string;
   }[];
-  selectedStarIds: string[];
-  onCheckboxChange: (updatedIds: string[], rasi: string, star: string) => void;
+  selectedStarIds: SelectedStarIdItem[];
+  onCheckboxChange: (
+    updatedIds: SelectedStarIdItem[],
+    rasi: string,
+    star: string
+  ) => void;
 }
 
 const MatchingStars: React.FC<MatchingStarsProps> = ({
@@ -27,8 +32,8 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({
     checked: boolean
   ) => {
     const updatedIds = checked
-      ? [...selectedStarIds, id]
-      : selectedStarIds.filter((itemId) => itemId !== id);
+      ? [...selectedStarIds, { id, rasi, star, label: `${star} - ${rasi}` }] // Create a full SelectedStarIdItem object
+      : selectedStarIds.filter((item) => item.id !== id); // Keep the existing filter logic
 
     onCheckboxChange(updatedIds, rasi, star); // Pass updated IDs along with rasi and star
   };
@@ -47,7 +52,9 @@ const MatchingStars: React.FC<MatchingStarsProps> = ({
                 name={`star-${index}`}
                 value={`${item.matching_starId} - ${item.matching_rasiId}`}
                 label={`${item.matching_starname} - ${item.matching_rasiname}`}
-                checked={selectedStarIds.includes(item.id)}
+                checked={selectedStarIds.some(
+                  (selectedItem) => selectedItem.id === item.id
+                )} // Adjust to check based on object structure
                 onChange={(e) =>
                   handleCheckboxChange(
                     item.id,

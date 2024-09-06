@@ -19,7 +19,7 @@ export const DashBoardWishlist: React.FC<DashBoardWishlistProps> = ({ dashBoardA
 
                 {/* ListCard */}
                 <div>
-                    <WishlistCard />
+                    <WishlistCard page={0} perPage={0} />
                     {/* <ListCard />
                     <ListCard />
                     <ListCard />

@@ -69,7 +69,7 @@ export const photo_protection =
 export const Get_advance_search =
   "http://103.214.132.20:8000/auth/Get_advance_search/";
 
-export const fetchSearchProfiles = async (searchId: string,profession: string,age:string,location:string,pageNo): Promise<any> => {
+export const fetchSearchProfiles = async (searchId: string,profession: string,age:string,location:string,pageNo:number): Promise<any> => {
   try {
     const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
 
@@ -103,7 +103,7 @@ export const fetchSearchProfiles = async (searchId: string,profession: string,ag
 
 
 // Footer pages Content API
-export const fetchFooterContent = async (pageId?: number) => {
+export const fetchFooterContent = async (pageId?: string) => {
   try {
     const response = await apiClient.post("/auth/Get_page_details/", {
       page_id: pageId,
@@ -118,7 +118,7 @@ export const fetchFooterContent = async (pageId?: number) => {
     return response.data; // Adjust based on the actual response structure
   }
   catch (error) {
-    console.error("Error fetching fetchFooterContent response:", error.message || error);
+    console.error("Error fetching fetchFooterContent response:", error || error);
     throw new Error("Unable to fetch FooterContent response. Please try again later.");
   }
 }

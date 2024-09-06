@@ -16,7 +16,7 @@ export const Wishlist = () => {
     throw new Error("MyComponent must be used within a ProfileProvider");
   }
 
-  const { TotalRecords, totalPage, perWhistListPage } = context;
+  const { TotalRecords, totalPage } = context;
   const [page, setPage] = useState<number>(1);
   const perPage = 10
 

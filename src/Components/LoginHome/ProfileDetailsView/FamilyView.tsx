@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 
 interface FamilyDetails {
     about_family: string;
@@ -35,7 +35,7 @@ export const FamilyView: React.FC = () => {
         property_details: ''
     });
 
-    const { user_profile_id } = useParams<{ user_profile_id: string }>();
+    // const { user_profile_id } = useParams<{ user_profile_id: string }>();
     const queryParams = new URLSearchParams(location.search);
     const id = queryParams.get('id');
     const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");

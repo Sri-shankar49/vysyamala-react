@@ -38,12 +38,12 @@ export const MyProfile = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
 
-  const scrollToProfileDetailsSettings = () => {
-    const element = document.getElementById('ProfileDetailsSettings');
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
+  // const scrollToProfileDetailsSettings = () => {
+  //   const element = document.getElementById('ProfileDetailsSettings');
+  //   if (element) {
+  //     element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  //   }
+  // };
 
   useEffect(() => {
     const fetchGet_profile_det_match = async () => {

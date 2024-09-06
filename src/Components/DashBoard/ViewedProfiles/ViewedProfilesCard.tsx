@@ -35,7 +35,7 @@ type ViewedProfilesCardProps = {
   pageNumber: number;
   dataPerPage: number;
 };
-export const ViewedProfilesCard: React.FC<ViewedProfilesCardProps> = ({ pageNumber, dataPerPage }) => {
+export const ViewedProfilesCard: React.FC<ViewedProfilesCardProps> = ({ pageNumber }) => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [isBookmarked, setIsBookmarked] = useState<Record<string, boolean>>({});
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");

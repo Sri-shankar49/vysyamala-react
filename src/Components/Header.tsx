@@ -5,7 +5,7 @@ import { PopupModal } from "./HomePage/PopUpsReg/PopupModal";
 import { LoginPopupModal } from "./HomePage/PopUpsLogin/LoginPopupModal";
 
 export const Header: React.FC = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -117,8 +117,7 @@ export const Header: React.FC = () => {
                   onClose={handleCloseLoginPopup}
                   onForgetPassword={function (): void {
                     throw new Error("Function not implemented.");
-                  }}
-                />
+                  } } isopen={false}                />
               )}
             </ul>
           </nav>

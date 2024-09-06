@@ -3,13 +3,13 @@ import { IoArrowBackOutline } from "react-icons/io5";
 import { FaBell } from "react-icons/fa6";
 import { MdImage } from "react-icons/md";
 import { MdManageAccounts } from "react-icons/md";
-import { BiSolidUserCircle } from "react-icons/bi";
-import { IoMdLock } from "react-icons/io";
+// import { BiSolidUserCircle } from "react-icons/bi";
+// import { IoMdLock } from "react-icons/io";
 import { AlertSettings } from "./OtherSettings/AlertSettings";
 import { PhotoSettings } from "./OtherSettings/PhotoSettings";
 import { PartnerSettings } from "./OtherSettings/PartnerSettings";
-import { ChangePassword } from "./OtherSettings/ChangePassword";
-import { ProfileVisibility } from "./OtherSettings/ProfileVisibility";
+// import { ChangePassword } from "./OtherSettings/ChangePassword";
+// import { ProfileVisibility } from "./OtherSettings/ProfileVisibility";
 
 interface OtherSettingsProps {
   dashBoardAgain: () => void;

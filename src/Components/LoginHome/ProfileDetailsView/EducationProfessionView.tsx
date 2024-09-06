@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+// import { useParams } from 'react-router-dom';
 
 // Define the correct interface for your API response
 interface EducationProfession {
@@ -25,7 +25,7 @@ export const EducationProfessionView: React.FC = () => {
     const [profileData, setProfileData] = useState<EducationProfession | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const { user_profile_id } = useParams<{ user_profile_id: string }>();
+    // const { user_profile_id } = useParams<{ user_profile_id: string }>();
     const queryParams = new URLSearchParams(location.search);
     const id = queryParams.get('id');
     const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");

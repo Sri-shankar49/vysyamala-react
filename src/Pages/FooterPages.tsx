@@ -1,4 +1,4 @@
-import { FooterContent } from '../Components/FooterPages/FooterContent'
+// import { FooterContent } from '../Components/FooterPages/FooterContent'
 import { useLocation } from "react-router-dom";
 import parseHtml from "html-react-parser"
 

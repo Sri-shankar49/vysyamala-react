@@ -15,7 +15,7 @@ import {
   NotifyError,
   NotifySuccess,
 } from "../../Toast/ToastNotification";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { IoCalendar, IoEye, IoSchool } from "react-icons/io5";
 import {
   FaLocationDot,
@@ -62,7 +62,7 @@ const PhotoRequestCard = ({
   const [error, setError] = useState<string | null>(null);
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
   const [RejectMsg, setRejectMsg] = useState<string>("");
-  const [showPhotoRequestNotesPopup, setShowPhotoRequestNotesPopup] =
+  const [, setShowPhotoRequestNotesPopup] =
     useState<boolean>(false);
 
   const [showMessageButton, setShowMessageButton] = useState<boolean>(false);

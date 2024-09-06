@@ -63,7 +63,7 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
     throw new Error("MyComponent must be used within a ProfileProvider");
   }
 
-  const { setUserProfile } = context;
+  // const { setUserProfile } = context;
 
   // Load profileID and password from local storage if remember me was checked
   useEffect(() => {

@@ -19,9 +19,9 @@ import { IoChevronForwardOutline } from "react-icons/io5";
 import { Profile, ProfileContext } from "../../ProfileContext";
 import { fetchProfiles, fetchSearchProfiles } from "../../commonapicall";
 import axios from "axios";
-import { AdvancedSearchPopup } from "./MatchingProfiles/FilterPopup/AdvancedSearchPopup";
+// import { AdvancedSearchPopup } from "./MatchingProfiles/FilterPopup/AdvancedSearchPopup";
 import { FiFilter } from "react-icons/fi";
-import { number } from "zod";
+// import { number } from "zod";
 import { SearchCard } from "../SearchCard";
 
 // const items = [
@@ -111,7 +111,8 @@ export const MatchingProfiles = () => {
   // Function to sort profiles by name and toggle order
 
   // Advanced Popup Show
-  const [showAdvancedSearchPopup, setShowAdvancedSearchPopup] = useState(false);
+  let showAdvancedSearchPopup;
+  // const [showAdvancedSearchPopup, setShowAdvancedSearchPopup] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
 
   const [Get_Profes_Pref, setGet_Profes_Pref] = useState<ProfesPrefType[]>([]);
@@ -143,7 +144,7 @@ export const MatchingProfiles = () => {
   // };
 
   const [searchProfileId, setSearchProfileId] = useState("");
-  const [searchProfileStatus, setSearchStatus] = useState<number>();
+  const [, setSearchStatus] = useState<number>();
   const [searchResult, setSearchResult] = useState<any[]>([]);
 
   // useEffect(() => {

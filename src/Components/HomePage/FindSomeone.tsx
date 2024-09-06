@@ -246,7 +246,9 @@ const FindSomeone = () => {
       </div>
 
       {isLoginPopupOpen && (
-        <LoginPopupModal isopen={isLoginPopupOpen} onClose={handleCloseLoginPopup} />
+        <LoginPopupModal isopen={isLoginPopupOpen} onClose={handleCloseLoginPopup} onForgetPassword={function (): void {
+          throw new Error("Function not implemented.");
+        } } />
       )}
     </div>
   );

@@ -45,7 +45,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   const [incomeOptions, setIncomeOptions] = useState<Income[]>([]);
   const loginuser_profile_id = sessionStorage.getItem("loginuser_profile_id");
   const [searchProfile, setSearchProfile] = useState<string>("");
-  const [maritialStatus, SetMaritualStatus] = useState<number[]>([]);
+  // const [maritialStatus, SetMaritualStatus] = useState<number[]>([]);
   const context = useContext(ProfileContext);
 
 
@@ -74,7 +74,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     setAdvanceSelectedBirthStar,
     setNativeState,
     setPeopleOnlyWithPhoto,
-    workLocation,
+    // workLocation,
     setWorkLocation,
     peopleOnlyWithPhoto
    

@@ -30,9 +30,9 @@ const CustomMessagePopup: React.FC<CustomMessagePopupProps> = ({
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectValue(event.target.value);
   };
-  const clearSelectValue = () => {
-    setSelectValue("");
-  };
+  // const clearSelectValue = () => {
+  //   setSelectValue("");
+  // };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

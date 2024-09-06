@@ -147,7 +147,7 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
               profile_id={undefined}
               profile_age={undefined}
               height={undefined}
-              searchResult={undefined}
+              // searchResult={undefined}
             />
           )}
           {currentView === "grid" && (

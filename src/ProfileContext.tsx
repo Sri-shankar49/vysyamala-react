@@ -187,7 +187,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
   const [error, setError] = useState<string | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [dashboardDetails, setDashboardDetails] =
-    useState<DashboardDetails | null>(null);
+    useState<DashboardDetails|any >();
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
   const [AdvanceselectedProfessions, setAdvanceSelectedProfessions] = useState<
     number[]
