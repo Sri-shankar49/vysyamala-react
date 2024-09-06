@@ -35,12 +35,14 @@ export const PersonalView: React.FC = () => {
     const { user_profile_id } = useParams<{ user_profile_id: string }>();
     const queryParams = new URLSearchParams(location.search);
     const id = queryParams.get('id');
+    const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
+
 
     useEffect(() => {
         const fetchPersonalDetails = async () => {
           try {
             const response = await axios.post("http://103.214.132.20:8000/auth/Get_profile_det_match/", {
-              profile_id: "VY240014",
+              profile_id: loginuser_profileId,
               user_profile_id: id
             });
             console.log("API Response:", response.data);
@@ -63,10 +65,10 @@ export const PersonalView: React.FC = () => {
         };
       
         fetchPersonalDetails();
-      }, [user_profile_id]);
+      }, [id]);
       
     if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
+    if (error) return <p>No Data Available</p>;
 
     return (
         <div>

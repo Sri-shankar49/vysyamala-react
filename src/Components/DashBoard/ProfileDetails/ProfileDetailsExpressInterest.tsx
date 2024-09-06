@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 // import { hideInterest } from "../../../redux/slices/interestSlice";
 import axios from "axios";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import ProfileViewPassWordInput from "./ProfileViewPasswordInput";
+
 import { MdMessage, MdVerifiedUser } from "react-icons/md";
 import { MdBookmark, MdBookmarkBorder } from "react-icons/md";
-import { IoClose, IoDocumentText } from "react-icons/io5";
-import { RiAlertFill } from "react-icons/ri";
+import { IoDocumentText } from "react-icons/io5";
+
 import { BiSolidUserVoice } from "react-icons/bi";
 import { IoShareSocialSharp } from "react-icons/io5";
 import { MdOutlineGrid3X3 } from "react-icons/md";
@@ -38,54 +38,11 @@ import {
 import { toast } from "react-toastify";
 import { PersonalNotesPopup } from "../PersonalNotes/PersonalNotesPopup";
 
-import {
-  EmailShareButton,
-  FacebookShareButton,
-  GabShareButton,
-  HatenaShareButton,
-  InstapaperShareButton,
-  LineShareButton,
-  LinkedinShareButton,
-  LivejournalShareButton,
-  MailruShareButton,
-  OKShareButton,
-  PocketShareButton,
-  RedditShareButton,
-  TelegramShareButton,
-  TumblrShareButton,
-  TwitterShareButton,
-  ViberShareButton,
-  VKShareButton,
-  WhatsappShareButton,
-  WorkplaceShareButton,
-  WeiboShareButton,
-} from "react-share";
-
-import {
-  EmailIcon,
-  FacebookIcon,
-  GabIcon,
-  HatenaIcon,
-  InstapaperIcon,
-  LineIcon,
-  LinkedinIcon,
-  LivejournalIcon,
-  MailruIcon,
-  OKIcon,
-  PocketIcon,
-  RedditIcon,
-  TelegramIcon,
-  TumblrIcon,
-  TwitterIcon,
-  ViberIcon,
-  VKIcon,
-  WeiboIcon,
-  WhatsappIcon,
-  WorkplaceIcon,
-} from "react-share";
-import { Get_profile_det_match } from "../../../commonapicall";
-import { Get_photo_bypassword } from "../../../commonapicall";
 import { Share } from "./Share";
+import { Get_profile_det_match } from "../../../commonapicall";
+import { VysAssistPopup } from "../VysAssist/VysAssistPopup";
+
+
 
 // import { boolean } from "zod";
 
@@ -107,6 +64,12 @@ interface BasicDetails {
   about: string;
   user_profile_views: string;
   matching_score: number;
+  horoscope_available: number;
+  horoscope_link: string;
+  horoscope_available_text: string;
+  user_status: string;
+  last_visit: string;
+  verified: number;
 }
 
 interface PersonalDetails {
@@ -122,55 +85,128 @@ interface ProfileData {
   personal_details: PersonalDetails;
 }
 
+interface ApiResponse {
+  data: any;
+  status: string;
+  interest_status: string;
+  // Add other fields based on the API response
+}
+
+// interface ProfileListResponse {
+//   Status: number;
+//   message: string;
+//   all_profile_ids: Record<string, string>; // Use Record to map numbers to strings
+//   // Add other fields if necessary
+// }
+
 interface ProfileDetailsExpressInterestProps { }
 
 export const ProfileDetailsExpressInterest: React.FC<
   ProfileDetailsExpressInterestProps
 > = () => {
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  console.log(profileData, "profileData");
+  const [PhotoPasswordlock, setPhotoPasswordlock] = useState<string>('');
+
+  // console.log(profileData?.basic_details.verified, "llllllllllllllllll");
   const [hideExpresButton, setHideExpressButton] = useState<boolean>(true);
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const interestParam = queryParams.get("interest");
-  const id = queryParams.get("id");
+  const idparam = queryParams.get("id") || "";
+
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
-  const [GetProfileDetMatchData, SetGetProfileDetMatchData] = useState<any>({});
+  // const [GetProfileDetMatchData, SetGetProfileDetMatchData] = useState<any>({});
   // const [PasswordModal, setPassWordModal] = useState<boolean>(false);
 
-  const [response, setResponse] = useState<boolean>(false);
   const custom_message = sessionStorage.getItem("custom_message");
-  useEffect(() => {
-    if (response === true) {
-      NotifySuccess("Image Unlocked Successfully");
-    }
-  }, [response]);
 
   const storedPlanId = sessionStorage.getItem("plan_id");
-  console.log("vysya", storedPlanId)
-  const { photo_protection } = GetProfileDetMatchData;
-  console.log("vysya", photo_protection)
+  console.log("vysya", storedPlanId);
+  // const { photo_protection } = GetProfileDetMatchData;
+  // console.log("vysya", photo_protection);
 
-  const [photoLock, setPhotoLock] = useState<number>(0);
+  // const [photoLock, setPhotoLock] = useState<number>(0);
 
-  const GetProfileDetMatch = async () => {
-    try {
-      const response = await axios.post(Get_profile_det_match, {
-        profile_id: loginuser_profileId, // Replace with the appropriate value or extract from route params if needed
-        user_profile_id: id,
-      });
+  // const GetProfileDetMatch = async () => {
+  //   try {
+  //     const response = await axios.post(Get_profile_det_match, {
+  //       profile_id: loginuser_profileId, // Replace with the appropriate value or extract from route params if needed
+  //       user_profile_id: id,
+  //     });
 
-      if (response.status === 200) {
-        SetGetProfileDetMatchData(response.data);
-        setPhotoLock(response.data.photo_protection);
+  //     if (response.status === 200) {
+  //       SetGetProfileDetMatchData(response.data);
+  //       setPhotoLock(response.data.photo_protection);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // console.log(photoLock, "photoLock");
 
 
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const [profileIds, setProfileIds] = useState<string[]>([]);
+  // const [currentIndex, setCurrentIndex] = useState<number>(-1);
+  // const [loading, setLoading] = useState<boolean>(true);
+  // const [error, setError] = useState<string | null>(null);
+  // const navigate = useNavigate();
 
+  // useEffect(() => {
+  //   // Define the fetchProfileIds function
+  //   const fetchProfileIds = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const response = await axios.post<ProfileListResponse>(
+  //         'http://103.214.132.20:8000/auth/Get_prof_list_match/',
+  //         {
+  //           profile_id: 'VY240001'
+  //         }
+  //       );
+  //       const data = response.data;
+
+  //       if (data.Status === 1) {
+  //         const ids = Object.values(data.all_profile_ids);
+  //         setProfileIds(ids);
+  //         setCurrentIndex(-1); // Set initial index to 0
+  //         if (ids.length > 0) {
+  //           // navigate(`/ProfileDetails?id=${ids[0]}`); // Navigate to the first profile
+  //         }
+  //       } else {
+  //         setError("Failed to fetch profiles.");
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching profile IDs:", err);
+  //       setError("Failed to fetch profiles.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   // Call the fetchProfileIds function
+  //   fetchProfileIds();
+  // }, [navigate]);
+
+  // const handlePrevious = () => {
+  //   if (currentIndex > 0) {
+  //     const newIndex = currentIndex - 1;
+  //     setCurrentIndex(newIndex);
+  //     navigate(`/ProfileDetails?id=${profileIds[newIndex]}`);
+  //   }
+  // };
+
+  // const handleNext = () => {
+  //   if (currentIndex < profileIds.length - 1) {
+  //     const newIndex = currentIndex + 1;
+  //     setCurrentIndex(newIndex);
+  //     navigate(`/ProfileDetails?id=${profileIds[newIndex]}`);
+  //   }
+  // };
+
+
+
+
+  const navigate = useNavigate();
 
 
 
@@ -187,10 +223,17 @@ export const ProfileDetailsExpressInterest: React.FC<
       if (response.data.Status === 1) {
         // Remove the profile from the state if rejected
         if (status === "2") {
-          NotifySuccess("Interest Accepted");
+          // NotifySuccess("Interest Accepted");
+          toast.success("Interest Accepted");
           setHideExpressButton(false);
+          if (loginuser_profileId) {
+            await fetchProfileStatusNew(loginuser_profileId);
+          } else {
+            console.error("loginuser_profileId is null or undefined");
+          }
         } else if (status === "3") {
-          NotifyError("Interest Declined");
+          // NotifyError("Interest Declined");
+          toast.error("Interest Declined");
           setHideExpressButton(false);
         } else {
           console.error(
@@ -206,6 +249,55 @@ export const ProfileDetailsExpressInterest: React.FC<
     }
   };
 
+
+
+  const fetchProfileStatusNew = async (loginuser_profileId: string) => {
+    try {
+      const response = await axios.post<ApiResponse>(
+        `http://103.214.132.20:8000/auth/Get_expresint_status/`,
+        {
+          profile_id: loginuser_profileId,
+          profile_to: idparam,
+        }
+      );
+      console.log("Profile interest status:", response.data.data.interest_status);
+      setStatus(response.data.data.interest_status); // Adjust based on your response structure
+    } catch (err) {
+      console.error("Failed to fetch profile status:", err);
+      // setError('Failed to fetch profile status');
+    }
+  };
+
+  const [status, setStatus] = useState<number | null>(); // State to hold API status
+  // const [error, setError] = useState<string | null>(null); 
+
+  useEffect(() => {
+    // Define the API call function
+    const fetchProfileStatus = async (loginuser_profileId: string) => {
+      try {
+        const response = await axios.post<ApiResponse>(
+          `http://103.214.132.20:8000/auth/Get_expresint_status/`,
+          {
+            profile_id: loginuser_profileId,
+            profile_to: idparam
+          }
+        );
+        console.log("dddddddddddddddddddd", response.data.data.interest_status);
+
+        setStatus(response.data.data.interest_status); // Adjust based on your response structure
+      } catch (err) {
+        // setError('Failed to fetch profile status');
+        console.error(err);
+      }
+    };
+
+    // Fetch profile status when profileIdViewed changes
+    if (loginuser_profileId) {
+      fetchProfileStatus(loginuser_profileId);
+    }
+  }, [idparam, loginuser_profileId]); // Dependency array: effect runs when profileIdViewed changes
+
+  console.log("valueeee", status);
   // const GetPhotoByPassword = async (Password: string) => {
   //   try {
   //     const response = await axios.post(Get_photo_bypassword, {
@@ -228,7 +320,7 @@ export const ProfileDetailsExpressInterest: React.FC<
   //     NotifyError("Please Enter Correct Password");
   //   }
   // };
-
+  console.log(idparam, "id");
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -236,10 +328,18 @@ export const ProfileDetailsExpressInterest: React.FC<
           "http://103.214.132.20:8000/auth/Get_profile_det_match/",
           {
             profile_id: loginuser_profileId, // Replace with the appropriate value or extract from route params if needed
-            user_profile_id: id,
+            user_profile_id: idparam,
           }
         );
         setProfileData(response.data);
+        // setPhotoLock(response.data.photo_protection);
+        sessionStorage.setItem("photolock", JSON.stringify(response.data.photo_protection));
+        console.log(response.data.photo_protection);
+        const storedPhotoProtectionVal = sessionStorage.getItem("photolock");
+        const parsedPhotoProtectionVal = storedPhotoProtectionVal ? JSON.parse(storedPhotoProtectionVal) : "0";
+        setPhotoPasswordlock(parsedPhotoProtectionVal);
+
+
         if (response.data.basic_details.express_int === "1") {
           setIsHeartMarked(true);
         }
@@ -251,6 +351,11 @@ export const ProfileDetailsExpressInterest: React.FC<
     fetchProfileData();
   }, []);
 
+  // useEffect(() => {
+  //   const storedPhotoProtectionval = JSON.parse(sessionStorage.getItem("photolock") || "0");
+  //   setPhotoPasswordlock(storedPhotoProtectionval);
+  //   console.log("ffr");
+  // }, []);
   // Redux
   // const dispatch = useDispatch();
 
@@ -281,7 +386,7 @@ export const ProfileDetailsExpressInterest: React.FC<
           "http://103.214.132.20:8000/auth/Get_profile_det_match/",
           {
             profile_id: loginuser_profileId,
-            user_profile_id: id,
+            user_profile_id: idparam,
           }
         );
         setProfileData(response.data);
@@ -301,7 +406,7 @@ export const ProfileDetailsExpressInterest: React.FC<
     };
 
     fetchProfileData();
-  }, [id, loginuser_profileId, bookmarkedProfiles]);
+  }, [idparam, loginuser_profileId, bookmarkedProfiles]);
 
   useEffect(() => {
     localStorage.setItem(
@@ -320,7 +425,7 @@ export const ProfileDetailsExpressInterest: React.FC<
         "http://103.214.132.20:8000/auth/Mark_profile_wishlist/",
         {
           profile_id: loginuser_profileId,
-          profile_to: id,
+          profile_to: idparam,
           status: "1",
         },
         {
@@ -331,7 +436,7 @@ export const ProfileDetailsExpressInterest: React.FC<
       );
 
       if (response.status === 200) {
-        NotifySuccess("Profile added Bookmark Successfully");
+        toast.success("Profile added Bookmark Successfully");
       }
       if (response.data.Status === 1) {
         setBookmarkedProfiles((prev) => [...prev, profile]);
@@ -354,7 +459,7 @@ export const ProfileDetailsExpressInterest: React.FC<
         "http://103.214.132.20:8000/auth/Mark_profile_wishlist/",
         {
           profile_id: loginuser_profileId,
-          profile_to: id,
+          profile_to: idparam,
           status: "0",
         },
         {
@@ -365,7 +470,7 @@ export const ProfileDetailsExpressInterest: React.FC<
       );
 
       if (response.data.Status === 1) {
-        NotifyError("Profile Removed from Bookmark Successfully");
+        toast.error("Profile Removed from Bookmark Successfully");
         setBookmarkedProfiles((prev) => {
           console.log("Previous bookmarked profiles:", prev);
 
@@ -427,7 +532,7 @@ export const ProfileDetailsExpressInterest: React.FC<
         "http://103.214.132.20:8000/auth/Send_profile_intrests/",
         {
           profile_id: loginuser_profileId,
-          profile_to: id,
+          profile_to: idparam,
           status: !isHeartMarked ? "1" : "0",
           to_express_message: openCustomMsg || selectValue, // Use message if provided, otherwise use an empty string
         }
@@ -438,13 +543,13 @@ export const ProfileDetailsExpressInterest: React.FC<
 
         // Toast Notification
         if (!isHeartMarked) {
-          NotifySuccess("Expressed Interest");
+          toast.success("Interest Accepted");
         } else {
-          toast.error("Removed Interest");
+          toast.error("Interest Declined");
         }
       } else {
         // Toast Notification
-        NotifyError("Failed to update express interest");
+        alert("Failed to update express interest");
 
         console.error("Failed to update express interest");
       }
@@ -454,8 +559,8 @@ export const ProfileDetailsExpressInterest: React.FC<
 
       console.error("Error updating express interest:", error);
     } finally {
-      setOpenCustomMsg("")
-      setSelectValue("")
+      setOpenCustomMsg("");
+      setSelectValue("");
     }
   };
 
@@ -503,6 +608,23 @@ export const ProfileDetailsExpressInterest: React.FC<
   //     setIsOpen(!isOpen);
   // };
 
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      try {
+        const response = await axios.post('http://103.214.132.20:8000/auth/Get_prof_list_match/', {
+          profile_id: loginuser_profileId,
+        });
+        // Assuming the response data is in response.data
+        // setArrayValues(response.data);
+        console.log("profileids", response.data);
+      } catch (err) {
+        console.error("Error fetching profile data:", err);
+      }
+    };
+
+    fetchProfileData();
+  }, [loginuser_profileId]);
+
   const handleSelectLanguage = (language: string) => {
     setSelectedLanguage(language);
     handleDownloadPdf();
@@ -511,7 +633,6 @@ export const ProfileDetailsExpressInterest: React.FC<
 
   // Personal Notes Popup
   const [showPersonalNotes, setShowPersonalNotes] = useState(false);
-  const navigate = useNavigate();
   const handlePersonalNotesPopup = () => {
     setShowPersonalNotes(!showPersonalNotes);
   };
@@ -520,18 +641,30 @@ export const ProfileDetailsExpressInterest: React.FC<
     setShowPersonalNotes(false);
   };
 
+  // Personal Notes Popup
+  const [showVysassist, setShowVysassist] = useState(false);
+  // const navigate = useNavigate();
+  const handleVysassistpopup = () => {
+    setShowVysassist(!showVysassist);
+  };
+
+  const closeVysassistpopup = () => {
+    setShowVysassist(false);
+  };
+
+
+
   const [isShareVisible, setIsShareVisible] = useState(false);
 
   const toggleShareVisibility = () => {
     setIsShareVisible(!isShareVisible);
   };
 
-  const closeShareModal = (e: React.MouseEvent<HTMLDivElement>) => {
-    if ((e.target as HTMLElement).className.includes("modal-overlay")) {
-      setIsShareVisible(false);
-    }
-  };
-
+  // const closeShareModal = (e: React.MouseEvent<HTMLDivElement>) => {
+  //   if ((e.target as HTMLElement).className.includes("modal-overlay")) {
+  //     setIsShareVisible(false);
+  //   }
+  // };
 
   useEffect(() => {
     if (storedPlanId === "0") {
@@ -542,10 +675,12 @@ export const ProfileDetailsExpressInterest: React.FC<
   // Horoscope Download Function
   const handleDownloadPdf = () => {
     const link = document.createElement("a");
-    link.href = `https://apiupg.rainyseasun.com/auth/generate-pdf/${id}`;
-    link.download = `pdf_${id}.pdf`; // Customize the file name
+    link.href = `https://apiupg.rainyseasun.com/auth/generate-pdf/${idparam}`;
+    link.download = `pdf_${idparam}.pdf`; // Customize the file name
     link.click();
   };
+
+  const horoscopeLink = profileData?.basic_details.horoscope_link
 
   return (
     <div>
@@ -559,24 +694,15 @@ export const ProfileDetailsExpressInterest: React.FC<
               {/* <span className="text-sm text-primary"> (234)</span> */}
             </h4>
           </div>
-          <ToastNotification />
+
           <div className="grid grid-rows-1 grid-cols-3 justify-start items-center space-x-10 my-5">
             <div>
               <ProfileSlickView
-                GetProfileDetMatch={GetProfileDetMatch}
+                // GetProfileDetMatch={GetProfileDetMatch}
                 profileId={profileData?.basic_details.profile_id}
-                photoLock={photoLock}
+                photoLock={PhotoPasswordlock}
               />
 
-              {/* <div>
-                {photo_protection && (
-                  <ProfileViewPassWordInput
-                    PasswordModal={PasswordModal}
-                    setPassWordModal={setPassWordModal}
-                    GetPhotoByPassword={GetPhotoByPassword}
-                  />
-                )}
-              </div> */}
             </div>
 
             {/* Profile Details */}
@@ -585,7 +711,10 @@ export const ProfileDetailsExpressInterest: React.FC<
                 <div className="">
                   <h4 className="flex items-center text-[30px] text-secondary font-bold mb-2">
                     {profileData?.basic_details.profile_name}
-                    <MdVerifiedUser className="text-checkGreen ml-2" />
+
+                    {profileData?.basic_details.verified === 1 && (
+                      <MdVerifiedUser className="text-checkGreen ml-2" />
+                    )}
                   </h4>
                 </div>
 
@@ -599,8 +728,9 @@ export const ProfileDetailsExpressInterest: React.FC<
                     />
 
                     {/* Share Component here */}
-                    {isShareVisible && (<Share closePopup={toggleShareVisibility} />)}
-
+                    {isShareVisible && (
+                      <Share closePopup={toggleShareVisibility} />
+                    )}
                   </div>
 
                   <div>
@@ -638,18 +768,21 @@ export const ProfileDetailsExpressInterest: React.FC<
                   <div>
                     <TbPhotoHeart
                       onClick={() => sendPhotoRequest()}
-                      title="Spot on Error"
+                      title="photo Request"
                       className="text-[22px] text-vysyamalaBlack cursor-pointer"
                     />
                   </div>
 
                   <div>
                     <BiSolidUserVoice
+                      onClick={handleVysassistpopup}
                       title="Vys Assist"
                       className="text-[22px] text-vysyamalaBlack cursor-pointer"
                     />
+                    {showVysassist && (
+                      <VysAssistPopup closePopup={closeVysassistpopup} />
+                    )}
                   </div>
-
                 </div>
               </div>
 
@@ -674,7 +807,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                       Height :
                       <span className="font-normal">
                         {" "}
-                        {profileData?.personal_details.height}
+                        {profileData?.personal_details.height} cms
                       </span>
                     </h5>
                   </div>
@@ -683,7 +816,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                     Weight :
                     <span className="font-normal">
                       {" "}
-                      {profileData?.personal_details.weight}
+                      {profileData?.personal_details.weight} kg
                     </span>
                   </h5>
 
@@ -734,24 +867,22 @@ export const ProfileDetailsExpressInterest: React.FC<
                     {/* Horoscope Available */}
                     <div>
                       <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                        <MdOutlineGrid3X3 className="mr-2" /> Horoscope
-                        Available
+                        <MdOutlineGrid3X3 className="mr-2" />  {profileData?.basic_details.horoscope_available_text}
+
                       </p>
                     </div>
 
                     {/*  Active User */}
                     <div>
                       <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                        <FaUser className="mr-2" /> Active user
+                        <FaUser className="mr-2" /> {profileData?.basic_details.user_status}
                       </p>
                     </div>
 
                     {/* Last Visit */}
                     <div>
                       <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                        <IoCalendar className="mr-2" /> Last visit on June 30,
-                        2024
-                      </p>
+                        <IoCalendar className="mr-2" /> Last visit on {profileData?.basic_details.last_visit}                      </p>
                     </div>
 
                     {/* views */}
@@ -771,7 +902,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                                         alt="Matching Score"
                                         className="w-full"
                                     /> */}
-                  <MatchingScore
+                  <MatchingScore scorePercentage={profileData?.basic_details.matching_score}
                   // matchingScore={profileData?.basic_details.matching_score}
                   />
                 </div>
@@ -790,7 +921,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                 <div>
                   {/* Buttons */}
 
-                  {interestParam !== "1" && loginuser_profileId && (
+                  {interestParam !== "1" && status !== 2 && status !== 3 && loginuser_profileId && (
                     <div className="flex justify-start items-center space-x-5 my-5">
                       <button
                         onClick={
@@ -810,50 +941,83 @@ export const ProfileDetailsExpressInterest: React.FC<
 
                         {/* Toast Notifications */}
                       </button>
+                      {profileData?.basic_details.horoscope_available === 1 && (
+                        <a
 
-                      <button className="bg-white text-main flex items-center rounded-md border-2 px-5 py-2.5 cursor-pointer">
-                        <FaTableList className="text-[22px] mr-2" /> Horoscope
+                          href={horoscopeLink}  // Replace with your actual URL
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <button className="bg-white text-main flex items-center rounded-md border-2 px-5 py-2.5 cursor-pointer">
+                            <FaTableList className="text-[22px] mr-2" /> Horoscope
+                          </button>
+                        </a>
+                      )}
+                    </div>
+                  )}
+
+                  {status === 2 ? (
+                    // Show message button if numericStatus >= 2
+                    <Link to="/Messages">
+                      <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
+                        <MdMessage className="text-[26px] mr-2" /> Message
+                      </button>
+                    </Link>
+                  ) : (
+                    // Show the interest buttons and message button if numericStatus < 2
+                    interestParam === "1" && loginuser_profileId && status !== 3 && status !== 2 && (
+                      <div className="flex justify-start items-center space-x-5 my-5">
+                        {/* Accept button */}
+                        {hideExpresButton ? (
+                          <>
+                            <button
+                              onClick={() => handleUpdateInterest(idparam, "2")}
+                              className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer"
+                            >
+                              <FaCheckCircle className="text-[22px] mr-2" /> Accept
+                            </button>
+                            {/* Decline button */}
+                            <button
+                              onClick={() => handleUpdateInterest(idparam, "3")}
+                              className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer"
+                            >
+                              <IoMdCloseCircle className="text-[26px] mr-2" /> Decline
+                            </button>
+                          </>
+                        ) : null}
+                        {/* Message button */}
+
+                      </div>
+                    )
+                  )}
+
+                  {status === 3 && (
+                    <p>Your Interest has been rejected</p>
+                  )}
+
+                  {/* <div>
+                    <div className="flex justify-between mt-4">
+                      <button
+                        onClick={handlePrevious}
+                        disabled={currentIndex === 0 || loading}
+                        className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer bg-gray-200"
+                      >
+                        Previous
+                      </button>
+                      <button
+                        onClick={handleNext}
+                        disabled={currentIndex === profileIds.length - 1 || loading}
+                        className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer bg-gray-200"
+                      >
+                        Next
                       </button>
                     </div>
-                  )}
 
-                  {interestParam === "1" && loginuser_profileId && (
-                    <div className="flex justify-start items-center space-x-5 my-5">
-                      {/* Accept button */}
-                      {hideExpresButton ? (
-                        <>
-                          {" "}
-                          <button
-                            onClick={() =>
-                              handleUpdateInterest(loginuser_profileId, "2")
-                            }
-                            className="bg-checkGreen text-white flex items-center rounded-lg px-5 py-3 cursor-pointer"
-                          >
-                            <FaCheckCircle className="text-[22px] mr-2" />{" "}
-                            Accept
-                          </button>
-                          {/* Decline button */}
-                          <button
-                            onClick={() =>
-                              handleUpdateInterest(loginuser_profileId, "3")
-                            }
-                            className="bg-white text-main flex items-center rounded-lg border-2 px-5 py-2.5 cursor-pointer"
-                          >
-                            <IoMdCloseCircle className="text-[26px] mr-2" />{" "}
-                            Decline
-                          </button>
-                          {/* Message button */}
-                        </>
-                      ) : (
-                        ""
-                      )}
-                      <Link to="/Messages">
-                        <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
-                          <MdMessage className="text-[26px] mr-2" /> Message
-                        </button>
-                      </Link>
-                    </div>
-                  )}
+                    {loading && <p>Loading...</p>}
+                    {error && <p>{error}</p>}
+                  </div> */}
+
+
                 </div>
 
                 <div

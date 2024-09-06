@@ -13,6 +13,7 @@
     "@hookform/resolvers": "^3.6.0",
     "@reduxjs/toolkit": "^2.2.6",
     "axios": "^1.7.2",
+    "html-react-parser": "^5.1.15",
     "npm": "^10.8.2",
     "react": "^18.2.0",
     "react-circular-progressbar": "^2.1.0",

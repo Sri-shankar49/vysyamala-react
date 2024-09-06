@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { AddOns } from "../Components/PayNow/AddOns";
 import { Link, useNavigate } from "react-router-dom";
@@ -19,7 +18,7 @@ interface Package {
 
 export const PayNow: React.FC = () => {
   const [membershipPlane, setMemberShipPlane] = useState<Package[]>([]);
-  const profile_id = sessionStorage.getItem("profile_id");
+  const profile_id = sessionStorage.getItem("profile_id_new");
   const navigate = useNavigate();
 
   const fetchData = async () => {
@@ -44,21 +43,30 @@ export const PayNow: React.FC = () => {
   const [selectedValues, setSelectedValues] = useState<number[]>([]);
   const [selectedPackageIds, setSelectedPackageIds] = useState<number[]>([]);
 
-  const handleAddOnChange = (rate: number, checked: boolean, packageId: number) => {
+  const handleAddOnChange = (
+    rate: number,
+    checked: boolean,
+    packageId: number
+  ) => {
     if (checked) {
       setSelectedValues([...selectedValues, rate]);
       setSelectedPackageIds([...selectedPackageIds, packageId]);
     } else {
       // Remove rate and package ID from the respective arrays
       const updatedValues = selectedValues.filter((val) => val !== rate);
-      const updatedPackageIds = selectedPackageIds.filter((id) => id !== packageId);
+      const updatedPackageIds = selectedPackageIds.filter(
+        (id) => id !== packageId
+      );
 
       setSelectedValues(updatedValues);
       setSelectedPackageIds(updatedPackageIds);
     }
   };
 
-  const totalAmount = selectedValues.reduce((acc, val) => acc + val, Number(price));
+  const totalAmount = selectedValues.reduce(
+    (acc, val) => acc + val,
+    Number(price)
+  );
 
   const Save_plan_package = async () => {
     try {
@@ -152,4 +160,3 @@ export const PayNow: React.FC = () => {
     </div>
   );
 };
-

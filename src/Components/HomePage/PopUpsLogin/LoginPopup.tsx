@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { IoEye, IoEyeOff } from "react-icons/io5";
 import { IoIosCloseCircle } from "react-icons/io";
 import { FaArrowRightLong } from "react-icons/fa6";
@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 // import config from '../../../API'; // Import the configuration file
 import apiClient from "./../../../API";
+import { ProfileContext } from "../../../ProfileContext";
 
 // ZOD Schema with updated regex validations
 const schema = zod
@@ -56,6 +57,13 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
   } = useForm<FormInputs>({
     resolver: zodResolver(schema),
   });
+  const context = useContext(ProfileContext);
+
+  if (!context) {
+    throw new Error("MyComponent must be used within a ProfileProvider");
+  }
+
+  const { setUserProfile } = context;
 
   // Load profileID and password from local storage if remember me was checked
   useEffect(() => {
@@ -96,8 +104,7 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
       sessionStorage.setItem("loginuser_profile_id", response.data.profile_id);
       sessionStorage.setItem("plan_id", response.data.cur_plan_id);
       if (response.data.status === 1) {
-
-        sessionStorage.setItem("custom_message", response.data.custom_message)
+        sessionStorage.setItem("custom_message", response.data.custom_message);
         setErrorMessage(null); // Clear error message on success
         if (rememberMe) {
           localStorage.setItem("rememberMeProfileID", data.profileID);
@@ -213,7 +220,7 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
             onClick={onForgetPassword}
             className="text-secondary hover:underline cursor-pointer"
           >
-            Forget Password?
+            Forgot Password?
           </p>
         </div>
       </div>

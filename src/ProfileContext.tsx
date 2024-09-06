@@ -9,6 +9,8 @@ import React, {
 import axios from "axios";
 
 export interface Profile {
+  matching_score: number | undefined;
+  verified: number;
   profile: any;
   profile_id: string;
   profile_name: string;
@@ -32,6 +34,9 @@ export interface DashboardDetails {
   received_int_count: number;
   sent_int_count: number;
   myvisitor_count: number;
+  gallery_count: number;
+  photo_int_count: number;
+  matching_profile_count?: number;
   viewed_profile_count: number;
   profile_details: {
     profile_id: string;
@@ -52,7 +57,7 @@ interface ProfileContextType {
   addBookmark: (profile: Profile) => void;
   removeBookmark: (profileId: string) => void;
   setSelectedProfiles: (profiles: Profile[]) => void;
-  dashboardDetails: DashboardDetails | null;
+  dashboardDetails: DashboardDetails;
   fetchDashboardDetails: () => void;
   perPage: number;
   pageNumber: number;
@@ -79,7 +84,45 @@ interface ProfileContextType {
   setSearchProfileData: Dispatch<SetStateAction<string>>;
   searchProfileData: any;
   setMatchingProfileSearchId: Dispatch<SetStateAction<string>>;
-  matchingProfileSearchId: string
+  matchingProfileSearchId: string;
+  matchingProfile_profession: string;
+  matchingProfile_search_age: string;
+  matichingSearch_location: string;
+  set_MatchingProfile_profession: Dispatch<SetStateAction<string>>;
+  set_MatchingProfile_search_age: Dispatch<SetStateAction<string>>;
+  Set_Search_location: Dispatch<SetStateAction<string>>;
+  userProfile: string;
+  setUserProfile: Dispatch<SetStateAction<string>>;
+  maritial_Status: number[];
+  Set_Maritial_Status: Dispatch<SetStateAction<number[]>>;
+  AdvanceselectedProfessions: number[];
+  setAdvanceSelectedProfessions: Dispatch<SetStateAction<number[]>>;
+  setAdvanceSelectedEducation: Dispatch<SetStateAction<string>>;
+  selectedAdvanceEducation: string;
+  setSelectedIncomes: Dispatch<SetStateAction<string>>;
+  selectedIncomes: string;
+  setChevvai_dhosam: Dispatch<SetStateAction<string>>;
+  chevvai_dhosam: string;
+  setRehuDhosam: Dispatch<SetStateAction<string>>;
+  rehuDhosam: string;
+  advanceSelectedBirthStar: string;
+  setAdvanceSelectedBirthStar: Dispatch<SetStateAction<string>>;
+  nativeState: string[];
+  setNativeState: Dispatch<SetStateAction<string[]>>;
+  workLocation: string;
+  setWorkLocation: Dispatch<SetStateAction<string>>;
+  setPeopleOnlyWithPhoto: Dispatch<SetStateAction<number>>;
+  peopleOnlyWithPhoto: number;
+  advanceSearchData: Profile[];
+  setAdvanceSearchData: Dispatch<SetStateAction<Profile[]>>;
+  gridListCardData: Profile[];
+  setGridListCardData: Dispatch<SetStateAction<Profile[]>>;
+  setTotalRecords: Dispatch<SetStateAction<number>>;
+  TotalRecords: number;
+  totalPage: number;
+  setTotalPage: Dispatch<SetStateAction<number>>;
+  perWhistListPage: number;
+  setWhistListPerpage: Dispatch<SetStateAction<number>>;
 }
 
 export const ProfileContext = createContext<ProfileContextType | undefined>(
@@ -101,14 +144,23 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
     return savedSelectedProfiles ? JSON.parse(savedSelectedProfiles) : [];
   });
 
+
+//viewedProfile
+
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Function to toggle the sort order
   const toggleSortOrder = () => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
-  const [searchProfileData, setSearchProfileData] = useState<any>([]); //advance search page search by id
 
+  //whistlist
+  const [TotalRecords, setTotalRecords] = useState<number>(0);
+  const [totalPage, setTotalPage] = useState<number>(0);
+  const [perWhistListPage, setWhistListPerpage] = useState<number>(0);
+
+  const [searchProfileData, setSearchProfileData] = useState<any>([]); //advance search page search by id
+  const [chevvai_dhosam, setChevvai_dhosam] = useState<string>("no");
   const [perPage, setPerPage] = useState<number>(10);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -116,7 +168,7 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
   const [ToAge, setToAge] = useState<number>(0);
   const [fromHeight, setFromHeight] = useState<number>(0);
   const [toHeight, setToHeight] = useState<number>(0);
-
+  const [userProfile, setUserProfile] = useState<string>("");
   //matching profile
   const [MatchingProfileperPage, setMatchingProfilePerPage] =
     useState<number>(20);
@@ -124,14 +176,35 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
     useState<number>(1);
   const [MatchingProfiletotalCount, setMatchingProfileTotalCount] =
     useState<number>(0);
-  const [matchingProfileSearchId, setMatchingProfileSearchId] = useState<string>("")
+  const [matchingProfileSearchId, setMatchingProfileSearchId] =
+    useState<string>("");
+  const [matchingProfile_profession, set_MatchingProfile_profession] =
+    useState<string>("");
+  const [matchingProfile_search_age, set_MatchingProfile_search_age] =
+    useState<string>("");
+  const [matichingSearch_location, Set_Search_location] = useState<string>("");
 
   const [error, setError] = useState<string | null>(null);
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
   const [dashboardDetails, setDashboardDetails] =
     useState<DashboardDetails | null>(null);
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
-
+  const [AdvanceselectedProfessions, setAdvanceSelectedProfessions] = useState<
+    number[]
+  >([]);
+  const [nativeState, setNativeState] = useState<string[]>([]);
+  const [selectedAdvanceEducation, setAdvanceSelectedEducation] =
+    useState<string>("");
+  const [workLocation, setWorkLocation] = useState<string>("");
+  const [selectedIncomes, setSelectedIncomes] = useState<string>("");
+  const [advanceSearchData, setAdvanceSearchData] = useState<Profile[]>([]);
+  const [gridListCardData, setGridListCardData] = useState<Profile[]>([]);
+  const [peopleOnlyWithPhoto, setPeopleOnlyWithPhoto] = useState<number>(0);
+  //advance search
+  const [advanceSelectedBirthStar, setAdvanceSelectedBirthStar] =
+    useState<string>("");
+  const [maritial_Status, Set_Maritial_Status] = useState<number[]>([]);
+  const [rehuDhosam, setRehuDhosam] = useState<string>("no");
   const fetchDashboardDetails = async () => {
     if (!loginuser_profileId) {
       setError("No profile ID found in session.");
@@ -275,6 +348,44 @@ export const ProfileProvider: React.FC<{ children: ReactNode }> = ({
         setSearchProfileData,
         setMatchingProfileSearchId,
         matchingProfileSearchId,
+        matchingProfile_profession,
+        matchingProfile_search_age,
+        matichingSearch_location,
+        set_MatchingProfile_profession,
+        set_MatchingProfile_search_age,
+        Set_Search_location,
+        userProfile,
+        setUserProfile,
+        Set_Maritial_Status,
+        maritial_Status,
+        AdvanceselectedProfessions,
+        setAdvanceSelectedProfessions,
+        selectedAdvanceEducation,
+        setAdvanceSelectedEducation,
+        setSelectedIncomes,
+        selectedIncomes,
+        chevvai_dhosam,
+        setChevvai_dhosam,
+        rehuDhosam,
+        setRehuDhosam,
+        advanceSelectedBirthStar,
+        setAdvanceSelectedBirthStar,
+        nativeState,
+        setNativeState,
+        workLocation,
+        setWorkLocation,
+        peopleOnlyWithPhoto,
+        setPeopleOnlyWithPhoto,
+        advanceSearchData,
+        setAdvanceSearchData,
+        gridListCardData,
+        setGridListCardData,
+        TotalRecords,
+        setTotalRecords,
+        totalPage,
+        setTotalPage,
+        perWhistListPage,
+        setWhistListPerpage,
       }}
     >
       {children}

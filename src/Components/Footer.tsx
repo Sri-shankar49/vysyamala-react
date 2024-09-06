@@ -1,4 +1,43 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { fetchFooterContent } from "../commonapicall";
+
+
 export const Footer = () => {
+
+  const [showFooterContent, setShowFooterContent] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const handleFooterContent = async (pageId?: string) => {
+    try {
+      setLoading(true); // Start loading
+      const data = await fetchFooterContent(pageId); // Call the API to fetch FAQ data
+
+      setShowFooterContent(!showFooterContent);
+
+      console.log(data);
+
+      navigate("/FooterPages", { state: { faqData: data } }); // Navigate to the FAQ page and pass the fetched data
+
+    } catch (error: any) {
+      setError(error.message || "Failed to fetch footer content");
+    } finally {
+      setLoading(false); // End loading
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
+
+
+
   return (
     <div>
       <footer className="bg-footer-gray text-zinc-400 py-[70px]">
@@ -25,19 +64,19 @@ export const Footer = () => {
                   </a>
                 </li>
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <p onClick={() => { handleFooterContent("4") }} className="hover:underline cursor-pointer">
                     History of Arya Vysya
-                  </a>
+                  </p>
                 </li>
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <p onClick={() => { handleFooterContent("6") }} className="hover:underline cursor-pointer">
                     Arya Vysya Gothras
-                  </a>
+                  </p>
                 </li>
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <p onClick={() => { handleFooterContent("1") }} className="hover:underline cursor-pointer">
                     Penugonda
-                  </a>
+                  </p>
                 </li>
               </ul>
             </div>
@@ -46,9 +85,9 @@ export const Footer = () => {
               <h3 className="text-white font-semibold mb-4">VysyaBazaar</h3>
               <ul className="text-footer-text-gray">
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <p onClick={() => { handleFooterContent("11") }} className="hover:underline cursor-pointer">
                     About
-                  </a>
+                  </p>
                 </li>
                 <li className="mb-2">
                   <a href="#" className="hover:underline">
@@ -100,29 +139,30 @@ export const Footer = () => {
               <h3 className="text-white font-semibold mb-4">Help</h3>
               <ul className="text-footer-text-gray">
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  {/ Trigger API call and navigation when clicked /}
+                  <p onClick={() => { handleFooterContent("1") }} className="hover:underline cursor-pointer">
                     FAQs
-                  </a>
+                  </p>
                 </li>
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <p onClick={() => { handleFooterContent("2") }} className="hover:underline cursor-pointer">
                     Terms & Conditions
-                  </a>
+                  </p>
                 </li>
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <p onClick={() => { handleFooterContent("3") }} className="hover:underline cursor-pointer">
                     Privacy Policy
-                  </a>
+                  </p>
                 </li>
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <p className="hover:underline cursor-pointer">
                     Feedback
-                  </a>
+                  </p>
                 </li>
                 <li className="mb-2">
-                  <a href="#" className="hover:underline">
+                  <p className="hover:underline cursor-pointer">
                     Contact Us
-                  </a>
+                  </p>
                 </li>
               </ul>
             </div>
@@ -131,13 +171,13 @@ export const Footer = () => {
               <h3 className="text-white font-semibold mb-4">Support</h3>
               <ul className="text-footer-text-gray">
                 <li className="mb-2 flex items-center">
-                  <span className="mr-2">📞</span> Someone@gmail.com
+                  <span className="mr-2">📞</span> someone@gmail.com
                 </li>
                 <li className="mb-2 flex items-center">
-                  <span className="mr-2">📧</span> Someone@gmail.com
+                  <span className="mr-2">📧</span> someone@gmail.com
                 </li>
                 <li className="mb-2 flex items-center">
-                  <span className="mr-2">📧</span> Someone@gmail.com
+                  <span className="mr-2">📧</span> someone@gmail.com
                 </li>
               </ul>
               <h3 className="text-white mb-4">Downloads</h3>

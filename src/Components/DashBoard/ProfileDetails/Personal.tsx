@@ -273,7 +273,7 @@ export const Personal = () => {
         window.location.reload();
 
         const getResponse = await axios.post("http://103.214.132.20:8000/auth/get_myprofile_personal/", {
-          profile_id: "VY240003"
+          profile_id: loginuser_profileId
         });
 
         const updatedDetails = getResponse.data.data;

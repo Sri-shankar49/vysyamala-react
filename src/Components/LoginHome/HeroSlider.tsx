@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { HeroSliderContent } from "../LoginHome/HeroSlider/HeroSliderContent";
@@ -21,8 +21,8 @@ const defaultSettings = {
         slidesToShow: 1,
         slidesToScroll: 1,
         infinite: true,
-        dots: true
-      }
+        dots: true,
+      },
     },
     {
       breakpoint: 768,
@@ -41,7 +41,7 @@ const defaultSettings = {
         slidesToScroll: 1,
         initialSlide: 2,
         arrows: false,
-      }
+      },
     },
     {
       breakpoint: 480,
@@ -49,9 +49,9 @@ const defaultSettings = {
         slidesToShow: 1,
         slidesToScroll: 1,
         arrows: false,
-      }
-    }
-  ]
+      },
+    },
+  ],
 };
 
 export const HeroSlider = () => {
@@ -60,13 +60,21 @@ export const HeroSlider = () => {
   useEffect(() => {
     // Fetch the profile count from the server
     const fetchProfileCount = async () => {
-      const response = await fetch('http://103.214.132.20:8000/auth/Get_profile_intrests_list/', {
-        method: 'POST',
-        body: JSON.stringify({ profile_id: sessionStorage.getItem('loginuser_profile_id') }),
-        headers: { 'Content-Type': 'application/json' }
-      });
+      const response = await fetch(
+        "http://103.214.132.20:8000/auth/Get_profile_intrests_list/",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            profile_id: sessionStorage.getItem("loginuser_profile_id"),
+          }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       const data = await response.json();
-      setProfileCount(data.data.profiles.length);
+      console.log(data, "data");
+      if (data.Status !== 0) {
+        setProfileCount(data.data.profiles.length);
+      }
     };
 
     fetchProfileCount();
@@ -77,7 +85,7 @@ export const HeroSlider = () => {
     ...defaultSettings,
     dots: profileCount > 1,
     infinite: profileCount > 1,
-    autoplay: profileCount > 1
+    autoplay: profileCount > 1,
   };
 
   return (

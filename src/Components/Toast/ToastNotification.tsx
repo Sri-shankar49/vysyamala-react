@@ -1,10 +1,9 @@
-
 import React from 'react';
 import { ToastContainer, toast, ToastOptions } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Zoom } from 'react-toastify';
 
-interface ToastNotificationProps { }
+interface ToastNotificationProps {}
 
 const defaultOptions: ToastOptions = {
     position: "top-right",
@@ -13,11 +12,9 @@ const defaultOptions: ToastOptions = {
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    progress: undefined,
     theme: "colored",
     transition: Zoom,
 };
-
 
 export const NotifySuccess = (message: string, options?: ToastOptions) => {
     toast.success(message, { ...defaultOptions, ...options });
@@ -30,4 +27,3 @@ export const NotifyError = (message: string, options?: ToastOptions) => {
 export const ToastNotification: React.FC<ToastNotificationProps> = () => {
     return <ToastContainer />;
 };
-

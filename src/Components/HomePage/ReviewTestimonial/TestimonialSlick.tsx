@@ -1,18 +1,21 @@
+import React from "react";
 import { FaStar } from "react-icons/fa";
 import { FiStar } from "react-icons/fi";
 
 interface TestimonialSlickProps {
   desc: string;
   img: string;
-  name: string;
+   name: string;
   datedOn: string;
+  rating:number
 }
 
 const TestimonialSlick: React.FC<TestimonialSlickProps> = ({
   desc,
   img,
-  name,
+   name,
   datedOn,
+  rating
 }) => {
   return (
     <div className="bg-white space-y-8 mx-3 p-6 rounded-md shadow-lg">
@@ -28,11 +31,9 @@ const TestimonialSlick: React.FC<TestimonialSlickProps> = ({
           </div>
         </div>
         <div className="flex text-yellow-500 text-[20px]">
-          <FaStar />
-          <FaStar />
-          <FaStar />
-          <FaStar />
-          <FiStar />
+        {Array.from({ length: 5 }, (_, index) =>
+            index < rating ? <FaStar key={index} /> : <FiStar key={index} />
+          )}
         </div>
       </div>
     </div>

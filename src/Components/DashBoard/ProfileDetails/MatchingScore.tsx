@@ -1,7 +1,14 @@
-import { useState, ChangeEvent } from "react";
+// import { useState, ChangeEvent } from "react";
+import React, { useState, useEffect } from 'react';
 
-const MatchingScore = () => {
-  const [score, setScore] = useState(75);
+
+interface MatchingScoreProps {
+  scorePercentage?: number;
+}
+
+const MatchingScore: React.FC<MatchingScoreProps> = ({ scorePercentage }) => {
+  const [score, setScore] = useState<number>(0);
+  {console.log(scorePercentage, "asasas");}
 
   const getEmoji = () => {
     if (score >= 75) return "😊";
@@ -17,12 +24,13 @@ const MatchingScore = () => {
     return "red";
   };
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newScore = parseInt(e.target.value, 10);
-    if (!isNaN(newScore)) {
-      setScore(newScore);
+
+  useEffect(() => {
+    if (scorePercentage) {
+      setScore(scorePercentage);
     }
-  };
+  }, [scorePercentage]); 
+  
 
   return (
     <div className="flex flex-col items-center p-4">
@@ -48,7 +56,7 @@ const MatchingScore = () => {
           </div>
         </div>
 
-        {/* Needle indicator */}
+        {/* {/ Needle indicator /} */}
         <div
           className="absolute bottom-[2px] left-[40%] w-10 h-10 flex justify-center items-center"
           style={{
@@ -58,8 +66,8 @@ const MatchingScore = () => {
         >
           <div className="w-[5px] h-10 rounded-lg bg-secondary"></div>
         </div>
-        
-        {/* Needle semi circle */}
+
+        {/* {/ Needle semi circle /} */}
         <div
           className="absolute bottom-[-20px] left-[40%] w-10 h-10 flex justify-center items-center">
           <div className="w-4 h-4 rounded-full bg-secondary"></div>
@@ -67,8 +75,8 @@ const MatchingScore = () => {
 
       </div>
 
-      {/* Input Style */}
-      <div className="mt-4">
+      {/* {/ Input Style /} */}
+      {/* <div className="mt-4">
         <input
           type="number"
           value={score}
@@ -77,9 +85,11 @@ const MatchingScore = () => {
           min="0"
           max="100"
         />
-      </div>
+      </div> */}
 
-      <div className="mt-2 text-lg font-semibold">Matching Score: {score}%</div>
+      {/* {/ <div className="mt-2 text-lg font-semibold">Matching Score: {score}%</div> /} */}
+      <div className="mt-2 text-lg font-semibold">Matching Score: {scorePercentage}%</div>
+
     </div>
   );
 };

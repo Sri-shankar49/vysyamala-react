@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext } from "react";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { HiOutlineSearch } from "react-icons/hi";
 import { HiMiniViewColumns } from "react-icons/hi2";
@@ -7,21 +7,21 @@ import { ImMenu } from "react-icons/im";
 // import { BsSortDown } from "react-icons/bs";
 // import { BsSortUp } from "react-icons/bs";
 import { HiAdjustmentsVertical } from "react-icons/hi2";
-import { GridView } from '../LoginHome/MatchingProfiles/GridView';
-import { ListView } from '../LoginHome/MatchingProfiles/ListView';
-import { GridListView } from '../LoginHome/MatchingProfiles/GridListView';
+import { GridView } from "../LoginHome/MatchingProfiles/GridView";
+import { ListView } from "../LoginHome/MatchingProfiles/ListView";
+import { GridListView } from "../LoginHome/MatchingProfiles/GridListView";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { IoChevronForwardOutline } from "react-icons/io5";
-import { SuggestedProfiles } from '../LoginHome/SuggestedProfiles';
+import { SuggestedProfiles } from "../LoginHome/SuggestedProfiles";
 import { ProfileContext } from "../../ProfileContext";
-
 
 interface SearchResultsProps {
   onSearchAgain: () => void; // Call back function to trigger search again when user clicks on search again button
 }
 
-export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) => {
-
+export const SearchResults: React.FC<SearchResultsProps> = ({
+  onSearchAgain,
+}) => {
   // View state changed
   const [currentView, setCurrentView] = useState("gridlist");
 
@@ -43,24 +43,35 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
     setPageNumber((prev) => Math.min(prev + 1, noOfPages));
   };
 
-
   return (
     <div>
       <div className="container mx-auto py-10">
-
         <div className="flex items-center mb-5">
-          <IoArrowBackOutline className="text-[24px] mr-2 cursor-pointer" onClick={onSearchAgain} />
-          <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold"> Search results
-            <span className="text-sm text-primary"> (234)</span></h4>
+          <IoArrowBackOutline
+            className="text-[24px] mr-2 cursor-pointer"
+            onClick={onSearchAgain}
+          />
+          <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold">
+            {" "}
+            Search results
+            <span className="text-sm text-primary"> (234)</span>
+          </h4>
         </div>
 
         <div className="relative flex justify-center items-center bg-white rounded-lg p-1.5 shadow-md">
-          <input type="text" name="" id="" placeholder="Search by Profile ID" className="w-full rounded-l-lg px-10 py-3 focus-visible:outline-none" />
+          <input
+            type="text"
+            name=""
+            id=""
+            placeholder="Search by Profile ID"
+            className="w-full rounded-l-lg px-10 py-3 focus-visible:outline-none"
+          />
           <HiOutlineSearch className="absolute left-3 top-5 text-[22px] text-ashSecondary" />
 
-          <button className="w-[200px] bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3">Find Match</button>
+          <button className="w-[200px] bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3">
+            Find Match
+          </button>
         </div>
-
 
         {/* Icon Sort */}
         <div className="flex justify-between items-center mt-10">
@@ -74,10 +85,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
             >
               <HiMiniViewColumns
                 className={`text-[22px] 
-                    ${currentView === "gridlist"
-                    ? "text-secondary"
-                    : "text-ashSecondary"
-                  } hover:text-secondary}`}
+                    ${
+                      currentView === "gridlist"
+                        ? "text-secondary"
+                        : "text-ashSecondary"
+                    } hover:text-secondary}`}
               />
             </div>
             <div
@@ -87,10 +99,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
               onClick={() => setCurrentView("list")}
             >
               <ImMenu
-                className={`text-[22px] ${currentView === "list"
-                  ? "text-secondary"
-                  : "text-ashSecondary"
-                  } hover:text-secondary}`}
+                className={`text-[22px] ${
+                  currentView === "list"
+                    ? "text-secondary"
+                    : "text-ashSecondary"
+                } hover:text-secondary}`}
               />
             </div>
             <div
@@ -100,10 +113,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
               onClick={() => setCurrentView("grid")}
             >
               <BsFillGrid3X3GapFill
-                className={`text-[22px] ${currentView === "grid"
-                  ? "text-secondary"
-                  : "text-ashSecondary"
-                  } hover:text-secondary}`}
+                className={`text-[22px] ${
+                  currentView === "grid"
+                    ? "text-secondary"
+                    : "text-ashSecondary"
+                } hover:text-secondary}`}
               />
             </div>
           </div>
@@ -118,9 +132,33 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
 
         <div>
           {/* Conditionally render views based on currentView state */}
-          {currentView === "gridlist" && <GridListView />}
-          {currentView === "list" && <ListView />}
-          {currentView === "grid" && <GridView />}
+          {currentView === "gridlist" && (
+            <GridListView
+              profile_name={""}
+              profile_id={undefined}
+              profile_age={undefined}
+              height={undefined}
+              searchResult={undefined}
+            />
+          )}
+          {currentView === "list" && (
+            <ListView
+              profile_name={""}
+              profile_id={undefined}
+              profile_age={undefined}
+              height={undefined}
+              searchResult={undefined}
+            />
+          )}
+          {currentView === "grid" && (
+            <GridView
+              profile_name={""}
+              profile_id={undefined}
+              profile_age={undefined}
+              height={undefined}
+              searchResult={undefined}
+            />
+          )}
         </div>
 
         {/* Pagination */}
@@ -161,11 +199,15 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
                 <button
                   onClick={handlePrevious}
                   disabled={pageNumber === 1} // Disable if on the first page
-                  className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${pageNumber === 1 ? "cursor-not-allowed" : ""
-                    }`}
+                  className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
+                    pageNumber === 1 ? "cursor-not-allowed" : ""
+                  }`}
                 >
                   <span className="sr-only">Previous</span>
-                  <IoChevronBackOutline className="h-5 w-5 text-primary" aria-hidden="true" />
+                  <IoChevronBackOutline
+                    className="h-5 w-5 text-primary"
+                    aria-hidden="true"
+                  />
                 </button>
                 {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
 
@@ -174,10 +216,11 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
                   <button
                     key={index}
                     onClick={() => setPageNumber(index + 1)}
-                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${pageNumber === index + 1
-                      ? "bg-secondary text-white"
-                      : "text-primary hover:bg-gray-50"
-                      }`}
+                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                      pageNumber === index + 1
+                        ? "bg-secondary text-white"
+                        : "text-primary hover:bg-gray-50"
+                    }`}
                   >
                     {index + 1}
                   </button>
@@ -186,20 +229,22 @@ export const SearchResults: React.FC<SearchResultsProps> = ({ onSearchAgain }) =
                 <button
                   onClick={handleNext}
                   disabled={pageNumber === noOfPages} // Disable if on the last page
-                  className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${pageNumber === noOfPages ? "cursor-not-allowed" : ""
-                    }`}
+                  className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
+                    pageNumber === noOfPages ? "cursor-not-allowed" : ""
+                  }`}
                 >
                   <span className="sr-only">Next</span>
-                  <IoChevronForwardOutline className="h-5 w-5 text-primary" aria-hidden="true" />
+                  <IoChevronForwardOutline
+                    className="h-5 w-5 text-primary"
+                    aria-hidden="true"
+                  />
                 </button>
               </nav>
             </div>
           </div>
         </div>
-
       </div>
       <SuggestedProfiles />
-
     </div>
-  )
-}
+  );
+};

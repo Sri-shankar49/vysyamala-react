@@ -1,17 +1,25 @@
-import Married from "../../../assets/images/Married.png";
+import React from "react";
 
-interface MarriedSlickProps {
-  name: string;
+
+
+export interface happyStoriesType {
+  couple_name: string;
+  details: string;
+  photo: string;
 }
 
-const MarriedSlick: React.FC<MarriedSlickProps> = ({ name }) => {
+interface MarriedSlickProps {
+  data: happyStoriesType;
+}
+
+const MarriedSlick: React.FC<MarriedSlickProps> = ({ data }) => {
   return (
     <div className="mx-3">
       <div className="relative">
-        <img src={Married} alt={name} />
+        <img src={data.photo} alt={data.couple_name} />
 
         <div className="absolute bottom-8 left-10 text-white">
-          <h1 className="text-xl">{name}</h1>
+          <h1 className="text-xl">{data.couple_name}</h1>
         </div>
       </div>
     </div>

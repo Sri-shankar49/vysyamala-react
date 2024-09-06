@@ -2,13 +2,21 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import TestimonialSlick from "./ReviewTestimonial/TestimonialSlick";
-import TestimonialAvatar from "../../assets/images/TestimonialAvatar.png";
 import { FaArrowRight } from "react-icons/fa6";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 interface SlickArrowProps {
   onClick: () => void;
 }
-
+export interface TestimonialType {
+  profile_id:string;
+  rating: number;
+  review_content: string;
+  user_image: string;
+  
+  date: string; // or Date if you want to handle it as a Date object
+}
 const SlickNextArrow: React.FC<SlickArrowProps> = ({ onClick }) => {
   return (
     <div
@@ -36,12 +44,20 @@ const ReviewsTestimonial = () => {
     cssEase: "linear",
     pauseOnHover: true,
     rtl: true,
-    nextArrow: <SlickNextArrow onClick={function (): void {
-      throw new Error("Function not implemented.");
-    }} />,
-    prevArrow: <SlickPrevArrow onClick={function (): void {
-      throw new Error("Function not implemented.");
-    }} />,
+    nextArrow: (
+      <SlickNextArrow
+        onClick={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
+    ),
+    prevArrow: (
+      <SlickPrevArrow
+        onClick={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+      />
+    ),
 
     responsive: [
       {
@@ -70,6 +86,19 @@ const ReviewsTestimonial = () => {
     ],
   };
 
+  const [testMonial, setTestiMonial] = useState<TestimonialType[]>([]);
+  const happyStories = async () => {
+    const response = await axios.post(
+      "http://103.214.132.20:8000/auth/Testimonials/"
+    );
+
+    setTestiMonial(response.data.data);
+    return response.data;
+  };
+  useEffect(() => {
+    happyStories();
+  }, []);
+ 
   return (
     <div className="">
       <div className="container pt-14 pb-20">
@@ -82,7 +111,17 @@ const ReviewsTestimonial = () => {
 
         <div className="mt-10 slider-container relative">
           <Slider {...settings}>
-            <TestimonialSlick
+          {testMonial.map((testimonial, index) => (
+        <TestimonialSlick
+          key={index}
+          desc={testimonial.review_content}
+          img={testimonial.user_image}
+          name={testimonial.profile_id}
+          datedOn={testimonial.date}
+          rating={testimonial.rating}
+        />
+      ))}
+            {/* <TestimonialSlick
               desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint velit officia consequat duis enim velit mollit exercitation veniam."
               img={TestimonialAvatar}
               name="Kristin Watson"
@@ -93,13 +132,7 @@ const ReviewsTestimonial = () => {
               img={TestimonialAvatar}
               name="Kristin Watson"
               datedOn="Jun 27, 2020 · 6 min read"
-            />
-            <TestimonialSlick
-              desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint velit officia consequat duis enim velit mollit exercitation veniam."
-              img={TestimonialAvatar}
-              name="Kristin Watson"
-              datedOn="Jun 27, 2020 · 6 min read"
-            />
+            /> */}
           </Slider>
         </div>
       </div>

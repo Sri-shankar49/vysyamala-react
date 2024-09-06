@@ -16,165 +16,188 @@ import MatchingScore from "../ProfileDetails/MatchingScore";
 import { useNavigate } from "react-router-dom";
 // Define types for API response
 interface Profile {
-    visited_profileid: string;
-    visited_profile_name: string;
-    visited_Profile_img: string;
-    visited_profile_age: number;
+  visited_profileid: string;
+  visited_profile_name: string;
+  visited_Profile_img: string;
+  visited_profile_age: number;
+  visited_verified: number;
+  visited_match_score: number;
 }
 
 interface ApiResponse {
-    Status: number;
-    message: string;
-    data: {
-        profiles: Profile[];
-    };
+  Status: number;
+  message: string;
+  data: {
+    profiles: Profile[];
+  };
 }
+type ViewedProfilesCardProps = {
+  pageNumber: number;
+  dataPerPage: number;
+};
+export const ViewedProfilesCard: React.FC<ViewedProfilesCardProps> = ({ pageNumber, dataPerPage }) => {
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [isBookmarked, setIsBookmarked] = useState<Record<string, boolean>>({});
+  const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
+  const navigate = useNavigate();
+  useEffect(() => {
+    // Fetch the data from the API
+    axios
+      .post<ApiResponse>(
+        "http://103.214.132.20:8000/auth/My_viewed_profiles/",
+        {
+          profile_id: loginuser_profileId, // Send profile_id in the request body
+          page_number: pageNumber,
+        }
+      )
+      .then((response) => {
+        if (response.data.Status === 1) {
+          setProfiles(response.data.data.profiles);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching profiles:", error);
+      });
+  }, [loginuser_profileId, pageNumber]); // Include profile_id in the dependency array if it can change
 
-export const ViewedProfilesCard = () => {
-    const [profiles, setProfiles] = useState<Profile[]>([]);
-    const [isBookmarked, setIsBookmarked] = useState<Record<string, boolean>>({});
-    const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
-    const navigate = useNavigate();
-    useEffect(() => {
-        // Fetch the data from the API
-        axios.post<ApiResponse>("http://103.214.132.20:8000/auth/My_viewed_profiles/", {
-            profile_id: loginuser_profileId // Send profile_id in the request body
-        })
-            .then(response => {
-                if (response.data.Status === 1) {
-                    setProfiles(response.data.data.profiles);
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching profiles:", error);
-            });
-    }, [loginuser_profileId]); // Include profile_id in the dependency array if it can change
+  const handleBookmark = (profileId: string) => {
+    setIsBookmarked((prevState) => ({
+      ...prevState,
+      [profileId]: !prevState[profileId],
+    }));
+  };
+  const handleProfileClick = (profileId: string) => {
+    navigate(`/ProfileDetails?id=${profileId}`);
+  };
 
-    const handleBookmark = (profileId: string) => {
-        setIsBookmarked(prevState => ({
-            ...prevState,
-            [profileId]: !prevState[profileId]
-        }));
-    };
-    const handleProfileClick = (profileId: string) => {
-        navigate(`/ProfileDetails?id=${profileId}`);
-    };
-    return (
-        <div className="border-b-[1px] border-footer-text-gray">
-            {profiles.map(profile => (
-                <div key={profile.visited_profileid} className="flex justify-start items-center space-x-5 relative rounded-xl shadow-sm py-5">
-                    <div className="w-full flex justify-between items-center">
-                        <div className="flex justify-between items-center space-x-5">
-                            {/* Profile Image */}
-                            <div className="relative">
-                                <img src={profile.visited_Profile_img || ProfileListImg} alt="Profile-image" className="rounded-[6px]" />
+  console.log(profiles, "profilesssssss");
+  return (
+    <div className="border-b-[1px] border-footer-text-gray">
+      {profiles.map((profile) => (
+        <div
+          key={profile.visited_profileid}
+          className="flex justify-start items-center space-x-5 relative rounded-xl shadow-sm py-5"
+        >
+          <div className="w-full flex justify-between items-center">
+            <div className="flex justify-between items-center space-x-5">
+              {/* Profile Image */}
+              <div className="relative">
+                <img
+                  src={profile.visited_Profile_img || ProfileListImg}
+                  alt="Profile-image"
+                  className="rounded-[6px]"
+                />
 
-                                {isBookmarked[profile.visited_profileid] ? (
-                                    <MdBookmark
-                                        onClick={() => handleBookmark(profile.visited_profileid)}
-                                        className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                                    />
-                                ) : (
-                                    <MdBookmarkBorder
-                                        onClick={() => handleBookmark(profile.visited_profileid)}
-                                        className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
-                                    />
-                                )}
-                            </div>
+                {isBookmarked[profile.visited_profileid] ? (
+                  <MdBookmark
+                    onClick={() => handleBookmark(profile.visited_profileid)}
+                    className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  />
+                ) : (
+                  <MdBookmarkBorder
+                    onClick={() => handleBookmark(profile.visited_profileid)}
+                    className="absolute top-2 right-2 text-white text-[22px] cursor-pointer"
+                  />
+                )}
+              </div>
 
-                            {/* Profile Details */}
-                            <div className="">
-                                {/* Name & Profile ID */}
-                                <div className="relative mb-2">
-                                    <div className="flex items-center">
-                                        <h5 className="text-[20px] text-secondary font-semibold cursor-pointer"
-                                            onClick={() => handleProfileClick(profile.visited_profileid)}
-                                        >
-                                            {profile.visited_profile_name || "Unknown"}{" "}
-                                            <span className="text-sm text-ashSecondary">
-                                                ({profile.visited_profileid || "N/A"})
-                                            </span>
-                                        </h5>
+              {/* Profile Details */}
+              <div className="">
+                {/* Name & Profile ID */}
+                <div className="relative mb-2">
+                  <div className="flex items-center">
+                    <h5
+                      className="text-[20px] text-secondary font-semibold cursor-pointer"
+                      onClick={() =>
+                        handleProfileClick(profile.visited_profileid)
+                      }
+                    >
+                      {profile.visited_profile_name || "Unknown"}{" "}
+                      <span className="text-sm text-ashSecondary">
+                        ({profile.visited_profileid || "N/A"})
+                      </span>
+                    </h5>
+                    {profile.visited_verified === 1 && (
+                      <MdVerifiedUser className="text-[20px] text-checkGreen ml-2" />
+                    )}
+                  </div>
+                </div>
 
-                                        <MdVerifiedUser className="text-[20px] text-checkGreen ml-2" />
-                                    </div>
-                                </div>
+                {/* Age */}
+                <div className="flex items-center space-x-3 mb-2">
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <IoCalendar className="mr-2" />
+                    {profile.visited_profile_age || "N/A"} yrs
+                  </p>
+                </div>
 
+                {/* Other Details */}
+                <div className="mb-2">
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <MdStars className="mr-2" />
+                    Uthiram
+                  </p>
+                </div>
+                <div className="mb-2">
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <IoSchool className="mr-2" />
+                    Bachelors - Arts/Science/Commerce/B Phil
+                  </p>
+                </div>
+                <div className="mb-2">
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <FaSuitcase className="mr-2" />
+                    Employed
+                  </p>
+                </div>
+                <div className="mb-2">
+                  <p className="flex items-center text-ashSecondary font-semibold">
+                    <FaLocationDot className="mr-2" />
+                    Chennai
+                  </p>
+                </div>
 
-                                {/* Age */}
-                                <div className="flex items-center space-x-3 mb-2">
-                                    <p className="flex items-center text-ashSecondary font-semibold">
-                                        <IoCalendar className="mr-2" />
-                                        {profile.visited_profile_age || "N/A"} yrs
-                                    </p>
-                                </div>
+                {/* Tags */}
+                <div className="flex justify-start items-center space-x-3">
+                  <div>
+                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                      <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
+                    </p>
+                  </div>
+                  <div>
+                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                      <FaUser className="mr-2" /> Active user
+                    </p>
+                  </div>
+                  <div>
+                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                      <IoCalendar className="mr-2" /> Last visit on June 30,
+                      2024
+                    </p>
+                  </div>
+                  <div>
+                    <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
+                      <IoEye className="mr-2" /> 31 views
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                                {/* Other Details */}
-                                <div className="mb-2">
-                                    <p className="flex items-center text-ashSecondary font-semibold">
-                                        <MdStars className="mr-2" />
-                                        Uthiram
-                                    </p>
-                                </div>
-                                <div className="mb-2">
-                                    <p className="flex items-center text-ashSecondary font-semibold">
-                                        <IoSchool className="mr-2" />
-                                        Bachelors - Arts/Science/Commerce/B Phil
-                                    </p>
-                                </div>
-                                <div className="mb-2">
-                                    <p className="flex items-center text-ashSecondary font-semibold">
-                                        <FaSuitcase className="mr-2" />
-                                        Employed
-                                    </p>
-                                </div>
-                                <div className="mb-2">
-                                    <p className="flex items-center text-ashSecondary font-semibold">
-                                        <FaLocationDot className="mr-2" />
-                                        Chennai
-                                    </p>
-                                </div>
-
-                                {/* Tags */}
-                                <div className="flex justify-start items-center space-x-3">
-                                    <div>
-                                        <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                                            <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                                            <FaUser className="mr-2" /> Active user
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                                            <IoCalendar className="mr-2" /> Last visit on June 30, 2024
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                                            <IoEye className="mr-2" /> 31 views
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Matching Score */}
-                        <div>
-                            <div>
-                                {/* <img
+            {/* Matching Score */}
+            <div>
+              <div>
+                {/* <img
                                     src={MatchingScoreImg}
                                     alt="Matching Score"
                                     className="w-full"
                                 /> */}
-                                <MatchingScore />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ))}
+                <MatchingScore scorePercentage={profile.visited_match_score} />
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      ))}
+    </div>
+  );
 };

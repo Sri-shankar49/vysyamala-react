@@ -1,9 +1,20 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { fetchProfiles } from '../../../commonapicall'; // Adjust the path as needed
-import { ListCard } from './ProfileCard/ListCard'; // Adjust the path as needed
-import { Profile, ProfileContext } from '../../../ProfileContext'; // Adjust the path as needed
+import React, { useState, useEffect, useContext } from "react";
+import { fetchProfiles } from "../../../commonapicall"; // Adjust the path as needed
+import { ListCard } from "./ProfileCard/ListCard"; // Adjust the path as needed
+import { Profile, ProfileContext } from "../../../ProfileContext"; // Adjust the path as needed
+import Spinner from "../../Spinner";
 
-export const ListView: React.FC = () => {
+export interface SearchResultProps {
+  profile_name: string;
+  profile_id: any;
+  profile_age: any;
+  height: any;
+  profile_img?: string;
+}
+
+
+
+export const ListView: React.FC<SearchResultProps> = () => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,11 +25,17 @@ export const ListView: React.FC = () => {
     throw new Error("MyComponent must be used within a ProfileProvider");
   }
 
-  const { MatchingProfilepageNumber, MatchingProfileperPage, sortOrder } = context;
-  const advanceSearchData = sessionStorage.getItem("advance_search_data")
-    ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
-    : null;
-
+  const {
+    MatchingProfilepageNumber,
+    MatchingProfileperPage,
+    sortOrder,
+    matchingProfileSearchId,
+    advanceSearchData
+ 
+  } = context;
+  // const advanceSearchData = sessionStorage.getItem("advance_search_data")
+  //   ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
+  //   : null;
 
   // useEffect(()=>{
   //   if(advanceSearchData){
@@ -29,27 +46,42 @@ export const ListView: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+        const loginuser_profileId = sessionStorage.getItem(
+          "loginuser_profile_id"
+        );
 
         if (!loginuser_profileId) {
-          throw new Error('Profile ID is missing.');
+          throw new Error("Profile ID is missing.");
         }
 
-        const data = await fetchProfiles(loginuser_profileId, MatchingProfilepageNumber, MatchingProfileperPage, sortOrder);
+        const data = await fetchProfiles(
+          loginuser_profileId,
+          MatchingProfilepageNumber,
+          MatchingProfileperPage,
+          sortOrder,
+        );
         setProfiles(data.profiles); // Adjust based on the actual response structure
       } catch (error) {
-        console.error('Error fetching profiles:', error);
-        setError('Failed to fetch profiles.');
+        console.error("Error fetching profiles:", error);
+        setError("Failed to fetch profiles.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [MatchingProfilepageNumber, MatchingProfileperPage, sortOrder]);
+  }, [
+    MatchingProfilepageNumber,
+    MatchingProfileperPage,
+    sortOrder,
+    matchingProfileSearchId,
+  ]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Spinner />;
   if (error) return <div>{error}</div>;
+
+  const searchvalue = sessionStorage.getItem("searchvalue") || " ";
+  console.log(searchvalue);
 
   return (
     <div className="list-view">
@@ -57,12 +89,12 @@ export const ListView: React.FC = () => {
         advanceSearchData.map((profile: Profile) => (
           <ListCard key={profile.profile_id} profile={profile} />
         ))
-      ) : profiles.length > 0 ? (
+      ) : profiles.length > 0 && searchvalue !== "1" ? (
         profiles.map((profile: Profile) => (
           <ListCard key={profile.profile_id} profile={profile} />
         ))
-      ) : (
-        <div>No profiles found.</div>
+      ): (
+        <p>No profiles available</p>
       )}
     </div>
   );

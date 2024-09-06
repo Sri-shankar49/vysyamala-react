@@ -1,11 +1,9 @@
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import {Notification} from "../../Components/LoginHeader"
 
+import { useEffect, useState } from "react";
+import { Notification } from "../../Components/LoginHeader";
 
 export const Notifications = () => {
-
   const [NotificationData, setNotificationData] = useState<Notification[]>([]);
   const userId = sessionStorage.getItem("loginuser_profile_id");
   const getNotification = () => {
@@ -23,11 +21,10 @@ export const Notifications = () => {
         );
       });
   };
-  console.log("aaa", NotificationData)
+  console.log("aaa", NotificationData);
   useEffect(() => {
-    getNotification()
-  }, [])
-
+    getNotification();
+  }, []);
 
   return (
     <>
@@ -43,15 +40,19 @@ export const Notifications = () => {
                 <>
                   <div className="bg-lightFade-pink flex items-start border-b-[1px] border-gray px-3 py-3 space-x-5">
                     <div>
-                      <img src={data.notify_img} alt="Harini Image" className="w-full" />
+                      <img
+                        src={data.notify_img}
+                        alt="Harini Image"
+                        className="w-full"
+                      />
                     </div>
                     <div className="">
                       <h5 className="text-lg text-vysyamalaBlack font-semibold">
-                        {data.from_profile_id} {data.
-                          message_titile}
+                        {data.from_profile_id} {data.message_titile}
                       </h5>
                       <p className="text-md text-ashSecondary font-normal mb-3">
-                        I am interested in your profile. If you are interested in my profile, please contact me.
+                        I am interested in your profile. If you are interested
+                        in my profile, please contact me.
                       </p>
 
                       {data.notification_type === "express_interests" ? (
@@ -71,18 +72,9 @@ export const Notifications = () => {
                 </>
               ))}
             </div>
-
-            <div className="text-center px-3 py-3">
-              <Link to="/Notifications">
-                <button className="w-full rounded-md text-lg text-white bg-gradient py-3 font-semibold">
-                  See previous notifications
-                </button>
-              </Link>
-            </div>
           </div>
         </div>
       </div>
-
     </>
-  )
-}
+  );
+};

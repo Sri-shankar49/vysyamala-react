@@ -2,15 +2,27 @@ import { useContext, useEffect, useState } from "react";
 import { fetchProfiles } from "../../../commonapicall";
 import { GridCard } from "./ProfileCard/GridCard";
 import { Profile, ProfileContext } from "../../../ProfileContext";
+import Spinner from "../../Spinner";
 
-export const GridView = () => {
+export interface SearchResultProps {
+  profile_name: string;
+  profile_id: any;
+  profile_age: any;
+  height: any;
+  profile_img?: string;
+  searchResult: any; // Replace 'any' with the appropriate type if you know the structure
+}
+
+
+
+export const GridView: React.FC<SearchResultProps> = () => {
   const [profiles, setProfiles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
 
-  const advanceSearchData = sessionStorage.getItem("advance_search_data")
-    ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
-    : null;
+  // const advanceSearchData = sessionStorage.getItem("advance_search_data")
+  //   ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
+  //   : null;
 
   const context = useContext(ProfileContext);
 
@@ -18,7 +30,8 @@ export const GridView = () => {
     throw new Error("MyComponent must be used within a ProfileProvider");
   }
 
-  const { MatchingProfilepageNumber, MatchingProfileperPage, sortOrder } = context;
+  const { MatchingProfilepageNumber, MatchingProfileperPage, sortOrder,advanceSearchData } =
+    context;
 
   // useEffect(()=>{
   //   if(advanceSearchData){
@@ -41,6 +54,7 @@ export const GridView = () => {
           MatchingProfileperPage,
           sortOrder
         );
+        console.log(data.profiles, "dddd");
         setProfiles(data.profiles || []);
       } catch (error) {
         console.error("Error loading profiles:", error);
@@ -50,11 +64,17 @@ export const GridView = () => {
     };
 
     loadProfiles();
-  }, [loginuser_profileId, MatchingProfilepageNumber, MatchingProfileperPage, sortOrder]);
+  }, [
+    loginuser_profileId,
+    MatchingProfilepageNumber,
+    MatchingProfileperPage,
+    sortOrder,
+  ]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   }
+  const searchvalue = sessionStorage.getItem("searchvalue") || " ";
 
   return (
     <div>
@@ -63,11 +83,11 @@ export const GridView = () => {
           advanceSearchData.map((profile: Profile) => (
             <GridCard key={profile.profile_id} profile={profile} />
           ))
-        ) : profiles.length > 0 ? (
-          profiles.map((profile) => (
+        ) : profiles.length > 0 && searchvalue !== "1" ? (
+          profiles.map((profile: Profile) => (
             <GridCard key={profile.profile_id} profile={profile} />
           ))
-        ) : (
+        )  : (
           <p>No profiles available</p>
         )}
       </div>

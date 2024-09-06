@@ -80,13 +80,29 @@ interface MatchingStar {
   source_star_id: number;
 }
 
+export interface StarAndRasiItem {
+  id: string;
+  matching_starId: string;
+  matching_starname: string;
+  matching_rasiId: string;
+  matching_rasiname: string;
+}
+
+// Type for selectedStarIds
+export interface SelectedStarIdItem {
+  id: string;
+  rasi: string;
+  star: string;
+  label: string;
+}
+
 const PartnerSettings: React.FC = () => {
   const [eduPref, setEduPref] = useState<EduPref[]>([]);
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
   const [matchStars, setMatchStars] = useState<MatchingStar[][]>([]);
   const [maritalStatuses, setMaritalStatuses] = useState<MaritalStatus[]>([]);
-  const [selectedStarIds, setSelectedStarIds] = useState<string[]>([]);
-  const [selectedStarId, setSelectedStarId] = useState<string[]>([]);
+  const [selectedStarIds, setSelectedStarIds] = React.useState<SelectedStarIdItem[]>([]);
+  // const [selectedStarId, setSelectedStarId] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<
     string[]
@@ -100,9 +116,9 @@ const PartnerSettings: React.FC = () => {
   const [selectedStudent, setSelectedStudent] = useState(false);
   const [selectedNotWorking, setSelectedNotWorking] = useState(false);
   const [selectedNotMentioned, setSelectedNotMentioned] = useState(false);
-  const [selectedStarRasiPairs, setSelectedStarRasiPairs] = useState<string[]>(
-    []
-  );
+  // const [selectedStarRasiPairs, setSelectedStarRasiPairs] = useState<string[]>(
+  //   []
+  // );
 
   const {
     register,
@@ -174,12 +190,18 @@ const PartnerSettings: React.FC = () => {
   const onSubmit: SubmitHandler<PartnerSettingsInputs> = async (data) => {
     setIsSubmitting(true);
     console.log("Form data:", data);
-    const StarRasiString = selectedStarRasiPairs.join(",");
-    console.log(StarRasiString);
-    const StarString = selectedStarIds.join(",");
+  
+    const starArray = selectedStarIds.map(item => item.id);
+    const starRasiArray = selectedStarIds.map(item => `${item.star}-${item.rasi}`);
+
+    // Create a comma-separated string for each array
+    const StarString = starArray.join(',');
+    const combinedString = starRasiArray.join(',');
+
     console.log(StarString);
+    console.log(combinedString);
+
     const MaritalValues = selectedMaritalStatuses.join(",");
-    console.log(StarString);
     const EducationalValues = selectedEducations.join(",");
     console.log(EducationalValues);
     const IncomeValues = selectedAnnualIncomes.join(",");
@@ -211,7 +233,7 @@ const PartnerSettings: React.FC = () => {
         pref_ragukethu: data.rehu,
         pref_foreign_intrest: foreignInterestValue,
         pref_porutham_star: StarString,
-        pref_porutham_star_rasi: StarRasiString,
+        pref_porutham_star_rasi: combinedString,
         status: "1",
       };
 
@@ -402,64 +424,16 @@ const PartnerSettings: React.FC = () => {
     }
   }, [setValue]);
 
-  const handleCheckboxChange = (
-    updatedIds: string[],
-    rasi: string,
-    star: string
-  ) => {
-    // Update the state with the new set of selected star IDs
-    setSelectedStarId((prevIds) => {
-      // Create a Set to remove duplicate star IDs
-      const allIds = new Set([
-        ...prevIds,
-        star, // Use `star` directly if it's a single ID
-      ]);
-
-      // Convert Set back to an array
-      return Array.from(allIds);
-    });
-
-    setSelectedStarIds((prevsIds) => {
-      // Create a Set to remove duplicate star IDs
-      const allIds = new Set([
-        ...prevsIds,
-        ...updatedIds, // Use `star` directly if it's a single ID
-      ]);
-
-      // Convert Set back to an array
-      return Array.from(allIds);
-    });
-
-    // Log the selected Rasi, Star, and Updated Star IDs for debugging
-    console.log("Selected Rasi:", rasi);
-    console.log("Selected Star:", star);
-    console.log("Updated Star IDs:", updatedIds);
-
-    // Create pairs of each star ID with the provided rasi and star
-    const newPairs = updatedIds.map(() => `${star}-${rasi}`);
-
-    // Update the state with the new set of star-rasi pairs
-    setSelectedStarRasiPairs((prevPairs) => {
-      // Create a Set to remove duplicate pairs
-      const allPairs = new Set([...prevPairs, ...newPairs]);
-
-      // Convert Set back to an array
-      return Array.from(allPairs);
-    });
+  const handleCheckboxChange = (updatedIds: SelectedStarIdItem[]) => {
+    setSelectedStarIds(updatedIds);
   };
 
-  console.log(selectedStarRasiPairs);
-  console.log(selectedStarId);
+
   console.log(selectedStarIds);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  //console.log(selectedStarIds);
-  // console.log(selectedMaritalStatuses);
-  // console.log(selectedProfessions);
-  // console.log(selectedEducations);
-  // console.log(selectedAnnualIncomes);
 
   return (
     <div className="pb-20">
@@ -871,29 +845,33 @@ const PartnerSettings: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               {/* Other input fields */}
               <div className="justify-start items-center gap-x-5">
-                {matchStars
-                  .sort((a, b) => b[0].match_count - a[0].match_count)
-                  .map((matchCountArray, index) => {
-                    const starAndRasi = matchCountArray.map((star) => ({
-                      id: star.id.toString(),
-                      matching_starId: star.dest_star_id.toString(), // Use star name instead of id
-                      matching_starname: star.matching_starname, // Use star name instead of id
-                      matching_rasiId: star.dest_rasi_id.toString(), // Use rasi name instead of id
-                      matching_rasiname: star.matching_rasiname, // Use rasi name instead of id
-                    }));
+                {matchStars.length > 0 ? (
+                  matchStars
+                    .sort((a, b) => b[0].match_count - a[0].match_count) // Sort by match_count
+                    .map((matchCountArray, index) => {
+                      const starAndRasi = matchCountArray.map(star => ({
+                        id: star.id.toString(),
+                        matching_starId: star.dest_star_id.toString(),
+                        matching_starname: star.matching_starname,
+                        matching_rasiId: star.dest_rasi_id.toString(),
+                        matching_rasiname: star.matching_rasiname,
+                      }));
 
-                    const matchCountValue = matchCountArray[0].match_count;
+                      const matchCountValue = matchCountArray[0].match_count;
 
-                    return (
-                      <MatchingStars
-                        key={index}
-                        initialPoruthas={`No of porutham ${matchCountValue}`}
-                        starAndRasi={starAndRasi}
-                        selectedStarIds={selectedStarIds}
-                        onCheckboxChange={handleCheckboxChange} // Pass the updated function
-                      />
-                    );
-                  })}
+                      return (
+                        <MatchingStars
+                          key={index}
+                          initialPoruthas={`No of porutham ${matchCountValue}`}
+                          starAndRasi={starAndRasi}
+                          selectedStarIds={selectedStarIds}
+                          onCheckboxChange={handleCheckboxChange}
+                        />
+                      );
+                    })
+                ) : (
+                  <p>No match stars available</p>
+                )}
               </div>
             </form>
           </div>

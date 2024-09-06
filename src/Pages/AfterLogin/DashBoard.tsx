@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashBoardGrid } from "../../Components/DashBoard/DashBoardGrid";
 import { DashBoardMutualInterest } from "../../Components/DashBoard/DashBoardMutualInterest";
 import { DashBoardWishlist } from "../../Components/DashBoard/DashBoardWishlist";
@@ -9,7 +9,8 @@ import { InterestSent } from "../../Components/DashBoard/InterestSent";
 import { ViewedProfiles } from "../../Components/DashBoard/ViewedProfiles";
 import { MyVisitors } from "../../Components/DashBoard/MyVisitors";
 import { PersonalNotes } from "../../Components/DashBoard/PersonalNotes";
-import PhotoRequest  from "../../Components/DashBoard/PhotoRequest";
+import PhotoRequest from "../../Components/DashBoard/PhotoRequest";
+import { VysAssist } from "../../Components/DashBoard/VysAssist";
 
 
 
@@ -26,8 +27,14 @@ export const DashBoard = () => {
   const [showViewedProfiles, setShowViewedProfiles] = useState(false);
   const [showMyVisitors, setShowMyVisitors] = useState(false);
   const [showPersonalNotes, setShowPersonalNotes] = useState(false);
+  const [showVysAssist, setShowVysAssist] = useState(false);
   const [showOtherSettings, setShowOtherSettings] = useState(false);
   const [showPhotoRequest, setShowPhotoRequest] = useState(false);
+
+  useEffect(() => {
+    sessionStorage.removeItem('searchvalue');
+  }, []);
+
 
   return (
     <div>
@@ -36,7 +43,7 @@ export const DashBoard = () => {
           dashBoardAgain={() => setShowProfileDetails(false)}
         />
       ) : showPhotoRequest ? (
-        <PhotoRequest dashBoardAgain={()=>setShowPhotoRequest(false)} />
+        <PhotoRequest dashBoardAgain={() => setShowPhotoRequest(false)} />
       ) : showDashBoardMutualInterest ? (
         <DashBoardMutualInterest
           dashBoardAgain={() => setShowDashBoardMutualInterest(false)}
@@ -57,6 +64,8 @@ export const DashBoard = () => {
         <MyVisitors dashBoardAgain={() => setShowMyVisitors(false)} />
       ) : showPersonalNotes ? (
         <PersonalNotes dashBoardAgain={() => setShowPersonalNotes(false)} />
+      ) : showVysAssist ? (
+        <VysAssist dashBoardAgain={() => setShowVysAssist(false)} />
       ) : showOtherSettings ? (
         <OtherSettings dashBoardAgain={() => setShowOtherSettings(false)} />
       ) : (
@@ -77,6 +86,7 @@ export const DashBoard = () => {
           onPhotoRequest={() => setShowPhotoRequest(true)}
           // Optional Cards
           onPersonalNotes={() => setShowPersonalNotes(true)}
+          onVysAssist={() => setShowVysAssist(true)}
           onOtherSettings={() => setShowOtherSettings(true)}
         />
       )}

@@ -4,11 +4,11 @@ import ProfileImg from "../assets/icons/profileRound.png";
 import { MdMessage } from "react-icons/md";
 import { FaBell } from "react-icons/fa";
 // import NotificationsImg from "../assets/images/NotificationsImg.png";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink , useNavigate} from "react-router-dom";
 import { FaCircleUser } from "react-icons/fa6";
 import { MdManageAccounts } from "react-icons/md";
 import { FiLogOut } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 
 export interface Notification {
@@ -28,7 +28,11 @@ export const LoginHeader: React.FC = () => {
   // Retrieve token from sessionStorage
   // const token = sessionStorage.getItem("token");
   const userId = sessionStorage.getItem("loginuser_profile_id");
-  const navigate = useNavigate();
+
+
+  // const handleClick = () => {
+  //   navigate('/MyProfile/#ProfileDetailsSettings');
+  // };
   // Function to handle logout
   const handleLogout = () => {
     sessionStorage.clear();
@@ -38,14 +42,14 @@ export const LoginHeader: React.FC = () => {
     sessionStorage.removeItem("userImages");
     window.location.href = "/";
   };
-
+const navigate=useNavigate()
   // Notification Dropdown State Declaration
   const [isNotificationVisible, setIsNotificationVisible] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [NotificationData, setNotificationData] = useState<Notification[]>([]);
   const [notificationCount, setNotificationCount] = useState<number>(0);
   const userProfileImage = sessionStorage.getItem("user_profile_image");
-
+  console.log(userProfileImage, "userProfileImage ");
   // const handleNotificationClick = (e) => {
   //   e.stopPropagation(); // Prevent the click event from propagating to the document
   //   setIsNotificationVisible(!isNotificationVisible);
@@ -127,6 +131,7 @@ export const LoginHeader: React.FC = () => {
   useEffect(() => {
     getNotification();
   }, []);
+
   return (
     <div>
       <div>
@@ -355,7 +360,10 @@ export const LoginHeader: React.FC = () => {
                     href="#"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray"
                   >
-                    <MdManageAccounts className="text-[18px] inline mr-2" />{" "}
+                    <MdManageAccounts
+                    
+                      className="text-[18px] inline mr-2"
+                    />{" "}
                     Settings
                   </a>
                   <a

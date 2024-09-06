@@ -21,12 +21,13 @@ export const ContactView: React.FC = () => {
     const { user_profile_id } = useParams<{ user_profile_id: string }>();
     const queryParams = new URLSearchParams(location.search);
     const id = queryParams.get('id');
+    const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
 
     useEffect(() => {
         const fetchContactDetails = async () => {
           try {
             const response = await axios.post("http://103.214.132.20:8000/auth/Get_profile_det_match/", {
-              profile_id: "VY240014",
+              profile_id: loginuser_profileId,
               user_profile_id:id
             });
       
@@ -52,7 +53,7 @@ export const ContactView: React.FC = () => {
         };
       
         fetchContactDetails();
-      }, [user_profile_id]);
+      }, [id]);
       
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;

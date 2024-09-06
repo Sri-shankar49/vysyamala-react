@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { RiDraggable } from "react-icons/ri";
 import { AiOutlineClose } from "react-icons/ai";
+import apiClient from "../../API";
+
 
 interface AmsamGridProps {
   centerLabel: string;
-  data: string;
-  onChange: (newData: string) => void;
 }
 
 interface Label {
@@ -14,42 +14,137 @@ interface Label {
   name: string;
 }
 
-const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel, data, onChange }) => {
-  const initialLabels: Label[] = useMemo(() => [
-    { id: 1, name: "Raghu/Rahu" },
-    { id: 2, name: "Mars/Chevai" },
-    { id: 3, name: "Jupiter/Guru" },
-    { id: 4, name: "Mercury/Budhan" },
-    { id: 5, name: "Saturn/Sani" },
-    { id: 6, name: "Lagnam" },
-    { id: 7, name: "Sun/Suriyan" },
-    { id: 8, name: "Venus/Sukran" },
-    { id: 9, name: "Moon/Chandran" },
-    { id: 10, name: "Kethu/Ketu" },
-  ], []);
+const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel }) => {
+  const initialLabels: Label[] = useMemo(
+    () => [
+      { id: 8, name: "Raghu/Rahu" },
+      { id: 3, name: "Mars/Chevai" },
+      { id: 5, name: "Jupiter/Guru" },
+      { id: 4, name: "Mercury/Budhan" },
+      { id: 7, name: "Saturn/Sani" },
+      { id: 10, name: "Lagnam" },
+      { id: 1, name: "Sun/Suriyan" },
+      { id: 6, name: "Venus/Sukran" },
+      { id: 2, name: "Moon/Chandran" },
+      { id: 9, name: "Kethu/Ketu" },
+    ],
+    []
+  );
 
   const [labels, setLabels] = useState<Label[]>(initialLabels);
-  const [amsamContents, setAmsamContents] = useState<string[][]>(Array(12).fill([]));
+  const [amsamContents, setAmsamContents] = useState<string[][]>(
+    Array(12).fill([])
+  );
   const location = useLocation();
 
   useEffect(() => {
-    if (data) {
-      const formattedDatamsamval = data.slice(1, -1).split(', ').map((grid) => {
-        const match = grid.match(/Grid \d+: (.+)/);
-        return match ? match[1].split(',').map(id => parseInt(id, 10)) : [];
-      });
+    const fetchProfileData = async () => {
+      const profileId =
+        sessionStorage.getItem("profile_id_new") ||
+        sessionStorage.getItem("loginuser_profile_id");
+      if (profileId) {
+        try {
+          const requestData = {
+            profile_id: profileId,
+            page_id: 5,
+          };
 
-      const newAmsamContents = formattedDatamsamval.map((ids) => {
-        return ids.map(id => initialLabels.find(label => label.id === id)?.name).filter(Boolean) as string[];
+          const response = await apiClient.post(
+            `/auth/Get_save_details/`,
+            requestData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          console.log("API Response Grid:", response.data); // Log the entire API response
+
+          const profileData = response.data.data; // Access the 'data' object directly
+
+          console.log("Profile Data Grid:", profileData); // Log the profile data
+
+          // console.log("rasi:",profileData.rasi_kattam);
+          // console.log("amsam:",profileData.amsa_kattam);
+
+          sessionStorage.setItem("formattedDatarasi", profileData.rasi_kattam);
+          sessionStorage.setItem("formattedDatamsam", profileData.amsa_kattam);
+
+          const formattedDatamsamval = sessionStorage.getItem("formattedDatamsam");
+          if (formattedDatamsamval) {
+            console.log(
+              "Retrieved formattedDatamsam from sessionStorage:",
+              formattedDatamsamval
+            );
+
+            // Parse the formatted data
+            const data = formattedDatamsamval
+              .slice(1, -1)
+              .split(", ")
+              .map((grid) => {
+                const match = grid.match(/Grid \d+: (.+)/);
+                return match ? match[1].split(",").map((id) => parseInt(id, 10)) : [];
+              });
+
+            // Map ids to labels and set the amsam contents
+            const newAmsamContents = data.map((ids) => {
+              return ids
+                .map((id) => initialLabels.find((label) => label.id === id)?.name)
+                .filter(Boolean) as string[];
+            });
+
+            setAmsamContents(newAmsamContents);
+          } else {
+            console.log("No formattedDatamsam found in sessionStorage");
+          }
+
+
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      } else {
+        console.warn("Profile ID not found in sessionStorage");
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
+  useEffect(() => {
+    const formattedDatamsamval = sessionStorage.getItem("formattedDatamsam");
+    if (formattedDatamsamval) {
+      console.log(
+        "Retrieved formattedDatamsam from sessionStorage:",
+        formattedDatamsamval
+      );
+
+      // Parse the formatted data
+      const data = formattedDatamsamval
+        .slice(1, -1)
+        .split(", ")
+        .map((grid) => {
+          const match = grid.match(/Grid \d+: (.+)/);
+          return match ? match[1].split(",").map((id) => parseInt(id, 10)) : [];
+        });
+
+      // Map ids to labels and set the amsam contents
+      const newAmsamContents = data.map((ids) => {
+        return ids
+          .map((id) => initialLabels.find((label) => label.id === id)?.name)
+          .filter(Boolean) as string[];
       });
 
       setAmsamContents(newAmsamContents);
-      const usedIds = formattedDatamsamval.flat();
-      setLabels(prevLabels => prevLabels.filter(label => !usedIds.includes(label.id)));
+    } else {
+      console.log("No formattedDatamsam found in sessionStorage");
     }
-  }, [location, initialLabels, data]);
+  }, [location, initialLabels]);
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, label: Label) => {
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    label: Label
+  ) => {
     e.dataTransfer.setData("labelId", label.id.toString());
     e.dataTransfer.setData("source", "amsam");
   };
@@ -58,48 +153,87 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel, data, onChange }) =>
     e.preventDefault();
   };
 
-  const handleDropRasiBox = (e: React.DragEvent<HTMLDivElement>, index: number) => {
+  const handleDropRasiBox = (
+    e: React.DragEvent<HTMLDivElement>,
+    index: number
+  ) => {
     e.preventDefault();
     const draggedLabelId = e.dataTransfer.getData("labelId");
     const source = e.dataTransfer.getData("source");
 
     if (source === "amsam" && draggedLabelId) {
-      const draggedLabel = labels.find((label) => label.id === parseInt(draggedLabelId, 10));
-      if (draggedLabel && !amsamContents[index].includes(draggedLabel.name) && amsamContents[index].length < 6) {
+      const draggedLabel = labels.find(
+        (label) => label.id === parseInt(draggedLabelId, 10)
+      );
+      if (
+        draggedLabel &&
+        !amsamContents[index].includes(draggedLabel.name) &&
+        amsamContents[index].length < 6
+      ) {
         const newContents = [...amsamContents];
         newContents[index] = [...newContents[index], draggedLabel.name];
         setAmsamContents(newContents);
-        setLabels((prevLabels) => prevLabels.filter((label) => label.id !== draggedLabel.id));
-        onChange(formatGridData(newContents));
+
+        setLabels((prevLabels) =>
+          prevLabels.filter((label) => label.id !== draggedLabel.id)
+        );
       }
     }
   };
 
   const handleRemoveLabel = (index: number, labelIndex: number) => {
+    // Create a copy of the current amsamContents state
     const newContents = [...amsamContents];
     const removedLabel = newContents[index][labelIndex];
+
+    // Remove the label from the copied state
     newContents[index].splice(labelIndex, 1);
     setAmsamContents(newContents);
 
-    const removedLabelObj = initialLabels.find((label) => label.name === removedLabel);
-    if (removedLabelObj) {
-      setLabels((prevLabels) => [...prevLabels, removedLabelObj]);
-    }
+    // Find the removed label object from the initialLabels
+    const removedLabelObj = initialLabels.find(
+      (label) => label.name === removedLabel
+    );
 
-    onChange(formatGridData(newContents));
+    // If the removed label object is found
+    if (removedLabelObj) {
+      setLabels((prevLabels) => {
+        // Check if the label already exists in the state
+        if (prevLabels.some((label) => label.name === removedLabel)) {
+          return prevLabels; // Return the current state if label is already present
+        }
+        // Add the label to the state if it's not already present
+        return [...prevLabels, removedLabelObj];
+      });
+    }
   };
 
-  const formatGridData = (gridContents: string[][]) => {
-    const formattedData = gridContents.map((contents, index) => {
-      const boxNumber = index + 1;
-      const ids = contents.map(label => initialLabels.find(l => l.name === label)?.id).filter(id => id !== undefined);
-      return `Grid ${boxNumber}: ${ids.length > 0 ? ids.join(",") : "empty"}`;
-    }).join(", ");
+
+  const formatGridData = () => {
+    const formattedData = amsamContents
+      .map((contents, index) => {
+        const boxNumber = index + 1;
+        const ids = contents
+          .map((label) => initialLabels.find((l) => l.name === label)?.id)
+          .filter((id) => id !== undefined);
+        return `Grid ${boxNumber}: ${ids.length > 0 ? ids.join(",") : "empty"}`;
+      })
+      .join(", ");
     return `{${formattedData}}`;
   };
 
+  useEffect(() => {
+    const formattedData = formatGridData();
+    console.log("Amsam Contents:");
+    console.log(formattedData);
+
+    // Store formattedData in sessionStorage
+    sessionStorage.setItem("formattedData1", JSON.stringify(formattedData));
+  }, [amsamContents]);
+
   return (
     <div className="flex justify-start items-start bg-gray-200 space-x-16">
+      {/* Labels */}
       <div className="flex flex-col space-y-2">
         {labels.map((label, index) => (
           <div
@@ -114,13 +248,24 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel, data, onChange }) =>
         ))}
       </div>
 
+      {/* Amsam Grid */}
       <div className="">
+        {/* Top Row */}
         <div className="col-span-3 grid grid-cols-4 gap-2">
+          {/* Define positions for the grid in a clockwise manner */}
           {[
-            { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 1, col: 3 }, { row: 1, col: 4 },
-            { row: 2, col: 4 }, { row: 3, col: 4 }, { row: 4, col: 4 },
-            { row: 4, col: 3 }, { row: 4, col: 2 }, { row: 4, col: 1 },
-            { row: 3, col: 1 }, { row: 2, col: 1 }
+            { row: 1, col: 1 },
+            { row: 1, col: 2 },
+            { row: 1, col: 3 },
+            { row: 1, col: 4 },
+            { row: 2, col: 4 },
+            { row: 3, col: 4 },
+            { row: 4, col: 4 },
+            { row: 4, col: 3 },
+            { row: 4, col: 2 },
+            { row: 4, col: 1 },
+            { row: 3, col: 1 },
+            { row: 2, col: 1 },
           ].map((pos, index) => (
             <div
               key={index}
@@ -141,6 +286,9 @@ const AmsamGrid: React.FC<AmsamGridProps> = ({ centerLabel, data, onChange }) =>
                   />
                 </div>
               ))}
+              {/* <div className="absolute top-0 left-0 m-1 text-xs font-bold text-gray-500">
+                {index + 1}
+              </div> */}
             </div>
           ))}
 

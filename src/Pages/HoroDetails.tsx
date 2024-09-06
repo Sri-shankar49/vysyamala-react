@@ -5,7 +5,7 @@ import arrow from "../assets/icons/arrow.png";
 import RasiGrid from "../Components/HoroDetails/RasiGrid";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as zod from "zod";
 import { DndProvider } from "react-dnd";
@@ -35,17 +35,17 @@ const schema = zod
     //dasaBalance: zod.string().min(1, "Dasa balance is required"),
     horoscopeHints: zod.string().min(1, "Horoscope hints are required"),
   })
-  .refine(
-    (data) => {
-      const { day, month, year } = data;
-      const date = new Date(`${year}-${month}-${day}`);
-      return date instanceof Date && !isNaN(date.valueOf());
-    },
-    {
-      message: "Invalid date",
-      path: ["day", "month", "year"],
-    }
-  );
+  // .refine(
+  //   (data) => {
+  //     const { day, month, year } = data;
+  //     const date = new Date(`${year}-${month}-${day}`);
+  //     return date instanceof Date && !isNaN(date.valueOf());
+  //   },
+  //   {
+  //     message: "Invalid date",
+  //     path: ["day", "month", "year"],
+  //   }
+  // );
 
 interface HoroDetailsInputs {
   day: string;
@@ -68,7 +68,7 @@ interface HoroDetailsInputs {
   minute: string;
 }
 
-interface HoroDetailsProps { }
+interface HoroDetailsProps {}
 
 interface BirthStar {
   birth_id: number;
@@ -94,16 +94,24 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     handleSubmit,
     formState: { errors },
     watch,
+    control,
     setValue,
   } = useForm<HoroDetailsInputs>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      day: "",
+      month: "",
+      year: "",
+    },
   });
 
   //const profileId = sessionStorage.getItem('profile_id_new');
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
+      const profileId =
+        sessionStorage.getItem("profile_id_new") ||
+        sessionStorage.getItem("loginuser_profile_id");
       if (profileId) {
         try {
           const requestData = {
@@ -130,8 +138,8 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           // console.log("rasi:",profileData.rasi_kattam);
           // console.log("amsam:",profileData.amsa_kattam);
 
-          sessionStorage.setItem("formattedDatarasi", profileData.rasi_kattam);
-          sessionStorage.setItem("formattedDatamsam", profileData.amsa_kattam);
+          // sessionStorage.setItem("formattedDatarasi", profileData.rasi_kattam);
+          // sessionStorage.setItem("formattedDatamsam", profileData.amsa_kattam);
 
           // Set other form values here after fetching data
           //setValue("timeOfBirth", profileData.time_of_birth);
@@ -148,8 +156,8 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           setSarpaDhosham(profileData.ragu_dosham);
 
           // Parse and set dasa_balance values
-          const dasaBalance = profileData.dasa_balance; // Assume this is the format you get: "day:3,month:2,year:4"
-          const [day, month, year] = dasaBalance
+          const dasaBalance1 = profileData.dasa_balance; // Assume this is the format you get: "day:3,month:2,year:4"
+          const [day, month, year] = dasaBalance1
             .split(",")
             .map((item: string) => item.split(":")[1]);
           setValue("day", day);
@@ -197,13 +205,6 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       console.log("No formattedData1 found in sessionStorage");
     }
 
-    const day = watch("day");
-    const month = watch("month");
-    const year = watch("year");
-
-    const dasaBalance = `day:${day},month:${month},year:${year}`;
-    console.log(dasaBalance);
-
     const hour = watch("hour");
     const minute = watch("minute");
     const period = watch("period");
@@ -243,11 +244,15 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       setIsSubmitting(false);
 
       if (response.data.Status === 1) {
+
         NotifySuccess("Horoscope details saved successfully");
 
         setTimeout(() => {
           navigate("/PartnerSettings");
         }, 2000);
+        sessionStorage.removeItem('formattedDatarasi');
+        sessionStorage.removeItem('formattedDatamsam');
+
       } else {
         NotifyError("Failed to upload Horoscope details");
         // Handle error or show message to the user
@@ -264,6 +269,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   const [lagnam, setLagnamOptions] = useState<Lagnam[]>([]);
   const [chevvaiDhosam, setChevvaiDhosam] = useState("");
   const [sarpaDhosham, setSarpaDhosham] = useState("");
+  const [dasaBalance, setDasaBalance] = useState<string>("");
 
   const selectedStar = watch("birthStar");
 
@@ -352,6 +358,50 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     setValue("timeOfBirth", formattedTime);
   };
 
+  const day = useWatch({ control, name: "day" });
+  const month = useWatch({ control, name: "month" });
+  const year = useWatch({ control, name: "year" });
+
+  useEffect(() => {
+    const balance = `day:${day},month:${month},year:${year}`;
+    setDasaBalance(balance);
+    console.log(balance); // Optional: Log the balance for debugging
+  }, [day, month, year]);
+
+  // OnChange function for day
+  const handleDayChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setValue("day", value); // Update the value in react-hook-form
+    console.log(`Day: ${value}`);
+  };
+
+  // OnChange function for month
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setValue("month", value); // Update the value in react-hook-form
+    console.log(`Month: ${value}`);
+  };
+
+  // OnChange function for year
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    setValue("year", value); // Update the value in react-hook-form
+    console.log(`Year: ${value}`);
+  };
+
+  useEffect(() => {
+    console.log(`Day: ${day}, Month: ${month}, Year: ${year}`);
+  }, [day, month, year]);
+
+  const [rasiKey, setRasiKey] = useState(Date.now());
+  const [amsamKey, setAmsamKey] = useState(Date.now());
+
+  useEffect(() => {
+    // Automatically update the key values when the component mounts
+    setRasiKey(Date.now());
+    setAmsamKey(Date.now());
+  }, []);
+
   return (
     <div className="pb-20">
       <ContentBlackCard
@@ -412,7 +462,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           <div>
             <InputField
               label={"Place of Birth"}
-              {...register("placeOfBirth", { setValueAs: (value) => value.trim() })}
+              {...register("placeOfBirth", {
+                setValueAs: (value) => value.trim(),
+              })}
             />
             {errors.placeOfBirth && (
               <span className="text-red-500">
@@ -567,7 +619,10 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           </div>
 
           <div>
-            <InputField label={"Naalikai"} {...register("naalikai", { setValueAs: (value) => value.trim() })} />
+            <InputField
+              label={"Naalikai"}
+              {...register("naalikai", { setValueAs: (value) => value.trim() })}
+            />
             {errors.naalikai && (
               <span className="text-red-500">{errors.naalikai.message}</span>
             )}
@@ -589,7 +644,8 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                 <select
                   id="day"
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-                  {...register("day", { setValueAs: (value) => value.trim() })}
+                  {...register("day")}
+                  onChange={handleDayChange}
                 >
                   <option value="" disabled>
                     Day
@@ -609,6 +665,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                   id="month"
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                   {...register("month")}
+                  onChange={handleMonthChange}
                 >
                   <option value="" disabled>
                     Month
@@ -628,6 +685,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                   id="year"
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                   {...register("year")}
+                  onChange={handleYearChange}
                 >
                   <option value="" disabled>
                     Year
@@ -648,7 +706,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           <div>
             <InputField
               label={"Horoscope Hints"}
-              {...register("horoscopeHints", { setValueAs: (value) => value.trim() })}
+              {...register("horoscopeHints", {
+                setValueAs: (value) => value.trim(),
+              })}
             />
             {errors.horoscopeHints && (
               <span className="text-red-500">
@@ -659,11 +719,11 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
           {/* RasiGrid */}
           <DndProvider backend={HTML5Backend}>
-            <RasiGrid centerLabel={"Rasi"} />
+            <RasiGrid key={rasiKey} centerLabel={"Rasi"} />
           </DndProvider>
 
           <DndProvider backend={HTML5Backend}>
-            <AmsamGrid centerLabel={"Amsam"} />
+            <AmsamGrid key={amsamKey} centerLabel={"Amsam"} />
           </DndProvider>
 
           <div className="mt-7 flex justify-between">

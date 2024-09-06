@@ -5,8 +5,17 @@ import MarriedSlick from "./HappyStories/MarriedSlick";
 
 // import Couple from "../../assets/images/Couple.png";
 import { FaArrowRightLong } from "react-icons/fa6";
+import React, { useEffect, useState } from "react";
+
+import axios from "axios";
 // import { FaCirclePlay } from "react-icons/fa6";
 // import { useState } from "react";
+
+export interface happyStoriesType {
+  couple_name: string;
+  details: string;
+  photo: string;
+}
 
 const HappyStories = () => {
   // const [videoUrl, setVideoUrl] = useState("insertvideourlhere");
@@ -50,6 +59,21 @@ const HappyStories = () => {
       },
     ],
   };
+  const [happyCouples, setHappyCouples] = useState([]);
+  const happyStories = async () => {
+    
+    const response = await axios.post(
+      "http://103.214.132.20:8000/auth/Success_stories/"
+    );
+
+    setHappyCouples(response.data.data);
+    return response.data
+  };
+
+  useEffect(() => {
+    happyStories();
+  }, []);
+
 
   return (
     <div className="container py-10">
@@ -62,10 +86,14 @@ const HappyStories = () => {
       </div>
 
       <div className="mt-10 hover:cursor-grab">
-        <Slider {...settings}>
-          <MarriedSlick name="" />
-          <MarriedSlick name="" />
-          <MarriedSlick name="" />
+      <Slider {...settings}>
+          {happyCouples.length > 0 ? (
+            happyCouples.map((data, index) => (
+              <MarriedSlick key={index} data={data} />
+            ))
+          ) : (
+            <p>No stories available.</p> // Handle the case where there are no stories
+          )}
         </Slider>
       </div>
 

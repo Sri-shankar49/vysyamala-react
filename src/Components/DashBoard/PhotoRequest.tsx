@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import PhotoRequestCard from "./PhotoRequest/PhotoRequestCard";
-import { FaArrowLeft } from "react-icons/fa6";
+
 import { IoArrowBackOutline } from "react-icons/io5";
 import { SuggestedProfiles } from "../LoginHome/SuggestedProfiles";
+import Pagination from "../Pagination";
 
 interface DashBoardMyProfileProps {
   dashBoardAgain: () => void;
@@ -12,8 +13,14 @@ interface DashBoardMyProfileProps {
 const PhotoRequest: React.FC<DashBoardMyProfileProps> = ({
   dashBoardAgain,
 }) => {
-  const [photoRequestData, setPhotoRequestData] = useState([]);
+  // const [perPage,setPerPage]=useState<number>(0)
+  const [totalRecords, setTotalRecords] = useState<number>(0);
+  const dataPerPage = 10;
+  const toptalPages = totalRecords > 0 && dataPerPage > 0 ? Math.ceil(totalRecords / dataPerPage) : 0;
+  // const [totalPages,setTotalPages]=useState<number>(0)
 
+  const [photoRequestData, setPhotoRequestData] = useState([]);
+  const [pageNumber, setPageNumber] = useState<number>(1);
   const [NewUpdatedData, setNewUPDatedData] = useState<boolean>(false);
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
 
@@ -23,19 +30,24 @@ const PhotoRequest: React.FC<DashBoardMyProfileProps> = ({
         "http://103.214.132.20:8000/auth/Get_photo_request_list/",
         {
           profile_id: loginuser_profileId,
+          page_number: pageNumber,
+          per_page: dataPerPage,
         }
       );
+      // setPerPage(response.data.per_page)
+      // setTotalPages(response.data.total_pages)
+      setTotalRecords(response.data.photoreq_count);
+
       setPhotoRequestData(response.data.data.profiles);
     } catch (error) {
       console.error("Error fetching photo requests:", error);
     }
   };
 
-  console.log("NewUpdatedData", NewUpdatedData);
   // Optionally, you can call `getPhotoRequest` inside `useEffect` if you want to fetch data when the component mounts
   useEffect(() => {
     getPhotoRequest();
-  }, [NewUpdatedData]);
+  }, [NewUpdatedData, pageNumber]);
 
   return (
     // <div className="ml-10">
@@ -58,11 +70,14 @@ const PhotoRequest: React.FC<DashBoardMyProfileProps> = ({
 
     <div className="bg-grayBg pt-10">
       <div className="container mx-auto">
-
         <div className="flex items-center mb-5">
-          <IoArrowBackOutline onClick={dashBoardAgain} className="text-[24px] mr-2 cursor-pointer" />
-          <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold"> Photo Requests
-            <span className="text-sm text-primary"> (05)</span>
+          <IoArrowBackOutline
+            onClick={dashBoardAgain}
+            className="text-[24px] mr-2 cursor-pointer"
+          />
+          <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold">
+            Photo Requests{" "}
+            <span className="text-sm text-primary"> ({totalRecords})</span>
           </h4>
         </div>
 
@@ -70,12 +85,21 @@ const PhotoRequest: React.FC<DashBoardMyProfileProps> = ({
         <div>
           {photoRequestData.map((requests) => (
             <PhotoRequestCard
+              toptalPages={toptalPages}
+              totalRecords={totalRecords}
               NewUpdatedData={NewUpdatedData}
               setNewUPDatedData={setNewUPDatedData}
               data={requests}
             />
           ))}
         </div>
+        <Pagination
+          pageNumber={pageNumber}
+          setPageNumber={setPageNumber}
+          totalRecords={totalRecords}
+          dataPerPage={dataPerPage}
+          toptalPages={toptalPages}
+        />
       </div>
       <SuggestedProfiles />
     </div>

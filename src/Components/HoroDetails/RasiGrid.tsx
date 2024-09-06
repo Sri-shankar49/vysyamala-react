@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import { RiDraggable } from "react-icons/ri";
 import { AiOutlineClose } from "react-icons/ai";
+import apiClient from "../../API";
+
 
 interface RasiGridProps {
   centerLabel: string;
-  data: string;
-  onChange: (newData: string) => void;
 }
 
 interface Label {
@@ -14,7 +14,7 @@ interface Label {
   name: string;
 }
 
-const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel, data, onChange }) => {
+const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
   const initialLabels: Label[] = useMemo(
     () => [
       { id: 8, name: "Raghu/Rahu" },
@@ -35,39 +35,136 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel, data, onChange }) => {
   const [rasiContents, setRasiContents] = useState<string[][]>(
     Array(12).fill([])
   );
-  const [centerGridContent, setCenterGridContent] = useState<string | null>(
-    null
-  );
   const location = useLocation();
 
+
   useEffect(() => {
-    if (data) {
-      const formattedDatarasival = data
-        .slice(1, -1)
-        .split(", ")
-        .map((grid) => {
-          const match = grid.match(/Grid \d+: (.+)/);
-          return match
-            ? match[1].split(",").map((id) => parseInt(id, 10))
-            : [];
-        });
+    const fetchProfileData = async () => {
+      const profileId =
+        sessionStorage.getItem("profile_id_new") ||
+        sessionStorage.getItem("loginuser_profile_id");
+      if (profileId) {
+        try {
+          const requestData = {
+            profile_id: profileId,
+            page_id: 5,
+          };
 
-      const newRasiContents = formattedDatarasival.map((ids) => {
-        return ids
-          .map((id) =>
-            initialLabels.find((label) => label.id === id)?.name
-          )
-          .filter(Boolean) as string[];
-      });
+          const response = await apiClient.post(
+            `/auth/Get_save_details/`,
+            requestData,
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
-      setRasiContents(newRasiContents);
+          console.log("API Response Grid:", response.data); // Log the entire API response
 
-      const usedIds = formattedDatarasival.flat();
-      setLabels((prevLabels) =>
-        prevLabels.filter((label) => !usedIds.includes(label.id))
-      );
-    }
-  }, [location, initialLabels, data]);
+          const profileData = response.data.data; // Access the 'data' object directly
+
+          console.log("Profile Data Grid:", profileData); // Log the profile data
+
+          // console.log("rasi:",profileData.rasi_kattam);
+          // console.log("amsam:",profileData.amsa_kattam);
+
+          sessionStorage.setItem("formattedDatarasi", profileData.rasi_kattam);
+          sessionStorage.setItem("formattedDatamsam", profileData.amsa_kattam);
+
+          const formattedDatarasival = sessionStorage.getItem("formattedDatarasi");
+      if (formattedDatarasival) {
+        console.log("Retrieved formattedDatarasi from sessionStorage:", formattedDatarasival);
+
+        try {
+          // Parse the formatted data
+          const data = formattedDatarasival
+            .slice(1, -1)  // Adjust based on the actual format of your data
+            .split(", ")
+            .map((grid) => {
+              const match = grid.match(/Grid \d+: (.+)/);
+              return match ? match[1].split(",").map((id) => parseInt(id, 10)) : [];
+            });
+
+          // Map ids to labels and set the rasi contents
+          const newRasiContents = data.map((ids) => {
+            return ids
+              .map((id) => initialLabels.find((label) => label.id === id)?.name)
+              .filter(Boolean) as string[];
+          });
+
+          setRasiContents(newRasiContents);
+        } catch (error) {
+          console.error("Error parsing formattedDatarasival:", error);
+        }
+
+      } else {
+        console.log("No formattedDatarasi found in sessionStorage");
+      }
+  
+
+        } catch (error) {
+          console.error("Error fetching profile data:", error);
+        }
+      } else {
+        console.warn("Profile ID not found in sessionStorage");
+      }
+    };
+
+    fetchProfileData();
+  }, []);
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  useEffect(() => {
+    const fetchData = () => {
+      const formattedDatarasival = sessionStorage.getItem("formattedDatarasi");
+      if (formattedDatarasival) {
+        console.log("Retrieved formattedDatarasi from sessionStorage:", formattedDatarasival);
+
+        try {
+          // Parse the formatted data
+          const data = formattedDatarasival
+            .slice(1, -1)  // Adjust based on the actual format of your data
+            .split(", ")
+            .map((grid) => {
+              const match = grid.match(/Grid \d+: (.+)/);
+              return match ? match[1].split(",").map((id) => parseInt(id, 10)) : [];
+            });
+
+          // Map ids to labels and set the rasi contents
+          const newRasiContents = data.map((ids) => {
+            return ids
+              .map((id) => initialLabels.find((label) => label.id === id)?.name)
+              .filter(Boolean) as string[];
+          });
+
+          setRasiContents(newRasiContents);
+        } catch (error) {
+          console.error("Error parsing formattedDatarasival:", error);
+        }
+
+      } else {
+        console.log("No formattedDatarasi found in sessionStorage");
+      }
+    };
+
+    fetchData();
+
+    // Optionally, you can return a cleanup function if needed
+    // return () => { /* cleanup code here */ };
+
+  }, [initialLabels,location]); 
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
@@ -99,92 +196,68 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel, data, onChange }) => {
         rasiContents[index].length < 6
       ) {
         const newContents = [...rasiContents];
-        newContents[index] = [
-          ...newContents[index],
-          draggedLabel.name,
-        ];
+        newContents[index] = [...newContents[index], draggedLabel.name];
         setRasiContents(newContents);
 
         setLabels((prevLabels) =>
           prevLabels.filter((label) => label.id !== draggedLabel.id)
         );
-
-        onChange(formatGridData(newContents, centerGridContent));
-      }
-    }
-  };
-
-  const handleDropCenterBox = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const draggedLabelId = e.dataTransfer.getData("labelId");
-
-    if (draggedLabelId) {
-      const draggedLabel = labels.find(
-        (label) => label.id === parseInt(draggedLabelId, 10)
-      );
-      if (draggedLabel) {
-        setCenterGridContent(draggedLabel.name);
-        setLabels((prevLabels) =>
-          prevLabels.filter((label) => label.id !== draggedLabel.id)
-        );
-
-        onChange(formatGridData(rasiContents, draggedLabel.name));
       }
     }
   };
 
   const handleRemoveLabel = (index: number, labelIndex: number) => {
+    // Create a copy of the current rasiContents state
     const newContents = [...rasiContents];
     const removedLabel = newContents[index][labelIndex];
+    
+    // Remove the label from the copied state
     newContents[index].splice(labelIndex, 1);
     setRasiContents(newContents);
-
+  
+    // Find the removed label object from the initialLabels
     const removedLabelObj = initialLabels.find(
       (label) => label.name === removedLabel
     );
+  
+    // If the removed label object is found
     if (removedLabelObj) {
-      setLabels((prevLabels) => [...prevLabels, removedLabelObj]);
+      setLabels((prevLabels) => {
+        // Check if the label already exists in the state
+        if (prevLabels.some((label) => label.name === removedLabel)) {
+          return prevLabels; // Return the current state if label is already present
+        }
+        // Add the label to the state if it's not already present
+        return [...prevLabels, removedLabelObj];
+      });
     }
-
-    onChange(formatGridData(newContents, centerGridContent));
+  
+    // Clear the session variable 'formattedDatarasi'
+    // sessionStorage.removeItem('formattedDatarasi');
   };
+  
 
-  const handleRemoveCenterLabel = () => {
-    if (centerGridContent) {
-      const removedLabelObj = initialLabels.find(
-        (label) => label.name === centerGridContent
-      );
-      if (removedLabelObj) {
-        setLabels((prevLabels) => [...prevLabels, removedLabelObj]);
-      }
-      setCenterGridContent(null);
-      onChange(formatGridData(rasiContents, null));
-    }
-  };
-
-  const formatGridData = (
-    gridContents: string[][],
-    centerContent: string | null
-  ) => {
-    const formattedData = gridContents
+  const formatGridData = () => {
+    const formattedData = rasiContents
       .map((contents, index) => {
         const boxNumber = index + 1;
         const ids = contents
-          .map((label) =>
-            initialLabels.find((l) => l.name === label)?.id
-          )
+          .map((label) => initialLabels.find((l) => l.name === label)?.id)
           .filter((id) => id !== undefined);
-        return `Grid ${boxNumber}: ${ids.length > 0 ? ids.join(",") : "empty"
-          }`;
+        return `Grid ${boxNumber}: ${ids.length > 0 ? ids.join(",") : "empty"}`;
       })
       .join(", ");
-    const centerData = centerContent
-      ? `Center: ${initialLabels.find(
-        (l) => l.name === centerContent
-      )?.id}`
-      : "Center: empty";
-    return `{${formattedData}, ${centerData}}`;
+    return `{${formattedData}}`;
   };
+
+  useEffect(() => {
+    const formattedData = formatGridData();
+    console.log("Rasi Contents:");
+    console.log(formattedData);
+
+    // Store formattedData in sessionStorage
+    sessionStorage.setItem("formattedData", JSON.stringify(formattedData));
+  }, [rasiContents]);
 
   return (
     <div className="flex justify-start items-start bg-gray-200 space-x-16">
@@ -203,7 +276,7 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel, data, onChange }) => {
       </div>
 
       <div className="">
-        <div className="col-span-3 grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {[
             { row: 1, col: 1 },
             { row: 1, col: 2 },
@@ -223,9 +296,9 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel, data, onChange }) => {
               style={{ gridRow: pos.row, gridColumn: pos.col }}
               onDrop={(e) => handleDropRasiBox(e, index)}
               onDragOver={handleDragOver}
-              className="w-48 h-48 amsam-box rounded border border-footer-text-gray flex flex-col items-start justify-center gap-2"
+              className="relative w-48 h-48 rasi-box rounded border border-footer-text-gray flex flex-col items-start justify-center gap-2"
             >
-              {rasiContents[index].map((label, labelIndex) => (
+              {rasiContents[index].map((label: string, labelIndex: number) => (
                 <div
                   key={labelIndex}
                   className="w-32 h-auto mx-auto relative bg-yellow-200 text-xs px-2 py-1 rounded text-center flex items-center justify-between"
@@ -233,31 +306,18 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel, data, onChange }) => {
                   {label}
                   <AiOutlineClose
                     className="cursor-pointer ml-2"
-                    onClick={() =>
-                      handleRemoveLabel(index, labelIndex)
-                    }
+                    onClick={() => handleRemoveLabel(index, labelIndex)}
                   />
                 </div>
               ))}
+              {/* <div className="absolute top-0 left-0 m-1 text-xs font-bold text-gray-500">
+                {index + 1}
+              </div> */}
             </div>
           ))}
 
-          <div
-            className="row-start-2 amsam-center-box col-start-2 col-end-4 row-end-4 rounded font-semibold border border-gray bg-gray flex justify-center items-center"
-            onDrop={handleDropCenterBox}
-            onDragOver={handleDragOver}
-          >
-            {centerGridContent ? (
-              <div className="w-32 h-auto mx-auto relative bg-yellow-200 text-xs px-2 py-1 rounded text-center flex items-center justify-between">
-                {centerGridContent}
-                <AiOutlineClose
-                  className="cursor-pointer ml-2"
-                  onClick={handleRemoveCenterLabel}
-                />
-              </div>
-            ) : (
-              centerLabel
-            )}
+          <div className="row-start-2 col-start-2 col-end-4 row-end-4 rounded font-semibold border border-gray bg-gray flex justify-center items-center">
+            {centerLabel}
           </div>
         </div>
       </div>

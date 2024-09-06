@@ -8,6 +8,7 @@ import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import { Link } from "react-router-dom";
 import { FaLocationDot } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import MatchingScore from "../ProfileDetails/MatchingScore";
 // Define the Profile interface
 export interface Profile {
   mutint_Profile_img: string;
@@ -18,6 +19,7 @@ export interface Profile {
   user_status: string;
   last_visit: string;
   profile_views: number;
+  mutint_match_score?: number
 }
 
 export const MutualInterestCard: React.FC = () => {
@@ -206,11 +208,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({ profile, isBookmarked, onBook
 
         {/* Matching Score */}
         <div>
-          <img
+          {/* <img
             src={MatchingScoreImg}
             alt="Matching Score"
             className="w-full"
-          />
+          /> */}
+          <MatchingScore scorePercentage={profile.mutint_match_score} />
         </div>
       </Link>
     </div>

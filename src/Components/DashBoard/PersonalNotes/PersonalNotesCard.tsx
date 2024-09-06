@@ -27,6 +27,7 @@ interface GetProfListMatch {
   wish_list: string;
   notes_details: string;
   notes_datetime: string;
+  notes_match_score?: number;
 }
 
 export const PersonalNotesCard = () => {
@@ -205,7 +206,7 @@ export const PersonalNotesCard = () => {
                   alt="Matching Score"
                   className="w-full"
                 /> */}
-                <MatchingScore />
+                <MatchingScore scorePercentage={profileData.notes_match_score}/>
               </div>
             </div>
           </div>

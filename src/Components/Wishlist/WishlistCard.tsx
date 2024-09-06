@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
 import ProfileListImg from "../../assets/images/ProfileListImg.png";
 import { MdVerifiedUser } from "react-icons/md";
 import { IoCalendar } from "react-icons/io5";
@@ -13,6 +13,7 @@ import { FaUser } from "react-icons/fa6";
 import { IoEye } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import MatchingScore from "../DashBoard/ProfileDetails/MatchingScore";
+import { ProfileContext } from "../../ProfileContext";
 
 // Define the shape of your wishlist profile
 interface WishlistProfile {
@@ -24,45 +25,74 @@ interface WishlistProfile {
   wishlist_profile_name: string;
   wishlist_Profile_img: string;
   wishlist_profile_age: number;
+  
+
+  wishlist_verified?: number;
+  wishlist_match_score?: number
+}
+interface WishlistCardProps {
+  page: number;
+  perPage:number;
 }
 
-export const WishlistCard: React.FC = () => {
+export const WishlistCard: React.FC<WishlistCardProps> = ({ page}) => {
   const navigate = useNavigate();
 
-  // State to hold the profiles data
-  const [wishlistProfiles, setWishlistProfiles] = useState<WishlistProfile[]>([]);
+  const context = useContext(ProfileContext);
 
+  if (!context) {
+    throw new Error("MyComponent must be used within a ProfileProvider");
+  }
+
+  const { setTotalPage, setTotalRecords, setWhistListPerpage } = context;
+
+
+  // State to hold the profiles data
+  const [wishlistProfiles, setWishlistProfiles] = useState<WishlistProfile[]>(
+    []
+  );
 
   // Fetch data from API
   const fetchWishlistProfiles = async (profileId: string) => {
     try {
-      const response = await axios.post('http://103.214.132.20:8000/auth/Get_profile_wishlist/', {
-        profile_id: profileId // Include the profile_id in the request body
-      });
+      const response = await axios.post(
+        "http://103.214.132.20:8000/auth/Get_profile_wishlist/",
+        {
+          profile_id: profileId,
+          page_number:page,
+           // Include the profile_id in the request body
+        }
+      );
 
       if (response.data.Status === 1) {
+        setTotalRecords(response.data.data.total_records);
+        setTotalPage(response.data.data.total_pages);
+        setWhistListPerpage(response.data.data.per_page
+        )
+        console.log(response.data.data, "lllllllllllll");
         // Assuming you have a state to store the profiles
         setWishlistProfiles(response.data.data.profiles);
       } else {
-        console.error("Failed to fetch wishlist profiles:", response.data.message);
+        console.error(
+          "Failed to fetch wishlist profiles:",
+          response.data.message
+        );
       }
     } catch (error) {
       console.error("Error fetching wishlist profiles:", error);
     }
   };
 
-
   useEffect(() => {
     // Retrieve profile_id from sessionStorage
-    const loginuser_profileId = sessionStorage.getItem('loginuser_profile_id');
+    const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
 
     if (loginuser_profileId) {
       fetchWishlistProfiles(loginuser_profileId);
     } else {
       console.error("Profile ID not found in sessionStorage.");
     }
-  }, []);
-
+  }, [page]);
 
   const handleProfileClick = (profileId: string) => {
     navigate(`/ProfileDetails?id=${profileId}`);
@@ -76,12 +106,18 @@ export const WishlistCard: React.FC = () => {
         ) : (
           <div>
             {wishlistProfiles.map((profile) => (
-              <div key={profile.wishlist_profileid} className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5">
+              <div
+                key={profile.wishlist_profileid}
+                className="flex justify-start items-center space-x-5 relative rounded-xl shadow-md px-3 py-3 mb-5"
+              >
                 <div className="w-full flex justify-between items-center">
                   <div className="flex justify-between items-center space-x-5">
                     {/* Profile Image */}
                     <div className="relative">
-                      <img src={profile.wishlist_Profile_img || ProfileListImg} alt="Profile-image" />
+                      <img
+                        src={profile.wishlist_Profile_img || ProfileListImg}
+                        alt="Profile-image"
+                      />
 
                       {/* No Bookmark icon functionality here */}
                     </div>
@@ -89,18 +125,23 @@ export const WishlistCard: React.FC = () => {
                     {/* Profile Details */}
                     <div className="">
                       {/* Name & Profile ID */}
-                      
+
                       <div className="relative mb-2">
                         <div className="flex items-center">
                           <h5
-                            onClick={() => handleProfileClick(profile.wishlist_profileid)}
-                            className="text-[20px] text-secondary font-semibold cursor-pointer">
-                            {profile.wishlist_profile_name || 'Unknown'} {" "}
+                            onClick={() =>
+                              handleProfileClick(profile.wishlist_profileid)
+                            }
+                            className="text-[20px] text-secondary font-semibold cursor-pointer"
+                          >
+                            {profile.wishlist_profile_name || "Unknown"}{" "}
                             <span className="text-sm text-ashSecondary">
-                              ({profile.wishlist_profileid || 'N/A'})
+                              ({profile.wishlist_profileid || "N/A"})
                             </span>
                           </h5>
-                          <MdVerifiedUser className=" text-[20px] text-checkGreen ml-2" />
+                          {profile.wishlist_verified === 1 && (
+                            <MdVerifiedUser className=" text-[20px] text-checkGreen ml-2" />
+                          )}
                         </div>
                       </div>
 
@@ -108,14 +149,14 @@ export const WishlistCard: React.FC = () => {
                       <div className="flex items-center space-x-3 mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <IoCalendar className="mr-2" />
-                          {profile.wishlist_profile_age || 'N/A'} yrs
+                          {profile.wishlist_profile_age || "N/A"} yrs
                         </p>
 
                         <p className="text-gray font-semibold">|</p>
 
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <FaPersonArrowUpFromLine className="mr-2" />
-                          {profile.height || 'N/A'}
+                          {profile.height || "N/A"}
                         </p>
                       </div>
 
@@ -131,7 +172,7 @@ export const WishlistCard: React.FC = () => {
                       <div className="mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <IoSchool className="mr-2" />
-                          {profile.degree || 'N/A'}
+                          {profile.degree || "N/A"}
                         </p>
                       </div>
 
@@ -139,7 +180,7 @@ export const WishlistCard: React.FC = () => {
                       <div className="mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <FaSuitcase className="mr-2" />
-                          {profile.profession || 'N/A'}
+                          {profile.profession || "N/A"}
                         </p>
                       </div>
 
@@ -147,7 +188,7 @@ export const WishlistCard: React.FC = () => {
                       <div className="mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <FaLocationDot className="mr-2" />
-                          {profile.location || 'N/A'}
+                          {profile.location || "N/A"}
                         </p>
                       </div>
 
@@ -155,7 +196,8 @@ export const WishlistCard: React.FC = () => {
                         {/* Horoscope Available */}
                         <div>
                           <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                            <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
+                            <MdOutlineGrid3X3 className="mr-2" /> Horoscope
+                            Available
                           </p>
                         </div>
 
@@ -169,7 +211,8 @@ export const WishlistCard: React.FC = () => {
                         {/* Last Visit */}
                         <div>
                           <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                            <IoCalendar className="mr-2" /> Last visit on June 30, 2024
+                            <IoCalendar className="mr-2" /> Last visit on June
+                            30, 2024
                           </p>
                         </div>
 
@@ -191,7 +234,7 @@ export const WishlistCard: React.FC = () => {
                     alt="Matching Score"
                     className="w-full"
                   /> */}
-                      <MatchingScore />
+                      <MatchingScore scorePercentage={profile.wishlist_match_score} />
                     </div>
                   </div>
                 </div>

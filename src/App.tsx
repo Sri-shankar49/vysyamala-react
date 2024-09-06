@@ -14,6 +14,7 @@ import PartnerSettings from "./Pages/PartnerSettings";
 import { MembershipPlan } from "./Pages/MembershipPlan";
 import { PayNow } from "./Pages/PayNow";
 import { ThankYouReg } from "./Pages/ThankYouReg";
+import { FooterPages } from "./Pages/FooterPages";
 import { LoginHome } from "./Pages/AfterLogin/LoginHome";
 import Search from "./Pages/AfterLogin/Search";
 import { DashBoard } from "./Pages/AfterLogin/DashBoard";
@@ -24,17 +25,22 @@ import { MyProfile } from "./Pages/AfterLogin/MyProfile";
 import { ProfileDetails } from "./Pages/AfterLogin/ProfileDetails";
 import { ProfileProvider } from "./ProfileContext";
 import ProfileGrid from "./Components/LoginHome/MatchingProfiles/GridView";
-import ListView from "./Components/LoginHome/MatchingProfiles/ListView";         // Import ListView
+import ListView from "./Components/LoginHome/MatchingProfiles/ListView"; // Import ListView
 import GridListView from "./Components/LoginHome/MatchingProfiles/GridListView"; // Import GridListView
 import ProtectedRoute from "./Components/ProtectorRoute";
 import RegistrationProtectedRoute from "./Components/RegistrationProtectedRoute";
 import { UpgradePlan } from "./Pages/AfterLogin/UpgradePlan";
 import { UpgradePayNow } from "./Pages/AfterLogin/UpgradePayNow";
 import { UpgradeThankYouReg } from "./Pages/AfterLogin/UpgradeThankYouReg";
+import { ViewAllSuggestedProfiles } from "./Components/LoginHome/ViewAllSuggestedProfiles";
+import { ViewAllFeaturedProfiles } from "./Components/LoginHome/ViewAllFeaturedProfiles";
 
 function App() {
   const token = sessionStorage.getItem("token");
   console.log("Current token:", token); // Log token value for debugging
+ 
+  sessionStorage.removeItem('searchvalue');
+
 
   return (
     <ProfileProvider>
@@ -60,6 +66,8 @@ function App() {
               <Route path="/ThankYou" element={<ThankYou />} />
               <Route path="/ThankYouReg" element={<ThankYouReg />} />
             </Route>
+
+            <Route path="/FooterPages" element={<FooterPages />} />
           </Route>
 
           <Route element={<ProtectedRoute redirectTo="/" />}>
@@ -72,12 +80,55 @@ function App() {
               <Route path="/Notifications" element={<Notifications />} />
               <Route path="/MyProfile" element={<MyProfile />} />
               <Route path="/ProfileDetails" element={<ProfileDetails />} />
-              <Route path="/ProfileGrid" element={<ProfileGrid />} />
-              <Route path="/ListView" element={<ListView />} />
-              <Route path="/GridListView" element={<GridListView />} />
+              <Route
+                path="/ProfileGrid"
+                element={
+                  <ProfileGrid
+                    profile_name={""}
+                    profile_id={undefined}
+                    profile_age={undefined}
+                    height={undefined}
+                    searchResult={undefined}
+                  />
+                }
+              />
+              <Route
+                path="/ListView"
+                element={
+                  <ListView
+                    profile_name={""}
+                    profile_id={undefined}
+                    profile_age={undefined}
+                    height={undefined}
+                  />
+                }
+              />
+              <Route
+                path="/GridListView"
+                element={
+                  <GridListView
+                    profile_name={""}
+                    profile_id={undefined}
+                    profile_age={undefined}
+                    height={undefined}
+                    searchResult={undefined}
+                  />
+                }
+              />
               <Route path="/UpgradePlan" element={<UpgradePlan />} />
               <Route path="/UpgradePayNow" element={<UpgradePayNow />} />
-              <Route path="/UpgradeThankYouReg" element={<UpgradeThankYouReg />} />
+              <Route
+                path="/UpgradeThankYouReg"
+                element={<UpgradeThankYouReg />}
+              />
+              <Route
+                path="/ViewAllSuggestedProfiles"
+                element={<ViewAllSuggestedProfiles />}
+              />
+              <Route
+                path="/ViewAllFeaturedProfiles"
+                element={<ViewAllFeaturedProfiles />}
+              />
             </Route>
           </Route>
 

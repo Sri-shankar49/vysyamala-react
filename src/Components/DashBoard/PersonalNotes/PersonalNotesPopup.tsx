@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { IoClose } from 'react-icons/io5';
+import { toast } from 'react-toastify';
 
 interface PersonalNotesPopupProps {
     closePopup: () => void;
@@ -48,10 +49,10 @@ export const PersonalNotesPopup: React.FC<PersonalNotesPopupProps> = ({closePopu
             });
 
             if (response.data.Status === 1) {
-                alert('Notes saved successfully');
+                toast.success('Notes saved successfully');
                 closePopup(); // Close the popup after saving
             } else {
-                alert('Failed to save notes');
+                toast.error('Failed to save notes');
             }
         } catch (error) {
             console.error('Error saving notes:', error);

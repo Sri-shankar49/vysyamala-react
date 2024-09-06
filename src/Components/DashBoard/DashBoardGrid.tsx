@@ -2,7 +2,7 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import React, { useContext, useEffect } from "react";
 import "react-circular-progressbar/dist/styles.css";
 import { HiUsers } from "react-icons/hi";
-import ProfileImgRounded from "../../assets/images/ProfileImgRounded.png";
+
 import { RiHeartsFill } from "react-icons/ri";
 import { MdBookmark } from "react-icons/md";
 import PinkLayer from "../../assets/images/pinkLayer.png";
@@ -25,7 +25,6 @@ import { ProfileContext } from "../../ProfileContext";
 import { TbPhotoShare } from "react-icons/tb";
 import ProfileImageGroup from "./DashBoardMatchingProfiles/ProfileImageGroup";
 
-
 interface DashBoardGridProps {
   onDashBoardMatchingProfiles: () => void;
   onDashBoardMutualInterest: () => void;
@@ -38,10 +37,11 @@ interface DashBoardGridProps {
   onInterestSent: () => void;
   onViewedProfiles: () => void;
   onMyVisitors: () => void;
-  onPhotoRequest: () => void
+  onPhotoRequest: () => void;
 
   // Optional Cards
   onPersonalNotes: () => void;
+  onVysAssist: () => void;
   onOtherSettings: () => void;
 }
 
@@ -55,6 +55,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
   onMyVisitors,
   onPhotoRequest,
   onPersonalNotes,
+  onVysAssist,
   onOtherSettings,
 }) => {
   // Circular Progress bar value
@@ -68,20 +69,20 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
   }
 
   const { dashboardDetails, fetchDashboardDetails } = context;
+  console.log(dashboardDetails, "dashbordDetails");
 
   useEffect(() => {
     fetchDashboardDetails();
   }, []);
 
-
   // Profile Rounded images
   const profileImages = [
-    'https://randomuser.me/api/portraits/women/1.jpg',
-    'https://randomuser.me/api/portraits/men/2.jpg',
-    'https://randomuser.me/api/portraits/women/3.jpg',
-    'https://randomuser.me/api/portraits/men/4.jpg',
-    'https://randomuser.me/api/portraits/women/5.jpg',
-    'https://randomuser.me/api/portraits/men/6.jpg',
+    "https://randomuser.me/api/portraits/women/1.jpg",
+    "https://randomuser.me/api/portraits/men/2.jpg",
+    "https://randomuser.me/api/portraits/women/3.jpg",
+    "https://randomuser.me/api/portraits/men/4.jpg",
+    "https://randomuser.me/api/portraits/women/5.jpg",
+    "https://randomuser.me/api/portraits/men/6.jpg",
   ];
   const extraCount = 154; // Replace with your dynamic count
 
@@ -110,11 +111,15 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
                     Matching Profiles
                   </h4>
                   <p className="text-[48px] text-white font-semibold my-5">
-                    234
+                    {dashboardDetails?.matching_profile_count}
                   </p>
                   <div>
                     {/* <img src={ProfileImgRounded} alt="" /> */}
-                    <ProfileImageGroup images={profileImages} maxVisible={4} extraCount={extraCount} />
+                    <ProfileImageGroup
+                      images={profileImages}
+                      maxVisible={4}
+                      extraCount={extraCount}
+                    />
                   </div>
                 </div>
               </div>
@@ -189,7 +194,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
                       {dashboardDetails?.profile_details.profile_id}
                     </p>
                     <p className="text-primary font-semibold">
-                      Valid Upto : 16-July-2024
+                      {dashboardDetails?.profile_details.package_validity}
                     </p>
                   </div>
                 </div>
@@ -282,7 +287,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
               />
               <IndicatorCard
                 cardTitle="Gallery"
-                cardCount={"05"}
+                cardCount={String(dashboardDetails?.gallery_count || 0)}
                 cardIcon={<FaImages />}
                 onClick={function (): void {
                   throw new Error("Function not implemented.");
@@ -292,8 +297,8 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
               <IndicatorCard
                 onClick={onPhotoRequest}
                 cardTitle="Photo Request"
-                cardCount={String(dashboardDetails?.myvisitor_count || 0)}
-                cardIcon={< TbPhotoShare />}
+                cardCount={String(dashboardDetails?.photo_int_count || 0)}
+                cardIcon={<TbPhotoShare />}
               />
             </div>
 
@@ -308,9 +313,7 @@ export const DashBoardGrid: React.FC<DashBoardGridProps> = ({
                 <OptionCard
                   cardTitle="Vys Assist"
                   cardIcon={<BiSolidUserVoice />}
-                  onClick={function (): void {
-                    throw new Error("Function not implemented.");
-                  }}
+                  onClick={onVysAssist}
                 />
                 <OptionCard
                   cardTitle="Spot on Error"
