@@ -46,10 +46,6 @@ import { FeaturedGroomCard } from "./Components/FeaturedGroom/FeaturedGroomCard"
 import { FindSomeOneSpecial } from "./Components/SomeOneSpecial/FindSomeOneSpecial";
 
 
-// Siva
-// import {ProfileNotFound} from "./Components/LoginHome/ProfileNotFound";
-
-
 // Define prop types for AppContent
 interface AppContentProps {
   token: string | null;
