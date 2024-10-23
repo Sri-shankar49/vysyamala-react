@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 // import { useDispatch } from "react-redux";
 // import { hideInterest } from "../../../redux/slices/interestSlice";
@@ -91,21 +92,23 @@ interface ApiResponse {
   // Add other fields based on the API response
 }
 
-// interface ProfileListResponse {
-//   Status: number;
-//   message: string;
-//   all_profile_ids: Record<string, string>; // Use Record to map numbers to strings
-//   // Add other fields if necessary
-// }
 
 interface ProfileDetailsExpressInterestProps { }
 
 export const ProfileDetailsExpressInterest: React.FC<
   ProfileDetailsExpressInterestProps
 > = () => {
-  const [profileData, setProfileData] = useState<ProfileData | null>(null);
-  const [PhotoPasswordlock, setPhotoPasswordlock] = useState<string>('');
 
+
+  const [roomId, setRoomId] = useState('');
+  const [userName, setUserName] = useState('');
+  const [isRedirect, setIsRedirect] = useState(false);
+
+
+
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [PhotoPasswordlock, setPhotoPasswordlock] = useState<number>(0);
+  console.log(typeof PhotoPasswordlock, "PhotoPasswordlock")
   // console.log(profileData?.basic_details.verified, "llllllllllllllllll");
   const [hideExpresButton, setHideExpressButton] = useState<boolean>(true);
   const location = useLocation();
@@ -114,98 +117,47 @@ export const ProfileDetailsExpressInterest: React.FC<
   const idparam = queryParams.get("id") || "";
 
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
-  // const [GetProfileDetMatchData, SetGetProfileDetMatchData] = useState<any>({});
-  // const [PasswordModal, setPassWordModal] = useState<boolean>(false);
+
 
   const custom_message = sessionStorage.getItem("custom_message");
 
   const storedPlanId = sessionStorage.getItem("plan_id");
   console.log("vysya", storedPlanId);
-  // const { photo_protection } = GetProfileDetMatchData;
-  // console.log("vysya", photo_protection);
-
-  // const [photoLock, setPhotoLock] = useState<number>(0);
-
-  // const GetProfileDetMatch = async () => {
-  //   try {
-  //     const response = await axios.post(Get_profile_det_match, {
-  //       profile_id: loginuser_profileId, // Replace with the appropriate value or extract from route params if needed
-  //       user_profile_id: id,
-  //     });
-
-  //     if (response.status === 200) {
-  //       SetGetProfileDetMatchData(response.data);
-  //       setPhotoLock(response.data.photo_protection);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // console.log(photoLock, "photoLock");
-
-
-  // const [profileIds, setProfileIds] = useState<string[]>([]);
-  // const [currentIndex, setCurrentIndex] = useState<number>(-1);
-  // const [loading, setLoading] = useState<boolean>(true);
-  // const [error, setError] = useState<string | null>(null);
-  // const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   // Define the fetchProfileIds function
-  //   const fetchProfileIds = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const response = await axios.post<ProfileListResponse>(
-  //         'http://103.214.132.20:8000/auth/Get_prof_list_match/',
-  //         {
-  //           profile_id: 'VY240001'
-  //         }
-  //       );
-  //       const data = response.data;
-
-  //       if (data.Status === 1) {
-  //         const ids = Object.values(data.all_profile_ids);
-  //         setProfileIds(ids);
-  //         setCurrentIndex(-1); // Set initial index to 0
-  //         if (ids.length > 0) {
-  //           // navigate(`/ProfileDetails?id=${ids[0]}`); // Navigate to the first profile
-  //         }
-  //       } else {
-  //         setError("Failed to fetch profiles.");
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching profile IDs:", err);
-  //       setError("Failed to fetch profiles.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   // Call the fetchProfileIds function
-  //   fetchProfileIds();
-  // }, [navigate]);
-
-  // const handlePrevious = () => {
-  //   if (currentIndex > 0) {
-  //     const newIndex = currentIndex - 1;
-  //     setCurrentIndex(newIndex);
-  //     navigate(`/ProfileDetails?id=${profileIds[newIndex]}`);
-  //   }
-  // };
-
-  // const handleNext = () => {
-  //   if (currentIndex < profileIds.length - 1) {
-  //     const newIndex = currentIndex + 1;
-  //     setCurrentIndex(newIndex);
-  //     navigate(`/ProfileDetails?id=${profileIds[newIndex]}`);
-  //   }
-  // };
-
 
 
 
   const navigate = useNavigate();
+
+
+
+
+  const handleMessageClick = async () => {
+    try {
+      const response = await axios.post('http://103.214.132.20:8000/auth/Create_or_retrievechat/', {
+        // Add required parameters to create a new chat room
+        profile_id: loginuser_profileId,
+        profile_to: idparam,
+      });
+
+      if (response.data.Status === 1) {
+        const roomId = response.data.room_id;
+        const userName = response.data.username;
+        setRoomId(roomId);
+        setUserName(userName);
+        setIsRedirect(true);
+      } else {
+        console.error('Failed to create chat room:', response.data.Message);
+      }
+    } catch (error) {
+      console.error('Error creating chat room:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (isRedirect) {
+      window.location.href = `/messages/${roomId}/${userName}`;
+    }
+  }, [isRedirect, roomId, userName]);
 
 
 
@@ -542,13 +494,14 @@ export const ProfileDetailsExpressInterest: React.FC<
 
         // Toast Notification
         if (!isHeartMarked) {
-          toast.success("Interest Accepted");
+          toast.success("Your express interest has been sent successfully!");
         } else {
-          toast.error("Interest Declined");
+          toast.success("Your express interest has been removed successfully!");
         }
       } else {
         // Toast Notification
-        alert("Failed to update express interest");
+        // alert("Failed to update express interest");
+        toast.error("Failed to update express interest");
 
         console.error("Failed to update express interest");
       }
@@ -589,7 +542,7 @@ export const ProfileDetailsExpressInterest: React.FC<
         }
       );
       if (response.status >= 200 || response.status >= 204) {
-        NotifySuccess("Photo interests sent successfully");
+        NotifySuccess("Your photo interest request has been sent successfully!");
       } else {
         NotifyError("Something went wrong, please try again later");
       }
@@ -606,6 +559,45 @@ export const ProfileDetailsExpressInterest: React.FC<
   // const toggleDropdown = () => {
   //     setIsOpen(!isOpen);
   // };
+
+
+  const generatePoruthamPDF = async () => {
+    console.log("aaaaaaaaaaaaaaa", loginuser_profileId);
+    console.log("bbbbbbbbbbbbbb", idparam);
+    try {
+      const response = await axios.post('https://apiupg.rainyseasun.com/auth/generate-porutham-pdf/', {
+        profile_from: loginuser_profileId,
+        profile_to: idparam
+      }, {
+        responseType: 'blob', // Important for downloading binary data like PDF
+      });
+
+      if (response.status === 200) {
+        // Create a Blob from the PDF binary data
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const link = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+
+        // Set the download attribute with the file name
+        link.href = url;
+        link.setAttribute('download', 'Porutham.pdf'); // Set your file name
+        document.body.appendChild(link);
+        link.click(); // Trigger the download
+        link.remove(); // Remove the link element
+
+        console.log('PDF generated and downloaded successfully');
+      } else {
+        console.error('Unexpected status code:', response.status);
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error generating PDF:', error.response?.data || error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  };
+
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -674,7 +666,7 @@ export const ProfileDetailsExpressInterest: React.FC<
   // Horoscope Download Function
   const handleDownloadPdf = () => {
     const link = document.createElement("a");
-    link.href = `https://apiupg.rainyseasun.com/auth/generate-pdf/${idparam}`;
+    link.href = `https://apiupg.rainyseasun.com/auth/generate-pdf/${loginuser_profileId}/${idparam}`;
     link.download = `pdf_${idparam}.pdf`; // Customize the file name
     link.click();
   };
@@ -728,7 +720,14 @@ export const ProfileDetailsExpressInterest: React.FC<
 
                     {/* Share Component here */}
                     {isShareVisible && (
-                      <Share closePopup={toggleShareVisibility} />
+                      // <Share closePopup={toggleShareVisibility} />
+                      <Share
+                        closePopup={toggleShareVisibility}
+                        profileId={profileData?.basic_details.profile_id}
+                        profileName={profileData?.basic_details.profile_name}
+                        age={profileData?.personal_details.age}
+                        starName={profileData?.horoscope_details.star_name}
+                      />
                     )}
                   </div>
 
@@ -767,7 +766,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                   <div>
                     <TbPhotoHeart
                       onClick={() => sendPhotoRequest()}
-                      title="photo Request"
+                      title="Send Photo Request"
                       className="text-[22px] text-vysyamalaBlack cursor-pointer"
                     />
                   </div>
@@ -794,6 +793,8 @@ export const ProfileDetailsExpressInterest: React.FC<
                 <div>
                   {/* Age & height */}
                   <div className="flex justify-between items-center mb-2">
+                    {/* {profileData?.personal_details?.age&& profileData.personal_details.age == "" && profileData.personal_details.age == null && ( */}
+                    {profileData?.personal_details?.age && profileData.personal_details.age !== null && (
                     <h5 className="text-[18px] text-ash font-semibold">
                       Age :
                       <span className="font-normal">
@@ -801,26 +802,45 @@ export const ProfileDetailsExpressInterest: React.FC<
                         {profileData?.personal_details.age} years
                       </span>
                     </h5>
+                       )}
+                    {/* )} */}
 
+
+                    {profileData?.personal_details?.height && profileData.personal_details.height !== "" && profileData.personal_details.height !== null && (
                     <h5 className="text-[18px] text-ash font-semibold mb-2">
-                      Height :
+                      Heighttt :
                       <span className="font-normal">
                         {" "}
                         {profileData?.personal_details.height} cms
                       </span>
                     </h5>
+                       )}
                   </div>
 
-                  <h5 className="text-[18px] text-ash font-semibold mb-2">
+                  {/* <h5 className="text-[18px] text-ash font-semibold mb-2">
                     Weight :
                     <span className="font-normal">
                       {" "}
                       {profileData?.personal_details.weight} kg
                     </span>
-                  </h5>
+                  </h5> */}
+
+                  {profileData?.personal_details?.weight && profileData.personal_details.weight !== "" && profileData.personal_details.weight !== null && (
+                    <h5 className="text-[18px] text-ash font-semibold mb-2">
+                      Weight:
+                      <span className="font-normal">
+                        {profileData.personal_details.weight} kg
+                      </span>
+                    </h5>
+                  )}
+
+
+
+
 
                   {/* Star & Gothram */}
                   <div className="flex justify-between items-center mb-2">
+                  {profileData?.horoscope_details?.star_name && profileData.horoscope_details.star_name !== "" && profileData.horoscope_details.star_name !== null && (
                     <h5 className="text-[18px] text-ash font-semibold">
                       Star :
                       <span className="font-normal">
@@ -828,7 +848,9 @@ export const ProfileDetailsExpressInterest: React.FC<
                         {profileData?.horoscope_details.star_name}
                       </span>
                     </h5>
+                       )}
 
+{profileData?.horoscope_details?.surya_gothram && profileData.horoscope_details.surya_gothram !== "" && profileData.horoscope_details.surya_gothram !== null && (
                     <h5 className="text-[18px] text-ash font-semibold mb-2">
                       Gothram :
                       <span className="font-normal">
@@ -836,8 +858,10 @@ export const ProfileDetailsExpressInterest: React.FC<
                         {profileData?.horoscope_details.surya_gothram}
                       </span>
                     </h5>
+                       )}
                   </div>
 
+                  {profileData?.education_details.profession && profileData.education_details.profession !== "" && profileData.education_details.profession !== null && (
                   <h5 className="text-[18px] text-ash font-semibold mb-2">
                     Profession :
                     <span className="font-normal">
@@ -845,22 +869,25 @@ export const ProfileDetailsExpressInterest: React.FC<
                       {profileData?.education_details.profession}
                     </span>
                   </h5>
+                     )}
 
+{profileData?.education_details.education_level && profileData.education_details.education_level !== "" && profileData.education_details.education_level !== null && (
                   <h5 className="text-[18px] text-ash font-semibold mb-2">
                     Education :
                     <span className="font-normal">
                       {" "}
                       {profileData?.education_details.education_level}
                     </span>
-                  </h5>
+                  </h5>)}
 
+  {profileData?.basic_details.about && profileData.basic_details.about !== "" && profileData.basic_details.about !== null && (
                   <h5 className="text-[18px] text-ash font-semibold mb-2">
                     About :
                     <span className="font-normal">
                       {" "}
                       {profileData?.basic_details.about}
                     </span>
-                  </h5>
+                  </h5>)}
 
                   <div className="flex justify-start items-center space-x-3 mt-3">
                     {/* Horoscope Available */}
@@ -895,16 +922,12 @@ export const ProfileDetailsExpressInterest: React.FC<
                 </div>
 
                 {/* Matching Meter */}
-                <div>
-                  {/* <img
-                                        src={MatchingScoreImg}
-                                        alt="Matching Score"
-                                        className="w-full"
-                                    /> */}
-                  <MatchingScore scorePercentage={profileData?.basic_details.matching_score}
-                  // matchingScore={profileData?.basic_details.matching_score}
+                <div onClick={() => generatePoruthamPDF()} title="Click to download pdf">
+                  <MatchingScore
+                    scorePercentage={profileData?.basic_details?.matching_score}
                   />
                 </div>
+
               </div>
               {openCustomMsgShow ? (
                 <CustomMessagePopUp
@@ -958,7 +981,7 @@ export const ProfileDetailsExpressInterest: React.FC<
                   {status === 2 ? (
                     // Show message button if numericStatus >= 2
                     <Link to="/Messages">
-                      <button className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
+                      <button onClick={handleMessageClick} className="text-main flex items-center rounded-lg px-5 py-2.5 cursor-pointer">
                         <MdMessage className="text-[26px] mr-2" /> Message
                       </button>
                     </Link>

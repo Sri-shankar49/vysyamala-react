@@ -4,12 +4,13 @@ import { FeaturedBride } from "../Components/HomePage/FeaturedBride";
 import { FeaturedGroom } from "../Components/HomePage/FeaturedGroom";
 import { WhyVysyamala } from "../Components/HomePage/WhyVysyamala";
 import { AwardsGallery } from "../Components/HomePage/AwardsGallery";
-import TrustedPeople from "../Components/HomePage/TrustedPeople";
+// import TrustedPeople from "../Components/HomePage/TrustedPeople";
 import FindSomeone from "../Components/HomePage/FindSomeone";
 import HappyStories from "../Components/HomePage/HappyStories";
 import VysyamalaApps from "../Components/HomePage/VysyamalaApps";
 import ReviewsTestimonial from "../Components/HomePage/ReviewsTestimonial";
 import SearchProfiles from "../Components/HomePage/SearchProfiles";
+import TrustedPeople from "../Components/HomePage/TrustedPeople";
 
 export const HomePage = () => {
   return (

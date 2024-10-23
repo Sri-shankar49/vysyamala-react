@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // export const PartnerSettings = () => {
 //   return (
 //     <div>
@@ -251,6 +252,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { NotifyError, NotifySuccess, ToastNotification } from '../../Toast/ToastNotification';
+//import { ToastContainer, toast } from 'react-toastify';
+
+
+import MatchingStars from '../../PartnerPreference/MatchingStars';
+import apiClient from '../../../API';
+
 
 // Define Zod schema for validation
 const schema = z.object({
@@ -282,6 +289,14 @@ const schema = z.object({
       message: 'The education field is required.',
     }),
   profession: z.array(z.string()).nonempty('Please select at least one profession option.'),
+  // maritalstatus: z
+  //   .array(z.string())
+  //   .nonempty('Please select at least one maritalstatus option.')
+  //   .refine((val) => val.length > 0, {
+  //     message: 'The maritalstatus field is required.',
+  //   }),
+  maritalstatus: z.array(z.string()).nonempty('Please select at least one maritalstatus option.'),
+  // maritalstatus: z.array(z.string()).nonempty('Please select at least one maritalstatus option.'),
   income: z.array(z.string()).nonempty('Please select at least one income option.'),
   rahuKetuDhosam: z.string().nonempty('Please select Rahu/Ketu Dhosam option.'),
   chevvaiDhosam: z.string().nonempty('Please select Chevvai Dhosam option.'),
@@ -296,14 +311,42 @@ interface Option {
   name: string;
 }
 
+interface MatchingStar {
+  dest_rasi_id: number;
+  dest_star_id: number;
+  id: number;
+  match_count: number;
+  matching_porutham: string;
+  matching_starname: string;
+  matching_rasiname: string;
+  protham_names: null | string[];
+  source_star_id: number;
+}
+
+
+export interface SelectedStarIdItem {
+  id: string;
+  rasi: string;
+  star: string;
+  label: string;
+}
+
 export const PartnerSettings: React.FC = () => {
   const [educationOptions, setEducationOptions] = useState<Option[]>([]);
+
+
   const [professionOptions, setProfessionOptions] = useState<Option[]>([]);
   const [incomeOptions, setIncomeOptions] = useState<Option[]>([]);
+  const [maritalOptions, setMaritalOptions] = useState<Option[]>([]);
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<PartnerSettingsForm>({
     resolver: zodResolver(schema),
   });
+  const [matchStars, setMatchStars] = useState<MatchingStar[][]>([]);
+  const [selectedStarIds, setSelectedStarIds] = React.useState<SelectedStarIdItem[]>([]);
+  
 
+  const [prefilledStarRasiArray, setPrefilledStarRasiArray] = useState<string[]>([]); // Declare the state for prefilled values
+  
   useEffect(() => {
     axios.post('http://103.214.132.20:8000/auth/Get_Highest_Education/')
       .then(response => {
@@ -317,11 +360,11 @@ export const PartnerSettings: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    axios.post('http://103.214.132.20:8000/auth/Get_profession/')
+    axios.post('http://103.214.132.20:8000/auth/Get_Profes_Pref/')
       .then(response => {
         const data = Object.values(response.data).map((item: any) => ({
-          id: item.profession_id,
-          name: item.profession_name,
+          id: item.Profes_Pref_id,
+          name: item.Profes_name,
         }));
         setProfessionOptions(data);
       })
@@ -341,7 +384,25 @@ export const PartnerSettings: React.FC = () => {
       .catch(error => console.error('Error fetching income data:', error));
   }, []);
 
+
+  useEffect(() => {
+    axios.post('http://103.214.132.20:8000/auth/Get_Marital_Status/')
+      .then(response => {
+        const data = Object.values(response.data).map((item: any) => ({
+          id: item.marital_sts_id,
+          name: item.marital_sts_name,
+        }));
+        console.log('Get_Marital_Status',data)
+        setMaritalOptions(data);
+      })
+      .catch(error => console.error('Error fetching marital data:', error));
+  }, []);
+
  
+  
+
+
+
   useEffect(() => {
     const profile_id = sessionStorage.getItem('loginuser_profile_id'); // Replace with dynamic profile ID if needed
     axios.post('http://103.214.132.20:8000/auth/Get_myprofile_partner/', { profile_id })
@@ -349,8 +410,28 @@ export const PartnerSettings: React.FC = () => {
         const data = response.data.data;
         console.log("Get_myprofile_partner", data);
         
+    //     // Store pre-filled `partner_porutham_star_rasi` values
+    //   const prefilledStarRasiArray = data.partner_porutham_star_rasi
+    //   ? data.partner_porutham_star_rasi.split(',').map((item: string) => item.trim())
+    //   : [];
+    // console.log('Prefilled partner_porutham_star_rasi:', prefilledStarRasiArray);
+
+
+    //  // Save the prefilled array in session storage
+    //  sessionStorage.setItem('prefilledStarRasiArray', JSON.stringify(prefilledStarRasiArray));
+
+    // setPrefilledStarRasiArray(prefilledStarRasiArray);  // Store in state for later comparison
+
+
+
+    // Prefill star-rasi data
+    const prefilledStarRasiArray = data.partner_porutham_star_rasi
+    ? data.partner_porutham_star_rasi.split(',').map((item: string) => item.trim())
+    : [];
+  setPrefilledStarRasiArray(prefilledStarRasiArray);
         // Map the selected values for education, profession, and income
         const selectedEducation = data.partner_edu_id.split(',').map((id: string) => id.trim());
+        const selectedMaritalStatus = data.partner_edu_id.split(',').map((id: string) => id.trim());
         const selectedProfession = data.partner_profe.split(',').map((id: string) => id.trim());
         const selectedIncome = data.partner_ann_inc.split(',').map((id: string) => id.trim());
 
@@ -358,44 +439,139 @@ export const PartnerSettings: React.FC = () => {
         setValue('fromHeight', data.partner_height_from || '');
         setValue('toHeight', data.partner_height_to || '');
         setValue('education', selectedEducation);
+        setValue('maritalstatus',selectedMaritalStatus );
+        console.log("selectedMaritalStatus",)
         setValue('income', selectedIncome);
         setValue('profession', selectedProfession);
         setValue('rahuKetuDhosam', data.partner_rahu_kethu || '');
         setValue('chevvaiDhosam', data.partner_chev_dho || '');
-        setValue('foreignInterest', data.partner_fgn_Int || '');
+        setValue('foreignInterest', data.partner_forign_int || '');
+
+        const selectedStarIdsFromApi = data.partner_porutham_ids.split(",").map((id: string) => ({
+          id: id.trim(), 
+          rasi: "",      
+          star: "",
+          label: "",
+        }));
+
+        setSelectedStarIds(selectedStarIdsFromApi);
+        //setPrefilledStarRasiArray(prefilledStarRasiArray);  // Store the prefilled array in state
       })
       .catch(error => console.error('Error fetching partner profile:', error));
-  }, [setValue]);
-
+}, [setValue]);
  
-  const onSubmit = (data: PartnerSettingsForm) => {
+
+const onSubmit = (data: PartnerSettingsForm) => {
+  try {
+    // Convert selectedStarIds to a format for API
+    const starArray = selectedStarIds.map(item => item.id);
+    console.log(starArray, "starArray");
+    const starRasiArray = selectedStarIds.map(item => `${item.star}-${item.rasi}`);
+    console.log(starRasiArray, "starPORUTHAMRasiArray");
+
+    // Combine pre-filled and new selections
+    const combinedStarRasiArray = [...new Set([...prefilledStarRasiArray, ...starRasiArray])];
+    console.log(combinedStarRasiArray, "combinedStarRasiArray");
+
+    // Detect removed items
+    const removedStarRasiArray = prefilledStarRasiArray.filter(
+      prefilled => !starRasiArray.includes(prefilled)
+    );
+    console.log(removedStarRasiArray, "removedStarRasiArray");
+
+    // Final array excluding removed items
+    const finalStarRasiArray = combinedStarRasiArray.filter(
+      combined => !removedStarRasiArray.includes(combined)
+    );
+    console.log(finalStarRasiArray, "finalStarRasiArray");
+
+    // Create a comma-separated string for the final selections
+    const StarString = starArray.join(',');
+    const finalRasiString = finalStarRasiArray.join(',');
+
+    console.log('Final Star IDs:', StarString);
+    console.log('Final Star-Rasi String:', finalRasiString);
+
+    // Prepare the payload for submission
     const updateData = {
-        profile_id: sessionStorage.getItem('loginuser_profile_id'),
-        pref_age_differences: `${data.fromAge}`,
-        pref_height_from: data.fromHeight,
-        pref_height_to: data.toHeight,
-        pref_profession: data.profession.join(','),
-        pref_education: data.education.join(','),
-        pref_anual_income: data.income.join(','),
-        pref_chevvai: data.chevvaiDhosam,
-        pref_ragukethu: data.rahuKetuDhosam,
-        pref_foreign_intrest: data.foreignInterest,
+      profile_id: sessionStorage.getItem('loginuser_profile_id'),
+      pref_age_differences: `${data.fromAge}`,
+      pref_height_from: data.fromHeight,
+      pref_height_to: data.toHeight,
+      pref_profession: data.profession.join(','),
+      pref_education: data.education.join(','),
+      pref_marital_status: data.maritalstatus.join(','),
+      pref_anual_income: data.income.join(','),
+      pref_chevvai: data.chevvaiDhosam,
+      pref_ragukethu: data.rahuKetuDhosam,
+      pref_foreign_intrest: data.foreignInterest,
+      pref_porutham_star: StarString,
+      pref_porutham_star_rasi: finalRasiString, // Send final merged string
     };
 
+    // Send the updated data to the API
     axios.post('http://103.214.132.20:8000/auth/Update_myprofile_partner/', updateData)
-        .then(response => {
-            console.log('Partner preferences updated:', response.data);
-            if (response.data.status === "success") {
-             NotifySuccess('Partner Settings updated successfully');
-            } else {
-              NotifyError('Failed to update notification settings');
-            }
-            if (response.data.Status === "success") {
-                NotifySuccess("Family details saved successfully");
-            } 
-        })
-        .catch(error => console.error('Error updating partner preferences:', error));
+      .then(response => {
+        if (response.data.status === "success") {
+          NotifySuccess('Partner Settings updated successfully');
+          
+          // Clear the prefilledStarRasiArray after success
+          setPrefilledStarRasiArray([]);  // Clear the state
+          sessionStorage.removeItem('prefilledStarRasiArray');  // Remove from sessionStorage
+          
+        } else {
+          NotifyError('Failed to update partner settings');
+        }
+      })
+      .catch(error => console.error('Error updating partner preferences:', error));
+
+  } catch (error) {
+    console.error('Unexpected error occurred:', error);
+    NotifyError('An error occurred while submitting the form.');
+  }
 };
+
+
+
+
+const storedBirthStar = sessionStorage.getItem("selectedstar");
+const storedGender = sessionStorage.getItem("gender");
+
+
+useEffect(() => {
+  if (storedBirthStar && storedGender) {
+    const fetchMatchingStars = async () => {
+      try {
+        const response = await apiClient.post(`/auth/Get_Matchstr_Pref/`, {
+          birth_star_id: storedBirthStar,
+          gender: storedGender,
+        });
+
+        const matchCountArrays: MatchingStar[][] = Object.values(
+          response.data
+        ).map((matchCount: any) => matchCount);
+        setMatchStars(matchCountArrays);
+        console.log("Response from server:", matchCountArrays);
+      } catch (error) {
+        console.error("Error fetching matching star options:", error);
+      }
+    };
+    fetchMatchingStars();
+  }
+}, [storedBirthStar, storedGender]);
+
+
+// const handleCheckboxChange = (updatedIds: SelectedStarIdItem[]) => {
+//   setSelectedStarIds(updatedIds);
+//   setPrefilledStarRasiArray(updatedIds);
+// };
+
+const handleCheckboxChange = (updatedIds: SelectedStarIdItem[] ) => {
+  setSelectedStarIds(updatedIds); // Pass SelectedStarIdItem[]
+ 
+};
+
+
 
   return (
     <div>
@@ -450,6 +626,31 @@ export const PartnerSettings: React.FC = () => {
               {errors.toHeight && <span  className="text-red-500 block mt-0">{errors.toHeight.message}</span>}
             </div>
           </div>
+        </div>
+        
+
+         {/* Maritalstatus */}
+         <div className="mb-5">
+          <h4 className="text-[20px] text-primary font-semibold mb-2">Marital Status</h4>
+          <div className="w-full flex flex-wrap gap-4">
+            {maritalOptions.map((option) => (
+              <div className="flex items-center mb-2 w-[calc(50%-0.5rem)]" key={option.id}>
+                <input
+                  type="checkbox"
+                  id={`maritalstatus-${option.id}`}
+                  value={option.id}
+                  {...register('maritalstatus')}
+                  className="mr-2"
+                />
+                <label htmlFor={`maritalstatus-${option.id}`} className="text-[20px] text-ash">
+                  {option.name}
+                </label>
+              </div>
+            ))}
+          </div>
+          {errors.maritalstatus?.message && typeof errors.maritalstatus.message === 'string' && (
+            <span className="text-red-500">{errors.maritalstatus.message}</span>
+          )}
         </div>
 
         {/* Education */}
@@ -614,7 +815,43 @@ export const PartnerSettings: React.FC = () => {
             </label>
             {errors.foreignInterest && <span className="text-red-500">{errors.foreignInterest.message}</span>}
           </div>
+
+
+
+          <div className="justify-start items-center gap-x-5">
+                {matchStars.length > 0 ? (
+                  matchStars
+                    .sort((a, b) => b[0].match_count - a[0].match_count) // Sort by match_count
+                    .map((matchCountArray, index) => {
+                      const starAndRasi = matchCountArray.map(star => ({
+                        id: star.id.toString(),
+                        matching_starId: star.dest_star_id.toString(),
+                        matching_starname: star.matching_starname,
+                        matching_rasiId: star.dest_rasi_id.toString(),
+                        matching_rasiname: star.matching_rasiname,
+                      }));
+
+                      const matchCountValue = matchCountArray[0].match_count;
+
+                      return (
+                        <MatchingStars
+                          key={index}
+                          initialPoruthas={`No of porutham ${matchCountValue}`}
+                          starAndRasi={starAndRasi}
+                          selectedStarIds={selectedStarIds}
+                          onCheckboxChange={handleCheckboxChange}
+                        />
+                      );
+                    })
+                ) : (
+                  <p>No match stars available</p>
+                )}
+              </div>
+
+          
         </div>
+
+        
         <div className="flex justify-end items-center space-x-5">
         <button 
         type="submit"
@@ -627,4 +864,5 @@ export const PartnerSettings: React.FC = () => {
     </div>
   );
 };
+
 

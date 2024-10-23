@@ -1,4 +1,4 @@
-// import { FooterContent } from '../Components/FooterPages/FooterContent'
+import { FooterContent } from '../Components/FooterPages/FooterContent'
 import { useLocation } from "react-router-dom";
 import parseHtml from "html-react-parser"
 
@@ -17,18 +17,33 @@ export const FooterPages = () => {
     const parsedContent = parseHtml(faqData);
 
 
+     // Access the data passed via state from VysyamalaAbout
+  const section = location.state?.section || "";
+
+
     return (
+        <div className='mt-28'>
+
+{section === "about-us" && (
         <div>
+          <h1>About Us</h1>
+          <p>
+            Detailed information about Vysyamala, our mission, our values, and the services we offer. <br />
+            [Extended description about Vysyamala goes here...]
+          </p>
+        </div>
+      )}
             <ul>
-                {/* <FooterContent
-                    key={index}
-                    title=""  // Pass the question as the title prop
-                    description={faqData}  // Pass the answer as the description prop
-                /> */}
+                <FooterContent
+                    // key={index}
+                    content={parsedContent}
+                // title=""  // Pass the question as the title prop
+                // description={faqData}  // Pass the answer as the description prop
+                />
                 {/* {faqData} */}
-                {parsedContent}
+
             </ul>
-            <p>No FAQ data available.</p>
+            {/* <p>No FAQ data available.</p> */}
         </div>
     )
 }

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { MdModeEdit } from "react-icons/md";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 // Define the interface for family details
 interface FamilyDetails {
@@ -50,6 +51,7 @@ export const Family = () => {
     const [selectedOccupationId, setSelectedOccupationId] = useState<number | string>('');
     const [occupations1, setOccupations1] = useState<Occupation1[]>([]);
     const [selectedOccupationId1, setSelectedOccupationId1] = useState<number | string>('');
+    const [refreshData, setRefreshData] = useState(false);
 
     useEffect(() => {
         const fetchFamilyDetails = async () => {
@@ -88,7 +90,7 @@ export const Family = () => {
         };
 
         fetchFamilyDetails();
-    }, [familyStatuses]);
+    }, [familyStatuses, refreshData]);
 
 
     useEffect(() => {
@@ -194,6 +196,25 @@ export const Family = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+         // Form validation
+    if (
+        !formData.personal_father_name ||
+        !selectedOccupationId ||
+        !formData.personal_mother_name ||
+        !selectedOccupationId1 ||
+        !selectedFamilyStatusId ||
+        !formData.personal_sis ||
+        !formData.personal_sis_married ||
+        !formData.personal_bro ||
+        !formData.personal_bro_married ||
+        !formData.personal_prope_det ||
+        !formData.personal_about_fam
+    ) {
+        toast.error("Please fill all fields correctly.");
+        return;
+    }
+
         console.log(selectedOccupationId, 'mothocc')
         try {
             const response = await axios.post("http://103.214.132.20:8000/auth/update_myprofile_family/", {
@@ -211,8 +232,8 @@ export const Family = () => {
                 about_family: formData.personal_about_fam,
             });
             if (response.data.status === "success") {
-                alert(response.data.message);
-                window.location.reload(); // Reload the page
+                toast.success(response.data.message);
+                setRefreshData(prev => !prev); // Trigger re-fetch of data
                 setFamilyDetails(prevState => ({
                     ...prevState!,
                     ...formData
@@ -221,6 +242,7 @@ export const Family = () => {
             }
         } catch (error) {
             console.error("Error updating family details:", error);
+            toast.error("Failed to update family details. Please try again.");
         }
     };
 
@@ -230,14 +252,14 @@ export const Family = () => {
 
     return (
         <div>
-            <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5">
+            <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5 max-lg:text-[28px] max-md:text-[26px] max-sm:text-[22px]">
                 Family Details
                 <MdModeEdit className="text-2xl text-main ml-2 cursor-pointer" onClick={handleEditClick} />
             </h2>
 
             {isEditing ? (
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-rows-1 grid-cols-2 gap-4">
+                    <div className="grid grid-rows-1 grid-cols-2 gap-4 max-sm:grid-cols-1">
                         <div>
                             <label className="block mb-2 text-[20px] text-ash font-semibold">
                                 About My Family:
@@ -255,7 +277,13 @@ export const Family = () => {
                                     type="text"
                                     name="personal_father_name"
                                     value={formData.personal_father_name || ""}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        // Allow only alphabetic characters and spaces
+                                        if (/^[A-Za-z\s]*$/.test(value)) {
+                                          handleInputChange(e); // Call your input change handler
+                                        }
+                                      }}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             </label>
@@ -283,7 +311,13 @@ export const Family = () => {
                                     type="text"
                                     name="personal_mother_name"
                                     value={formData.personal_mother_name || ""}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        // Allow only alphabetic characters and spaces
+                                        if (/^[A-Za-z\s]*$/.test(value)) {
+                                          handleInputChange(e); // Call your input change handler
+                                        }
+                                      }}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             </label>
@@ -379,7 +413,7 @@ export const Family = () => {
                         </div>
                     </div>
                     {isEditing && (
-                        <div className="flex justify-end items-center space-x-5">
+                        <div className="flex justify-end items-center space-x-5 max-sm:flex-col">
                             <button
                                 type="button"
                                 onClick={handleEditClick1}
@@ -399,7 +433,7 @@ export const Family = () => {
 
             ) : (
                 <div>
-                    <div className="grid grid-rows-1 grid-cols-2 gap-4">
+                    <div className="grid grid-rows-1 grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-0">
                         <div>
                             <h5 className="text-[20px] text-ash font-semibold mb-2">About My Family:
                                 <span className="font-normal"> {familyDetails.personal_about_fam}</span>

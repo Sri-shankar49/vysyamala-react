@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MdModeEdit } from "react-icons/md";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from 'react-toastify';
 interface PersonalDetails {
   personal_profile_name: string;
   personal_gender: string;
@@ -23,6 +23,9 @@ interface PersonalDetails {
   height_id: number;
   complexion_id: number;
   owner_id: number;
+  personal_weight: number;
+  personal_body_type: string;
+  personal_eye_wear: string;
 }
 
 interface MaritalStatus {
@@ -62,6 +65,8 @@ export const Personal = () => {
   const [selectedProfileHolder, setSelectedProfileHolder] = useState<number | string>('');
 
   const [error, setError] = useState<string | null>(null);
+  const [refreshData, setRefreshData] = useState(false);
+
 
   useEffect(() => {
     const fetchPersonalDetails = async () => {
@@ -99,7 +104,7 @@ export const Personal = () => {
       }
     };
     fetchPersonalDetails();
-  }, [loginuser_profileId, heights, maritalStatuses, complexions, profileHolders]);
+  }, [loginuser_profileId, heights, maritalStatuses, complexions, profileHolders, refreshData]);
 
   useEffect(() => {
     const fetchMaritalStatuses = async () => {
@@ -204,7 +209,7 @@ export const Personal = () => {
       navigate(-1); // Navigate back to the previous page
     }
   };
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
@@ -226,14 +231,21 @@ export const Personal = () => {
   useEffect(() => {
     if (formData.personal_profile_dob) {
       const age = calculateAge(formData.personal_profile_dob);
-      if (age >= 18) {
+      if (age >= 18 && age <= 45) {
         setError(null);
         setFormData(prevState => ({
           ...prevState,
           personal_age: age
         }));
-      } else {
+      } else if (age < 18) {
         setError("Age must be 18 years or older.");
+        setFormData(prevState => ({
+          ...prevState,
+          personal_profile_dob: "",
+          personal_age: undefined
+        }));
+      } else if (age > 45) {
+        setError("Age must be 45 years or younger.");
         setFormData(prevState => ({
           ...prevState,
           personal_profile_dob: "",
@@ -243,12 +255,106 @@ export const Personal = () => {
     }
   }, [formData.personal_profile_dob]);
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+
+  //   if (error) {
+  //     toast.error(error);
+  //     return;
+  //   }
+  //   try {
+  //     const response = await axios.post("http://103.214.132.20:8000/auth/update_myprofile_personal/", {
+  //       profile_id: loginuser_profileId,
+  //       Profile_name: formData.personal_profile_name,
+  //       Gender: formData.personal_gender,
+  //       personal_age: formData.personal_age,
+  //       Profile_dob: formData.personal_profile_dob,
+  //       place_of_birth: formData.personal_place_of_birth,
+  //       time_of_birth: formData.personal_time_of_birth,
+  //       Profile_height: selectedHeight,
+  //       weight:formData.personal_weight,
+  //       eye_wear:formData.personal_eye_wear,
+  //       body_type:formData.personal_body_type,
+  //       Profile_marital_status: selectedMaritalStatusId,
+  //       blood_group: formData.personal_blood_group,
+  //       about_self: formData.personal_about_self,
+  //       Profile_complexion: selectedComplexion,
+  //       hobbies: formData.personal_hobbies,
+  //       Pysically_changed: formData.personal_pysically_changed,
+  //       Profile_for: selectedProfileHolder
+  //     });
+
+  //     if (response.data.status === "success") {
+  //       toast.success(response.data.message);
+  //       setRefreshData(prev => !prev); // Trigger re-fetch of data
+  //       //window.location.reload();
+
+  //       const getResponse = await axios.post("http://103.214.132.20:8000/auth/get_myprofile_personal/", {
+  //         profile_id: loginuser_profileId
+  //       });
+
+  //       const updatedDetails = getResponse.data.data;
+
+  //       setPersonalDetails(prevState => ({
+  //         ...prevState!,
+  //         personal_profile_name: updatedDetails.personal_profile_name,
+  //         personal_gender: updatedDetails.personal_gender,
+  //         personal_age: updatedDetails.personal_age,
+  //         personal_profile_dob: updatedDetails.personal_profile_dob,
+  //         personal_place_of_birth: updatedDetails.personal_place_of_birth,
+  //         personal_time_of_birth: updatedDetails.personal_time_of_birth,
+  //         personal_profile_height: updatedDetails.personal_profile_height,
+  //         personal_weight: updatedDetails.personal_weight,
+  //         personal_body_type: updatedDetails.personal_body_type,
+  //         personal_eye_wear: updatedDetails.personal_eye_wear,
+  //         marital_sts_id: updatedDetails.marital_sts_id,
+  //         personal_blood_group: updatedDetails.personal_blood_group,
+  //         personal_about_self: updatedDetails.personal_about_self,
+  //         personal_hobbies: updatedDetails.personal_hobbies,
+  //         personal_pysically_changed: updatedDetails.personal_pysically_changed,
+  //         personal_profile_complexion_name: updatedDetails.personal_profile_complexion_name,
+  //         owner_id: updatedDetails.owner_id
+  //       }));
+
+  //       setIsEditing(false);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating personal details:", error);
+  //     toast.error("Failed to update personal details. Please try again.");
+  //   }
+  // };
+
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (error) {
-      alert(error);
+
+    // Form validation
+    if (
+      !formData.personal_profile_name ||
+      !formData.personal_gender ||
+      !formData.personal_age ||
+      !formData.personal_profile_dob ||
+      !formData.personal_place_of_birth ||
+      !formData.personal_time_of_birth ||
+      !selectedHeight ||
+      !formData.personal_weight ||
+      !formData.personal_eye_wear ||
+      !formData.personal_body_type ||
+      !selectedMaritalStatusId ||
+      !formData.personal_blood_group ||
+      !formData.personal_about_self ||
+      !selectedComplexion ||
+      !formData.personal_hobbies ||
+      !formData.personal_pysically_changed ||
+      !selectedProfileHolder ||
+      error
+    ) {
+      toast.error("Please fill all fields correctly.");
       return;
     }
+
     try {
       const response = await axios.post("http://103.214.132.20:8000/auth/update_myprofile_personal/", {
         profile_id: loginuser_profileId,
@@ -259,6 +365,9 @@ export const Personal = () => {
         place_of_birth: formData.personal_place_of_birth,
         time_of_birth: formData.personal_time_of_birth,
         Profile_height: selectedHeight,
+        weight: formData.personal_weight,
+        eye_wear: formData.personal_eye_wear,
+        body_type: formData.personal_body_type,
         Profile_marital_status: selectedMaritalStatusId,
         blood_group: formData.personal_blood_group,
         about_self: formData.personal_about_self,
@@ -269,8 +378,8 @@ export const Personal = () => {
       });
 
       if (response.data.status === "success") {
-        alert(response.data.message);
-        window.location.reload();
+        toast.success(response.data.message);
+        setRefreshData(prev => !prev); // Trigger re-fetch of data
 
         const getResponse = await axios.post("http://103.214.132.20:8000/auth/get_myprofile_personal/", {
           profile_id: loginuser_profileId
@@ -287,6 +396,9 @@ export const Personal = () => {
           personal_place_of_birth: updatedDetails.personal_place_of_birth,
           personal_time_of_birth: updatedDetails.personal_time_of_birth,
           personal_profile_height: updatedDetails.personal_profile_height,
+          personal_weight: updatedDetails.personal_weight,
+          personal_body_type: updatedDetails.personal_body_type,
+          personal_eye_wear: updatedDetails.personal_eye_wear,
           marital_sts_id: updatedDetails.marital_sts_id,
           personal_blood_group: updatedDetails.personal_blood_group,
           personal_about_self: updatedDetails.personal_about_self,
@@ -297,12 +409,15 @@ export const Personal = () => {
         }));
 
         setIsEditing(false);
+      } else {
+        toast.error(response.data.message || "Failed to update personal details.");
       }
     } catch (error) {
       console.error("Error updating personal details:", error);
-      alert("Failed to update personal details. Please try again.");
+      toast.error("Failed to update personal details. Please try again.");
     }
   };
+
 
   if (!personalDetails) {
     return <div>Loading...</div>;
@@ -310,7 +425,7 @@ export const Personal = () => {
 
   return (
     <div>
-      <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5">
+      <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5 max-lg:text-[28px] max-md:text-[26px] max-sm:text-[22px]">
         Personal Details
         <MdModeEdit
           className="text-2xl text-main ml-2 cursor-pointer"
@@ -320,7 +435,7 @@ export const Personal = () => {
 
       {isEditing ? (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-rows-1 grid-cols-2 gap-4">
+          <div className="grid grid-rows-1 grid-cols-2 gap-4 max-sm:grid-cols-1">
             <div>
               <label className="block mb-2 text-[20px] text-ash font-semibold">
                 Name:
@@ -328,12 +443,18 @@ export const Personal = () => {
                   type="text"
                   name="personal_profile_name"
                   value={formData.personal_profile_name || ""}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow only alphabetic characters and spaces
+                    if (/^[A-Za-z\s]*$/.test(value)) {
+                      handleInputChange(e); // Call your input change handler
+                    }
+                  }}
                   className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                 />
               </label>
 
-              <label className="block mb-2 text-[20px] text-ash font-semibold">
+              {/* <label className="block mb-2 text-[20px] text-ash font-semibold">
                 Gender:
                 <div className="flex space-x-4 mt-2">
                   <label className="inline-flex items-center">
@@ -359,7 +480,7 @@ export const Personal = () => {
                     <span className="ml-2">Female</span>
                   </label>
                 </div>
-              </label>
+              </label> */}
 
               <label className="block mb-2 text-[20px] text-ash font-semibold">
                 DOB:
@@ -395,7 +516,13 @@ export const Personal = () => {
                   type="text"
                   name="personal_place_of_birth"
                   value={formData.personal_place_of_birth || ""}
-                  onChange={handleInputChange}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow only alphabetic characters and spaces
+                    if (/^[A-Za-z\s]*$/.test(value)) {
+                      handleInputChange(e); // Call your input change handler
+                    }
+                  }}
                   className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                 />
               </label>
@@ -429,6 +556,60 @@ export const Personal = () => {
               </label>
 
               <label className="block mb-2 text-[20px] text-ash font-semibold">
+                Weight:
+                <input
+                  type="number"
+                  name="personal_weight"
+                  value={formData.personal_weight || ""}
+                  onChange={handleInputChange}
+                  className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+                  maxLength={3} // Limit input length to 3 characters
+                  onInput={(e) => {
+                    const value = e.currentTarget.value;
+                    if (value.length > 3) {
+                      e.currentTarget.value = value.slice(0, 3); // Restrict to max 3 characters
+                    }
+                  }}
+                />
+              </label>
+
+
+              <label className="block mb-2 text-[20px] text-ash font-semibold">
+                Body Type:
+                <select
+                  name="personal_body_type"
+                  value={formData.personal_body_type || ""}
+                  onChange={handleInputChange}
+                  className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+                >
+                  <option value="" disabled>Select Body Type</option>
+                  <option value="Slim">Slim</option>
+                  <option value="Fat">Fat</option>
+                  <option value="Normal">Normal</option>
+                </select>
+              </label>
+
+
+            </div>
+
+            <div>
+
+              <label className="block mb-2 text-[20px] text-ash font-semibold">
+                Eye Wear:
+                <select
+                  name="personal_eye_wear"
+                  value={formData.personal_eye_wear || ""}
+                  onChange={handleInputChange}
+                  className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+                >
+                  <option value="" disabled>Select Eye Wear</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+
+                </select>
+              </label>
+
+              <label className="block mb-2 text-[20px] text-ash font-semibold">
                 Marital Status:
                 <select
                   name="personal_profile_marital_status"
@@ -444,9 +625,6 @@ export const Personal = () => {
                   ))}
                 </select>
               </label>
-            </div>
-
-            <div>
               <label className="block mb-2 text-[20px] text-ash font-semibold">
                 Blood Group:
                 <input
@@ -545,7 +723,7 @@ export const Personal = () => {
           </div>
 
           {isEditing && (
-            <div className="flex justify-end items-center space-x-5">
+            <div className="flex justify-end items-center space-x-5 max-sm:flex-col max-sm:flex-wrap-reverse">
               <button
                 type="button"
                 onClick={handleEditClick1}
@@ -564,7 +742,7 @@ export const Personal = () => {
         </form>
       ) : (
         <div>
-          <div className="grid grid-rows-1 grid-cols-2">
+          <div className="grid grid-rows-1 grid-cols-2 max-sm:grid-cols-1">
             <div>
               <h5 className="text-[20px] text-ash font-semibold mb-2">Name  :
                 <span className="font-normal"> {personalDetails.personal_profile_name}</span></h5>
@@ -576,7 +754,12 @@ export const Personal = () => {
                 <span className="font-normal"> {personalDetails.personal_age} yrs</span></h5>
 
               <h5 className="text-[20px] text-ash font-semibold mb-2">DOB :
-                <span className="font-normal"> {new Date(personalDetails.personal_profile_dob).toLocaleDateString()}</span></h5>
+                {/* <span className="font-normal"> {new Date(personalDetails.personal_profile_dob).toLocaleDateString()}</span></h5> */}
+                {/* <span className="font-normal"> {personalDetails.personal_profile_dob}</span></h5> */}
+                <span className="font-normal">
+                  {personalDetails.personal_profile_dob ?
+                    new Date(personalDetails.personal_profile_dob).toLocaleDateString('en-GB') : 'Invalid Date'}
+                </span></h5>
 
               <h5 className="text-[20px] text-ash font-semibold mb-2">Place of Birth :
                 <span className="font-normal"> {personalDetails.personal_place_of_birth}</span></h5>
@@ -587,15 +770,27 @@ export const Personal = () => {
               <h5 className="text-[20px] text-ash font-semibold mb-2">Height :
                 <span className="font-normal"> {personalDetails.personal_profile_height} cm</span></h5>
 
+              <h5 className="text-[20px] text-ash font-semibold mb-2">Weight :
+                <span className="font-normal"> {personalDetails.personal_weight} kg</span></h5>
+
+              <h5 className="text-[20px] text-ash font-semibold mb-2">Body Type :
+                <span className="font-normal"> {personalDetails.personal_body_type} </span></h5>
+
+
+            </div>
+
+            <div>
+
+              <h5 className="text-[20px] text-ash font-semibold mb-2">Eye Wear :
+                <span className="font-normal"> {personalDetails.personal_eye_wear} </span></h5>
+
               <h5 className="text-[20px] text-ash font-semibold mb-2">
                 Marital Status :
                 <span className="font-normal">
                   {personalDetails.personal_profile_marital_status_name}
                 </span>
               </h5>
-            </div>
 
-            <div>
               <h5 className="text-[20px] text-ash font-semibold mb-2">Blood Group :
                 <span className="font-normal"> {personalDetails.personal_blood_group}</span></h5>
 

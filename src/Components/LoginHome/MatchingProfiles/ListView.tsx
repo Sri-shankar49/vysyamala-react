@@ -3,6 +3,7 @@ import { fetchProfiles } from "../../../commonapicall"; // Adjust the path as ne
 import { ListCard } from "./ProfileCard/ListCard"; // Adjust the path as needed
 import { Profile, ProfileContext } from "../../../ProfileContext"; // Adjust the path as needed
 import Spinner from "../../Spinner";
+import { ProfileNotFound } from "./ProfileNotFound";
 
 export interface SearchResultProps {
   profile_name: string;
@@ -10,14 +11,19 @@ export interface SearchResultProps {
   profile_age: any;
   height: any;
   profile_img?: string;
+  searchvalues: any;
+  star:any;
+  matching_score:any;
 }
 
 
 
-export const ListView: React.FC<SearchResultProps> = () => {
+export const ListView: React.FC<SearchResultProps> = ({ searchvalues }) => {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  console.log(setError);
+  
 
   const context = useContext(ProfileContext);
 
@@ -31,7 +37,7 @@ export const ListView: React.FC<SearchResultProps> = () => {
     sortOrder,
     matchingProfileSearchId,
     advanceSearchData
- 
+
   } = context;
   // const advanceSearchData = sessionStorage.getItem("advance_search_data")
   //   ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
@@ -63,7 +69,7 @@ export const ListView: React.FC<SearchResultProps> = () => {
         setProfiles(data.profiles); // Adjust based on the actual response structure
       } catch (error) {
         console.error("Error fetching profiles:", error);
-        setError("Failed to fetch profiles.");
+        // setError("Failed to fetch profiles.");
       } finally {
         setLoading(false);
       }
@@ -77,25 +83,50 @@ export const ListView: React.FC<SearchResultProps> = () => {
     matchingProfileSearchId,
   ]);
 
-  if (loading) return <Spinner />;
-  if (error) return <div>{error}</div>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );   if (error) return <div>{error}</div>;
 
   const searchvalue = sessionStorage.getItem("searchvalue") || " ";
   console.log(searchvalue);
 
+
+
   return (
-    <div className="list-view">
+    <div className="list-view max-md:flex max-md:flex-col max-md:items-center">
       {advanceSearchData && advanceSearchData.length > 0 ? (
         advanceSearchData.map((profile: Profile) => (
-          <ListCard key={profile.profile_id} profile={profile} />
+          <ListCard
+            key={profile.profile_id}
+            profile={profile}
+            searchvalues={searchvalues}
+          />
         ))
-      ) : profiles.length > 0 && searchvalue !== "1" ? (
+      ) : (profiles && profiles.length > 0 && searchvalue !== "1") ? (
         profiles.map((profile: Profile) => (
-          <ListCard key={profile.profile_id} profile={profile} />
+          <ListCard
+            key={profile.profile_id}
+            profile={profile}
+            searchvalues={searchvalues}
+          />
         ))
-      ): (
-        <p>No profiles available</p>
+      ) : (searchvalue === "1" && searchvalues && searchvalues.length > 0) ? (
+        searchvalues.map((profile: Profile) => (
+          <ListCard
+            key={profile.profile_id}
+            profile={profile}
+            searchvalues={searchvalues}
+          />
+        ))
+      ) : (
+        <div className="py-20">
+            <ProfileNotFound />
+          </div>
       )}
+
     </div>
   );
 };

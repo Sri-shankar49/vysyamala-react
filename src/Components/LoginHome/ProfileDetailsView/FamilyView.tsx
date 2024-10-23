@@ -93,6 +93,7 @@ export const FamilyView: React.FC = () => {
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-rows-1 grid-cols-2 gap-4">
                     <div>
+                    {formData?.about_family && formData.about_family !== "" && formData.about_family !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">About My Family:
                             {isEditing ? (
                                 <input
@@ -105,7 +106,9 @@ export const FamilyView: React.FC = () => {
                             ) : (
                                 <span className="font-normal"> {formData.about_family || '-'}</span>
                             )}
-                        </h5>
+                        </h5>)}
+
+                        {formData?.father_name && formData.father_name !== "" && formData.father_name !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Father Name:
                             {isEditing ? (
                                 <input
@@ -118,7 +121,9 @@ export const FamilyView: React.FC = () => {
                             ) : (
                                 <span className="font-normal"> {formData.father_name || '-'}</span>
                             )}
-                        </h5>
+                        </h5>)}
+
+                        {formData?.father_occupation && formData.father_occupation !== "" && formData.father_occupation !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Father Occupation:
                             {isEditing ? (
                                 <input
@@ -132,6 +137,10 @@ export const FamilyView: React.FC = () => {
                                 <span className="font-normal"> {formData.father_occupation || '-'}</span>
                             )}
                         </h5>
+                        )}
+
+
+{formData?.mother_name && formData.mother_name !== "" && formData.mother_name !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Mother Name:
                             {isEditing ? (
                                 <input
@@ -144,7 +153,9 @@ export const FamilyView: React.FC = () => {
                             ) : (
                                 <span className="font-normal"> {formData.mother_name || '-'}</span>
                             )}
-                        </h5>
+                        </h5>)}
+
+                        {formData?.mother_occupation && formData.mother_occupation !== "" && formData.mother_occupation !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Mother Occupation:
                             {isEditing ? (
                                 <input
@@ -157,7 +168,9 @@ export const FamilyView: React.FC = () => {
                             ) : (
                                 <span className="font-normal"> {formData.mother_occupation || '-'}</span>
                             )}
-                        </h5>
+                        </h5>)}
+
+                        {formData?.family_status && formData.family_status !== "" && formData.family_status !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Family Status:
                             {isEditing ? (
                                 <input
@@ -171,6 +184,10 @@ export const FamilyView: React.FC = () => {
                                 <span className="font-normal"> {formData.family_status || '-'}</span>
                             )}
                         </h5>
+                        )}
+
+
+{formData?.no_of_sisters && formData.no_of_sisters !== "" && formData.no_of_sisters !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Sisters:
                             {isEditing ? (
                                 <input
@@ -183,10 +200,11 @@ export const FamilyView: React.FC = () => {
                             ) : (
                                 <span className="font-normal"> {formData.no_of_sisters || '-'}</span>
                             )}
-                        </h5>
+                        </h5>)}
                     </div>
 
                     <div>
+                    {formData?.no_of_sis_married && formData.no_of_sis_married !== "" && formData.no_of_sis_married !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Sisters Married:
                             {isEditing ? (
                                 <input
@@ -199,7 +217,10 @@ export const FamilyView: React.FC = () => {
                             ) : (
                                 <span className="font-normal"> {formData.no_of_sis_married || '-'}</span>
                             )}
-                        </h5>
+                        </h5>)}
+
+
+                        {formData?.no_of_brothers && formData.no_of_brothers !== "" && formData.no_of_brothers !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Brothers:
                             {isEditing ? (
                                 <input
@@ -212,7 +233,9 @@ export const FamilyView: React.FC = () => {
                             ) : (
                                 <span className="font-normal"> {formData.no_of_brothers || '-'}</span>
                             )}
-                        </h5>
+                        </h5>)}
+
+                        {formData?.no_of_bro_married && formData.no_of_bro_married !== "" && formData.no_of_bro_married !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Brothers Married:
                             {isEditing ? (
                                 <input
@@ -225,7 +248,9 @@ export const FamilyView: React.FC = () => {
                             ) : (
                                 <span className="font-normal"> {formData.no_of_bro_married || '-'}</span>
                             )}
-                        </h5>
+                        </h5>)}
+
+                        {formData?.property_details && formData.property_details !== "" && formData.property_details !== null && (
                         <h5 className="text-[20px] text-ash font-semibold mb-2">Property Details:
                             {isEditing ? (
                                 <input
@@ -238,7 +263,7 @@ export const FamilyView: React.FC = () => {
                             ) : (
                                 <span className="font-normal"> {formData.property_details || '-'}</span>
                             )}
-                        </h5>
+                        </h5>)}
                     </div>
                 </div>
 

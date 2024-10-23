@@ -86,15 +86,15 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
 
   return (
     <div>
-      <section className="relative h-screen bg-cover bg-center flex items-center justify-center"
+      <section className=" mt-20 h-screen bg-cover bg-center flex items-end justify-center pb-28 max-sm:pb-6 max-lg:mt-10"
         style={{ backgroundImage: `url(${HeroBanner})` }}>
-        <div className="absolute bottom-[100px] container mx-auto p-[24px] bg-gloss-black rounded-[8px]">
-          <h5 className="text-[20px] font-semibold text-white">A Platform to</h5>
-          <h3 className="text-[36px] font-bold text-secondary">Find your perfect partner and family</h3>
+        <div className=" container mx-auto p-[24px] bg-gloss-black rounded-[8px] max-2xl:w-[95%] max-sm:bottom-[25px]">
+          <h5 className="text-[20px] font-semibold text-white pb-2 max-md:text-[18px] max-sm:text-[16px]">A Platform to</h5>
+          <h3 className="text-[36px] font-bold text-secondary pb-8 leading-8 max-xl:text-[34px] max-lg:text-[30px] max-md:text-[28px] max-sm:text-[24px] max-sm:leading-7 max-sm:font-semibold">Find your <br className="max-sm:hidden" /> perfect partner and family</h3>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex items-start justify-between flex-wrap gap-4">
-            <div>
-              <select {...register("profileFor")} className="bg-gloss-black text-[16px] text-white font-semibold py-[13px] px-[24px] border-[3px] border-[white] rounded-[8px] focus-visible:outline-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex items-start justify-between flex-wrap gap-4 max-2xl:gap-x-2 max-lg:justify-start max-lg:gap-x-7">
+            <div className="max-xl:w-[18%] max-lg:w-[30%] max-sm:w-full">
+              <select {...register("profileFor")} className="w-full bg-transparent text-[16px] text-white font-semibold py-[13px] px-[24px] border-[1px] border-[white] rounded-[5px] focus-visible:outline-0 max-xl:px-2 max-lg:py-[12px] max-sm:font-normal max-sm:border-[1px]">
                 <option value="" hidden className="text-white">Select Profile for</option>
                 {profileOptions.map(option => (
                   <option key={option.owner_id} value={option.owner_id} className="text-white">{option.owner_description}</option>
@@ -103,8 +103,8 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
               {errors.profileFor && <p className="text-red-500">{errors.profileFor.message}</p>}
             </div>
 
-            <div>
-              <select {...register("gender")} className="bg-gloss-black text-[16px] text-white font-semibold py-[13px] px-[24px] border-[3px] border-[white] rounded-[8px] focus-visible:outline-0">
+            <div className="max-xl:w-[18%] max-lg:w-[30%] max-sm:w-full">
+              <select {...register("gender")} className=" w-full bg-transparent text-[16px] text-white font-semibold py-[13px] px-[24px] border-[1px] border-[white] rounded-[5px] focus-visible:outline-0 max-xl:px-2 max-lg:py-[12px] max-sm:font-normal max-sm:border-[1px]">
                 <option value="" hidden className="text-white">Select Gender</option>
                 <option value="male" className="text-white">Male</option>
                 <option value="female" className="text-white">Female</option>
@@ -112,40 +112,41 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
               {errors.gender && <p className="text-red-500">{errors.gender.message}</p>}
             </div>
 
-            <div>
+            <div className="max-xl:w-[18%] max-lg:w-[30%] max-sm:w-full">
               <input
                 type="tel"
                 {...register("mobileNumber")}
                 placeholder="Mobile Number"
-                className="bg-gloss-black text-[16px] text-white font-semibold py-[13px] px-[24px] border-[3px] border-[white] rounded-[8px] focus-visible:outline-0 placeholder:text-[16px] placeholder:text-white placeholder:font-semibold"
-                style={{ WebkitBoxShadow: '0 0 0 1000px #000 inset', WebkitTextFillColor: 'white' }}
+                className="w-full bg-transparent text-[16px] text-white font-semibold py-[13px] px-[24px] border-[1px] border-[white] rounded-[5px] focus-visible:outline-0 placeholder:text-[16px] placeholder:text-white placeholder:font-semibold max-xl:px-2 max-lg:py-[12px] max-sm:placeholder:font-normal max-sm:font-normal max-sm:border-[1px]"
+                // style={{ WebkitBoxShadow: '0 0 0 1000px #000 inset', WebkitTextFillColor: 'white' }}
               />
               {errors.mobileNumber && <p className="text-red-500">{errors.mobileNumber.message}</p>}
             </div>
 
-            <div>
+            <div className="max-xl:w-[18%] max-lg:w-[30%] max-sm:w-full">
               <input
                 type="email"
                 {...register("email")}
                 placeholder="Email"
-                className="bg-gloss-black text-[16px] text-white font-semibold py-[13px] px-[24px] border-[3px] border-[white] rounded-[8px] focus-visible:outline-0 placeholder:text-[16px] placeholder:text-white placeholder:font-semibold"
-                // Add inline styles to prevent autofill changing background
+                className="w-full bg-transparent text-[16px] text-white font-semibold py-[13px] px-[24px] border-[1px] border-[white] rounded-[5px] focus-visible:outline-0 placeholder:text-[16px] placeholder:text-white placeholder:font-semibold max-xl:px-2 max-lg:py-[12px] max-sm:font-normal max-sm:border-[1px]"
                 style={{ WebkitBoxShadow: '0 0 0 1000px #000 inset', WebkitTextFillColor: 'white' }}
               />
               {errors.email && <p className="text-red-500">{errors.email.message}</p>}
             </div>
 
-            <div>
+            <div className="max-xl:w-[18%] max-lg:w-[30%] max-sm:w-full">
               <input
                 type="password"
                 {...register("password")}
                 placeholder="Create Password"
-                className="bg-gloss-black text-[16px] text-white font-semibold py-[13px] px-[24px] border-[3px] border-[white] rounded-[8px] focus-visible:outline-0 placeholder:text-[16px] placeholder:text-white placeholder:font-semibold"
+                className="w-full bg-transparent text-[16px] text-white font-semibold py-[13px] px-[24px] border-[1px] border-[white] rounded-[5px] focus-visible:outline-0 placeholder:text-[16px] placeholder:text-white placeholder:font-semibold max-xl:px-2 max-lg:py-[12px] max-sm:placeholder:font-medium max-sm:font-normal max-sm:border-[1px]"
+                style={{ WebkitBoxShadow: '0 0 0 1000px #000 inset', WebkitTextFillColor: 'white' }}
+              
               />
               {errors.password && <p className="text-red-500">{errors.password.message}</p>}
             </div>
 
-            <div className="bg-gradient flex justify-center items-center py-[13px] px-[24px] rounded-[6px] space-x-2">
+            <div className="max-lg:w-[30%] max-sm:w-full bg-gradient flex justify-center items-center py-[13px] px-[35px] rounded-[6px] space-x-2">
               <button type="submit" className="text-[16px] text-white font-semibold">Register</button>
               <FaArrowRightLong className="text-white text-[22px]" />
             </div>
@@ -156,5 +157,6 @@ export const HeroSection: React.FC<HeroSectionProps> = () => {
       {/* Render PopupModal conditionally */}
       {showOtpPopup && <PopupModal mobileNumber={mobileNumber} onClose={() => setShowOtpPopup(false)} />}
     </div>
+
   );
 };

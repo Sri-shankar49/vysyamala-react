@@ -4,58 +4,61 @@ import "slick-carousel/slick/slick-theme.css";
 import { HeroSliderContent } from "../LoginHome/HeroSlider/HeroSliderContent";
 import "./HeroSlider/HeroSlickStyle.css";
 
-const defaultSettings = {
-  dots: true,
-  infinite: true,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  initialSlide: 0,
-  autoplay: false,
-  autoplaySpeed: 2000,
-  cssEase: "linear",
-  pauseOnHover: true,
-  responsive: [
-    {
-      breakpoint: 1024,
-      settings: {
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        infinite: true,
-        dots: true,
-      },
-    },
-    {
-      breakpoint: 768,
-      settings: {
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        infinite: true,
-        dots: true,
-        arrows: false,
-      },
-    },
-    {
-      breakpoint: 600,
-      settings: {
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        initialSlide: 2,
-        arrows: false,
-      },
-    },
-    {
-      breakpoint: 480,
-      settings: {
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-      },
-    },
-  ],
-};
+
+
+
+// const defaultSettings = {
+//   dots: true,
+//   infinite: true,
+//   slidesToShow: 1,
+//   slidesToScroll: 1,
+//   initialSlide: 0,
+//   autoplay: false,
+//   autoplaySpeed: 2000,
+//   cssEase: "linear",
+//   pauseOnHover: true,
+//   responsive: [
+//     {
+//       breakpoint: 1024,
+//       settings: {
+//         slidesToShow: 1,
+//         slidesToScroll: 1,
+//         infinite: true,
+//         dots: true,
+//       },
+//     },
+//     {
+//       breakpoint: 768,
+//       settings: {
+//         slidesToShow: 1,
+//         slidesToScroll: 1,
+//         infinite: true,
+//         dots: true,
+//         arrows: false,
+//       },
+//     },
+//     {
+//       breakpoint: 600,
+//       settings: {
+//         slidesToShow: 1,
+//         slidesToScroll: 1,
+//         initialSlide: 2,
+//         arrows: false,
+//       },
+//     },
+//     {
+//       breakpoint: 480,
+//       settings: {
+//         slidesToShow: 1,
+//         slidesToScroll: 1,
+//         arrows: false,
+//       },
+//     },
+//   ],
+// };
 
 export const HeroSlider = () => {
-  const [profileCount, setProfileCount] = useState<number>(0);
+  const [, setProfileCount] = useState<number>(0);
 
   useEffect(() => {
     // Fetch the profile count from the server
@@ -81,18 +84,18 @@ export const HeroSlider = () => {
   }, []);
 
   // Conditionally set the dots property
-  const settings = {
-    ...defaultSettings,
-    dots: profileCount > 1,
-    infinite: profileCount > 1,
-    autoplay: profileCount > 1,
-  };
+  // const settings = {
+  //   ...defaultSettings,
+  //   dots: profileCount > 1,
+  //   infinite: profileCount > 1,
+  //   autoplay: profileCount > 1,
+  // };
 
   return (
-    <section className="bg-heroSliderBgImg bg-no-repeat bg-cover w-full">
+    <section className="bg-heroSliderBgImg bg-no-repeat bg-cover w-full overflow-hidden">
       <div className="container mx-auto heroSlickStyle">
         <div className="slider-container">
-          <HeroSliderContent settings={settings} />
+          <HeroSliderContent  />
         </div>
       </div>
     </section>

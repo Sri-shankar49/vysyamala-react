@@ -5,7 +5,7 @@ import UploadFile from "../Components/UploadImages/UploadFile";
 import uploadfile from "../assets/icons/uploadfile.png";
 import closebtn from "../assets/icons/closebtn.png";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SideContent from "../Components/RegistrationForm/SideContent";
 import arrow from "../assets/icons/arrow.png";
 
@@ -31,7 +31,10 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setShowPassWordNumber(event.target.checked ? 1 : 0);
   };
-
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const Param = queryParams.get("quick") || 0;
+  // console.log("ppppppppppppppppp",Param);
   const fileInputRefs = {
     images: useRef<HTMLInputElement>(null),
     horoscope: useRef<HTMLInputElement>(null),
@@ -126,6 +129,11 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
   const maritalStatus = sessionStorage.getItem("maritalStatus");
 
   const handleSubmit = async () => {
+
+
+    // Determine the value of quick_reg: 1 if quick is "1", otherwise 0
+    const quick_reg = Param === "1" ? "1" : "0";
+
     const uploadImages = async (
       files: File[],
       endpoint: string,
@@ -137,6 +145,9 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
         formData.append("profile_id", profile_id as string);
         files.forEach((file) => formData.append(fieldName, file));
 
+        // Add the new quick_reg field to formData
+        formData.append("quick_reg", quick_reg);
+
         formData.append("photo_protection", showPassWordNumber.toString());
         formData.append("photo_password", password);
         formData.append("video_url", url);
@@ -147,7 +158,12 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
         if (response.status === 200) {
           NotifySuccess("Files uploaded successfully");
           setTimeout(() => {
-            navigate("/FamilyDetails");
+            if (Param === "1") {
+              navigate("/MembershipPlan");
+            } else {
+              navigate("/FamilyDetails");
+            }
+            // navigate("/FamilyDetails");
           }, 2000);
         }
 
@@ -178,6 +194,7 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
       "idproof_file"
     );
   };
+
 
   const renderFileUploadSection = (
     title: string,
@@ -273,11 +290,11 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
               password can view the images)
             </label>
           </div>
-
-          <div className="mt-7">
+          {showPassWordNumber ===1 &&           <div className="mt-7">
             <label htmlFor="password" className="block text-lg mb-2">
               Enter Password
             </label>
+           
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -294,7 +311,8 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
                 {showPassword ? <IoEyeOff /> : <IoEye />}
               </div>
             </div>
-          </div>
+          </div> }
+
 
           {maritalStatus === "2" &&
             renderFileUploadSection(
@@ -354,11 +372,13 @@ const UploadImages: React.FC<UploadImagesProps> = () => {
             </div>
 
             <div className="flex space-x-4">
-              <Link to="/FamilyDetails">
-                <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2">
-                  Skip
-                </button>
-              </Link>
+              {Param !== "1" && (
+                <Link to="/FamilyDetails">
+                  <button className="py-[10px] px-14 bg-white text-main font-semibold rounded-[6px] mt-2">
+                    Skip
+                  </button>
+                </Link>
+              )}
               {/* <Link to="/FamilyDetails"> */}
               <button
                 className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2"

@@ -19,6 +19,8 @@ import {
 // import MatchingScoreImg from "../../../assets/images/MatchingScore.png";
 import MatchingScore from "../ProfileDetails/MatchingScore";
 import Spinner from "../../Spinner";
+import { useNavigate } from "react-router-dom";
+import { ProfileNotFound } from "../../LoginHome/MatchingProfiles/ProfileNotFound";
 
 // Define the Profile interface
 export interface Profile {
@@ -26,9 +28,18 @@ export interface Profile {
   myint_profile_name: string;
   myint_profileid: string;
   myint_profile_age: number;
-
   myint_verified: number;
+  myint_height:number;
+  myint_star:string;
+  myint_profession:string;
+  myint_city:string;
+  myint_degree:string;
   myint_match_score?: number;
+  myint_views:number;
+  myint_lastvisit:string;
+  myint_userstatus:string;
+  myint_horoscope:string;
+  myint_profile_wishlist:number;
 }
 
 type InterestSentCardProps = {
@@ -37,6 +48,7 @@ type InterestSentCardProps = {
 };
 
 export const InterestSentCard: React.FC<InterestSentCardProps> = ({ pageNumber }) => {
+  const navigate = useNavigate();
   // State to track if the card is bookmarked or not
   const [isBookmarked, setIsBookmarked] = useState<{ [key: string]: boolean }>(
     {}
@@ -113,12 +125,16 @@ export const InterestSentCard: React.FC<InterestSentCardProps> = ({ pageNumber }
   }
 
   if (noData) {
-    return <p>No data found.</p>;
+    return (
+      <div className="py-20">
+            <ProfileNotFound />
+          </div>
+    );
   }
 
-  // const handleProfileClick = (profileId: string) => {
-  //     navigate(`/ProfileDetails?id=${profileId}`);
-  // };
+  const handleProfileClick = (profileId: string) => {
+      navigate(`/ProfileDetails?id=${profileId}&page=3`);
+  };
   return (
     <div className="border-b-[1px] border-footer-text-gray">
       {profile.map((profile) => (
@@ -160,7 +176,11 @@ export const InterestSentCard: React.FC<InterestSentCardProps> = ({ pageNumber }
                 {/* Name & Profile ID */}
                 <div className="relative mb-2">
                   <div className="flex items-center">
-                    <h5 className="text-[20px] text-secondary font-semibold cursor-pointer">
+                    <h5 
+                     onClick={() =>
+                      handleProfileClick(profile.myint_profileid)
+                    }
+                    className="text-[20px] text-secondary font-semibold cursor-pointer">
                       {profile.myint_profile_name}{" "}
                       <span className="text-sm text-ashSecondary">
                         ({profile.myint_profileid})
@@ -183,7 +203,7 @@ export const InterestSentCard: React.FC<InterestSentCardProps> = ({ pageNumber }
 
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <FaPersonArrowUpFromLine className="mr-2" />
-                    Height Data
+                    {profile.myint_height} ft
                   </p>
                 </div>
 
@@ -191,7 +211,7 @@ export const InterestSentCard: React.FC<InterestSentCardProps> = ({ pageNumber }
                 <div className="mb-2">
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <MdStars className="mr-2" />
-                    Uthiram
+                    {profile.myint_star}
                   </p>
                 </div>
 
@@ -199,7 +219,7 @@ export const InterestSentCard: React.FC<InterestSentCardProps> = ({ pageNumber }
                 <div className="mb-2">
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <IoSchool className="mr-2" />
-                    Bachelors - Arts/Science/Commerce/B Phil
+                    {profile.myint_degree}
                   </p>
                 </div>
 
@@ -207,7 +227,7 @@ export const InterestSentCard: React.FC<InterestSentCardProps> = ({ pageNumber }
                 <div className="mb-2">
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <FaSuitcase className="mr-2" />
-                    Employed
+                    {profile.myint_profession}
                   </p>
                 </div>
 
@@ -215,7 +235,7 @@ export const InterestSentCard: React.FC<InterestSentCardProps> = ({ pageNumber }
                 <div className="mb-2">
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <FaLocationDot className="mr-2" />
-                    Chennai
+                    {profile.myint_city}
                   </p>
                 </div>
 
@@ -224,29 +244,28 @@ export const InterestSentCard: React.FC<InterestSentCardProps> = ({ pageNumber }
                   {/* Horoscope Available */}
                   <div>
                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
+                      <MdOutlineGrid3X3 className="mr-2" />  {profile.myint_horoscope}
                     </p>
                   </div>
 
                   {/* Active User */}
                   <div>
                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <FaUser className="mr-2" /> Active user
+                      <FaUser className="mr-2" /> {profile.myint_userstatus}
                     </p>
                   </div>
 
                   {/* Last Visit */}
                   <div>
                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <IoCalendar className="mr-2" /> Last visit on June 30,
-                      2024
+                      <IoCalendar className="mr-2" /> Last visit on {profile.myint_lastvisit}
                     </p>
                   </div>
 
                   {/* Views */}
                   <div>
                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <IoEye className="mr-2" /> 31 views
+                      <IoEye className="mr-2" />{profile.myint_views}  views
                     </p>
                   </div>
                 </div>

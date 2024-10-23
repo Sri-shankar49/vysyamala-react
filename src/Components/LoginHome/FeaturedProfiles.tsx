@@ -189,11 +189,11 @@ export const FeaturedProfiles = () => {
     navigate("/ViewAllFeaturedProfiles");
   };
   return (
-    <div className="bg-vysyamalaBlackSecondary py-5">
-      <div className="container mx-auto my-10">
+    <div className="bg-vysyamalaBlackSecondary py-5 px-5 max-xl:py-4 max-lg:py-3 overflow-hidden">
+      <div className="container mx-auto my-10 max-lg:my-8 max-md:my-6">
         <div className="flex justify-between items-center">
           <div>
-            <h4 className="text-[24px] text-white font-bold">
+            <h4 className="text-[24px] text-white font-bold max-xl:text-[22px] max-lg:text-[20px] max-md:text-[18px]">
               Featured Profiles{" "}
               <span className="text-sm text-white font-bold">
                 {" "}
@@ -203,7 +203,7 @@ export const FeaturedProfiles = () => {
           </div>
           <div>
             <button
-              className="flex items-center text-sm text-white font-semibold"
+              className="flex items-center text-sm text-white font-semibold max-md:text-[14px]"
               onClick={handleNavigate}
             >
               View All <IoChevronForwardOutline className="ml-2" />

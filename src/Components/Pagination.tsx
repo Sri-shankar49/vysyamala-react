@@ -10,15 +10,18 @@ interface PaginationProps {
 const Pagination: React.FC<PaginationProps> = ({
   toptalPages,
   dataPerPage,
-  totalRecords=0,
+  totalRecords = 0,
   setPageNumber,
   pageNumber,
 }) => {
-    const startResult = (pageNumber - 1) * dataPerPage + 1;
-    const endResult = Math.min(pageNumber * dataPerPage, totalRecords);
-  
+  if (!toptalPages || !dataPerPage || !totalRecords || !pageNumber) {
+    return <div></div>;
+  }
+
+  const startResult = (pageNumber - 1) * dataPerPage + 1;
+  const endResult = Math.min(pageNumber * dataPerPage, totalRecords);
+
   return (
-  
     <div>
       <div className="flex items-center justify-between border-t border-gray bg-white px-4 py-3 sm:px-6">
         <div className="flex flex-1 justify-between sm:hidden">
@@ -33,7 +36,7 @@ const Pagination: React.FC<PaginationProps> = ({
           </a>
         </div>
         <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-        <div>
+          <div>
             <p className="text-sm text-primary">
               Showing <span className="font-medium">{startResult}</span> to{" "}
               <span className="font-medium">{endResult}</span> of{" "}
@@ -46,7 +49,7 @@ const Pagination: React.FC<PaginationProps> = ({
               aria-label="Pagination"
             >
               <button
-               disabled={pageNumber===1}
+                disabled={pageNumber === 1}
                 onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
                 className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
               >
@@ -58,16 +61,17 @@ const Pagination: React.FC<PaginationProps> = ({
                 <button
                   onClick={() => setPageNumber(index + 1)}
                   key={index}
-                  className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${pageNumber === index + 1
-                    ? "bg-secondary text-white"
-                    : "text-primary hover:bg-gray-50"
-                    }`}
+                  className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
+                    pageNumber === index + 1
+                      ? "bg-secondary text-white"
+                      : "text-primary hover:bg-gray-50"
+                  }`}
                 >
                   {index + 1}
                 </button>
               ))}
               <button
-              disabled={pageNumber===toptalPages}
+                disabled={pageNumber === toptalPages}
                 onClick={() =>
                   setPageNumber((prev) => Math.min(prev + 1, toptalPages))
                 }

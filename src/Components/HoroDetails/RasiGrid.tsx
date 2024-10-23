@@ -7,6 +7,7 @@ import apiClient from "../../API";
 
 interface RasiGridProps {
   centerLabel: string;
+  rasiTemp: any
 }
 
 interface Label {
@@ -14,7 +15,7 @@ interface Label {
   name: string;
 }
 
-const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
+const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel,rasiTemp }) => {
   const initialLabels: Label[] = useMemo(
     () => [
       { id: 8, name: "Raghu/Rahu" },
@@ -38,133 +39,43 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
   const location = useLocation();
 
 
+
+
   useEffect(() => {
     const fetchProfileData = async () => {
-      const profileId =
-        sessionStorage.getItem("profile_id_new") ||
-        sessionStorage.getItem("loginuser_profile_id");
+      const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id");
       if (profileId) {
         try {
-          const requestData = {
-            profile_id: profileId,
-            page_id: 5,
-          };
+          const requestData = { profile_id: profileId, page_id: 5 };
+          const response = await apiClient.post(`/auth/Get_save_details/`, requestData, { headers: { "Content-Type": "application/json" } });
 
-          const response = await apiClient.post(
-            `/auth/Get_save_details/`,
-            requestData,
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
-
-          console.log("API Response Grid:", response.data); // Log the entire API response
-
-          const profileData = response.data.data; // Access the 'data' object directly
-
-          console.log("Profile Data Grid:", profileData); // Log the profile data
-
-          // console.log("rasi:",profileData.rasi_kattam);
-          // console.log("amsam:",profileData.amsa_kattam);
-
+          const profileData = response.data.data;
           sessionStorage.setItem("formattedDatarasi", profileData.rasi_kattam);
-          sessionStorage.setItem("formattedDatamsam", profileData.amsa_kattam);
 
           const formattedDatarasival = sessionStorage.getItem("formattedDatarasi");
-      if (formattedDatarasival) {
-        console.log("Retrieved formattedDatarasi from sessionStorage:", formattedDatarasival);
+          if (formattedDatarasival) {
+            const data = formattedDatarasival
+              .slice(1, -1)
+              .split(", ")
+              .map((grid) => {
+                const match = grid.match(/Grid \d+: (.+)/);
+                return match ? match[1].split(",").map((id) => parseInt(id, 10)) : [];
+              });
 
-        try {
-          // Parse the formatted data
-          const data = formattedDatarasival
-            .slice(1, -1)  // Adjust based on the actual format of your data
-            .split(", ")
-            .map((grid) => {
-              const match = grid.match(/Grid \d+: (.+)/);
-              return match ? match[1].split(",").map((id) => parseInt(id, 10)) : [];
-            });
+            const newRasiContents = data.map((ids) => ids.map((id) => initialLabels.find((label) => label.id === id)?.name).filter(Boolean) as string[]);
+            setRasiContents(newRasiContents);
 
-          // Map ids to labels and set the rasi contents
-          const newRasiContents = data.map((ids) => {
-            return ids
-              .map((id) => initialLabels.find((label) => label.id === id)?.name)
-              .filter(Boolean) as string[];
-          });
-
-          setRasiContents(newRasiContents);
-        } catch (error) {
-          console.error("Error parsing formattedDatarasival:", error);
-        }
-
-      } else {
-        console.log("No formattedDatarasi found in sessionStorage");
-      }
-  
-
+            const usedIds = data.flat();
+            setLabels((prevLabels) => prevLabels.filter((label) => !usedIds.includes(label.id)));
+          }
         } catch (error) {
           console.error("Error fetching profile data:", error);
         }
-      } else {
-        console.warn("Profile ID not found in sessionStorage");
       }
     };
 
     fetchProfileData();
-  }, []);
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  useEffect(() => {
-    const fetchData = () => {
-      const formattedDatarasival = sessionStorage.getItem("formattedDatarasi");
-      if (formattedDatarasival) {
-        console.log("Retrieved formattedDatarasi from sessionStorage:", formattedDatarasival);
-
-        try {
-          // Parse the formatted data
-          const data = formattedDatarasival
-            .slice(1, -1)  // Adjust based on the actual format of your data
-            .split(", ")
-            .map((grid) => {
-              const match = grid.match(/Grid \d+: (.+)/);
-              return match ? match[1].split(",").map((id) => parseInt(id, 10)) : [];
-            });
-
-          // Map ids to labels and set the rasi contents
-          const newRasiContents = data.map((ids) => {
-            return ids
-              .map((id) => initialLabels.find((label) => label.id === id)?.name)
-              .filter(Boolean) as string[];
-          });
-
-          setRasiContents(newRasiContents);
-        } catch (error) {
-          console.error("Error parsing formattedDatarasival:", error);
-        }
-
-      } else {
-        console.log("No formattedDatarasi found in sessionStorage");
-      }
-    };
-
-    fetchData();
-
-    // Optionally, you can return a cleanup function if needed
-    // return () => { /* cleanup code here */ };
-
-  }, [initialLabels,location]); 
+  }, [location, initialLabels]);
 
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
@@ -210,16 +121,16 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
     // Create a copy of the current rasiContents state
     const newContents = [...rasiContents];
     const removedLabel = newContents[index][labelIndex];
-    
+
     // Remove the label from the copied state
     newContents[index].splice(labelIndex, 1);
     setRasiContents(newContents);
-  
+
     // Find the removed label object from the initialLabels
     const removedLabelObj = initialLabels.find(
       (label) => label.name === removedLabel
     );
-  
+
     // If the removed label object is found
     if (removedLabelObj) {
       setLabels((prevLabels) => {
@@ -231,11 +142,11 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
         return [...prevLabels, removedLabelObj];
       });
     }
-  
+
     // Clear the session variable 'formattedDatarasi'
     // sessionStorage.removeItem('formattedDatarasi');
   };
-  
+
 
   const formatGridData = () => {
     const formattedData = rasiContents
@@ -247,6 +158,7 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
         return `Grid ${boxNumber}: ${ids.length > 0 ? ids.join(",") : "empty"}`;
       })
       .join(", ");
+    console.log(formattedData, "llllllllllllll")
     return `{${formattedData}}`;
   };
 
@@ -262,7 +174,7 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
   return (
     <div className="flex justify-start items-start bg-gray-200 space-x-16">
       <div className="flex flex-col space-y-2">
-        {labels.map((label, index) => (
+        {rasiTemp !== "1" && labels.map((label, index) => (
           <div
             key={index}
             draggable
@@ -273,6 +185,7 @@ const RasiGrid: React.FC<RasiGridProps> = ({ centerLabel }) => {
             {label.name}
           </div>
         ))}
+
       </div>
 
       <div className="">

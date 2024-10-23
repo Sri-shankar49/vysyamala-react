@@ -49,7 +49,7 @@ export const PersonalNotesPopup: React.FC<PersonalNotesPopupProps> = ({closePopu
             });
 
             if (response.data.Status === 1) {
-                toast.success('Notes saved successfully');
+                toast.success('Your Notes have been saved!');
                 closePopup(); // Close the popup after saving
             } else {
                 toast.error('Failed to save notes');

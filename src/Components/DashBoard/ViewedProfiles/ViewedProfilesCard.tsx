@@ -21,7 +21,17 @@ interface Profile {
   visited_Profile_img: string;
   visited_profile_age: number;
   visited_verified: number;
+  visited_height:number;
+  visited_star:string;
+  visited_profession:string;
+  visited_city:string;
+  visited_degree:string;
   visited_match_score: number;
+  visited_views:number;
+  visited_lastvisit:string;
+  visited_userstatus:string;
+  visited_horoscope:string;
+  visited_profile_wishlist:number;
 }
 
 interface ApiResponse {
@@ -67,7 +77,7 @@ export const ViewedProfilesCard: React.FC<ViewedProfilesCardProps> = ({ pageNumb
     }));
   };
   const handleProfileClick = (profileId: string) => {
-    navigate(`/ProfileDetails?id=${profileId}`);
+    navigate(`/ProfileDetails?id=${profileId}&page=4`);
   };
 
   console.log(profiles, "profilesssssss");
@@ -112,9 +122,9 @@ export const ViewedProfilesCard: React.FC<ViewedProfilesCardProps> = ({ pageNumb
                         handleProfileClick(profile.visited_profileid)
                       }
                     >
-                      {profile.visited_profile_name || "Unknown"}{" "}
+                      {profile.visited_profile_name}
                       <span className="text-sm text-ashSecondary">
-                        ({profile.visited_profileid || "N/A"})
+                        ({profile.visited_profileid})
                       </span>
                     </h5>
                     {profile.visited_verified === 1 && (
@@ -127,7 +137,7 @@ export const ViewedProfilesCard: React.FC<ViewedProfilesCardProps> = ({ pageNumb
                 <div className="flex items-center space-x-3 mb-2">
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <IoCalendar className="mr-2" />
-                    {profile.visited_profile_age || "N/A"} yrs
+                    {profile.visited_profile_age } yrs
                   </p>
                 </div>
 
@@ -135,25 +145,25 @@ export const ViewedProfilesCard: React.FC<ViewedProfilesCardProps> = ({ pageNumb
                 <div className="mb-2">
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <MdStars className="mr-2" />
-                    Uthiram
+                    {profile.visited_star }
                   </p>
                 </div>
                 <div className="mb-2">
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <IoSchool className="mr-2" />
-                    Bachelors - Arts/Science/Commerce/B Phil
+                    {profile.visited_degree}
                   </p>
                 </div>
                 <div className="mb-2">
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <FaSuitcase className="mr-2" />
-                    Employed
+                    {profile.visited_profession }
                   </p>
                 </div>
                 <div className="mb-2">
                   <p className="flex items-center text-ashSecondary font-semibold">
                     <FaLocationDot className="mr-2" />
-                    Chennai
+                    {profile.visited_city }
                   </p>
                 </div>
 
@@ -161,23 +171,23 @@ export const ViewedProfilesCard: React.FC<ViewedProfilesCardProps> = ({ pageNumb
                 <div className="flex justify-start items-center space-x-3">
                   <div>
                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <MdOutlineGrid3X3 className="mr-2" /> Horoscope Available
+                      <MdOutlineGrid3X3 className="mr-2" /> {profile.visited_horoscope }
                     </p>
                   </div>
                   <div>
                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <FaUser className="mr-2" /> Active user
+                      <FaUser className="mr-2" /> {profile.visited_userstatus }
                     </p>
                   </div>
                   <div>
                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <IoCalendar className="mr-2" /> Last visit on June 30,
-                      2024
+                      <IoCalendar className="mr-2" /> Last visit on {profile.visited_lastvisit}
+                      
                     </p>
                   </div>
                   <div>
                     <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                      <IoEye className="mr-2" /> 31 views
+                      <IoEye className="mr-2" /> {profile.visited_views } views
                     </p>
                   </div>
                 </div>

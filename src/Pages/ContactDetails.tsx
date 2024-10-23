@@ -14,6 +14,10 @@ import {
   NotifySuccess,
 } from "../Components/Toast/ToastNotification";
 
+import "react-phone-input-2/lib/style.css";
+import axios from "axios";
+import PhoneInput from "react-phone-input-2";
+
 // API call URLs
 // const COUNTRY_API_URL = await apiClient.post(`/auth/Get_Country/`);
 // const STATE_API_URL = await apiClient.post(`/auth/Get_State/`);
@@ -26,18 +30,19 @@ const schema = zod
     address: zod.string().min(3, "Address is required"),
     country: zod.string().min(1, "Country is required"),
     state: zod.string().min(1, "State is required"),
-    city: zod.string().min(3, "City is required"),
+    city: zod.string().min(1, "City is required"),
+    district: zod.string().min(1, "district is required"),
     pincode: zod.string().min(6, "Pincode is required"),
-    alternatemobileNumber: zod
-      .string()
-      .min(10, "Mobile number must be exactly 10 characters")
-      .max(10, "Mobile number must be exactly 10 characters")
-      .optional(),
-    whatsappNumber: zod
-      .string()
-      .min(10, "Whatsapp number must be exactly 10 characters")
-      .max(10, "Whatsapp number must be exactly 10 characters")
-      .optional(),
+    // alternatemobileNumber: zod
+    //   .string()
+    //   .min(10, "Mobile number must be exactly 10 characters")
+    //   .max(10, "Mobile number must be exactly 10 characters")
+    //   .optional(),
+    // whatsappNumber: zod
+    //   .string()
+    //   .min(10, "Whatsapp number must be exactly 10 characters")
+    //   .max(10, "Whatsapp number must be exactly 10 characters")
+    //   .optional(),
     daughterMobileNumber: zod.string().optional(),
     daughterEmail: zod.string().optional(),
   })
@@ -53,6 +58,7 @@ interface FormInputs {
   whatsappNumber?: string;
   daughterMobileNumber?: string;
   daughterEmail?: string;
+  district?: string;
 }
 
 interface ContactDetailsProps {
@@ -86,10 +92,60 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
   const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profileowner, setProfileOwner] = useState<string | null>(null);
+  const [cities, setCities] = useState<any>([]);
+  const [district, getDistrict] = useState<any>([]);
+  const [whatsAppNumber, setWhatsAppNumber] = useState<string>("");
+  const [alterNativeNumber, setAlterNativeNumber] = useState<string>("");
+  const selectedStateId = watch("state");
+  const selectedDistrictId = watch("district");
 
-  const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
+  const fetchDistrict = async () => {
+    try {
+      const response = await axios.post(
+        "http://103.214.132.20:8000/auth/Get_District/",
+        {
+          state_id: selectedStateId,
+        }
+      );
+
+      getDistrict(Object.values(response.data));
+    } catch (error) {
+      console.error("distric:", error);
+    }
+  };
+  console.log(district, "district");
+  useEffect(() => {
+    if (selectedStateId) {
+      fetchDistrict();
+    }
+  }, [selectedStateId]);
+  useState(() => {});
+  const fetchCities = async () => {
+    try {
+      const response = await axios.post(
+        "http://103.214.132.20:8000/auth/Get_City/",
+        {
+          district_id: selectedDistrictId?.toString(),
+        }
+      );
+
+      setCities(Object.values(response.data));
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedDistrictId) {
+      fetchCities();
+    }
+  }, [selectedDistrictId]);
+
+  const profileId =
+    sessionStorage.getItem("profile_id_new") ||
+    sessionStorage.getItem("loginuser_profile_id");
   console.log(profileId);
-
+  console.log(stateOptions, "stateOptions");
   useEffect(() => {
     const fetchCountryData = async () => {
       if (profileId) {
@@ -121,11 +177,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
           setValue("state", profileData.Profile_state);
           setValue("city", profileData.Profile_city);
           setValue("pincode", profileData.Profile_pincode);
-          setValue(
-            "alternatemobileNumber",
-            profileData.Profile_alternate_mobile
-          );
-          setValue("whatsappNumber", profileData.Profile_whatsapp);
+          setValue("district", profileData.Profile_district);
+          setAlterNativeNumber(profileData.Profile_alternate_mobile);
+          setWhatsAppNumber(profileData.Profile_whatsapp);
           setValue("daughterMobileNumber", profileData.Profile_mobile_no);
         } catch (error) {
           console.error("Error fetching country data:", error);
@@ -215,25 +269,68 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
         Profile_state: data.state,
         Profile_city: data.city,
         Profile_pincode: data.pincode,
-        Profile_alternate_mobile: data.alternatemobileNumber,
-        Profile_whatsapp: data.whatsappNumber,
-        Profile_mobile_no: data.whatsappNumber,
+        Profile_alternate_mobile: alterNativeNumber,
+        Profile_whatsapp: whatsAppNumber,
+        Profile_mobile_no: whatsAppNumber,
+        Profile_district: data.district,
       };
+
       console.log(" postData:", postData);
 
       const response = await apiClient.post(
         `/auth/Contact_registration/`,
         postData
       );
+      // if (response.data.Status === 1) {
+      //   NotifySuccess("Contact details saved successful");
+      //   setTimeout(() => {
+      //     navigate('/UploadImages');
+      //   }, 2000)
+      // } else {
+      //   console.log("Registration unsuccessful:", response.data);
+      // }
+
       if (response.data.Status === 1) {
-        NotifySuccess("Contact details saved successful");
+        NotifySuccess("Contact details saved successfully");
+
+        // Get quick_reg value from sessionStorage
+        const quickreg = sessionStorage.getItem("quick_reg") || "0"; // Default to "0" if not found
+
         setTimeout(() => {
-          navigate('/UploadImages');
-        }, 2000)
+          if (quickreg === "1") {
+            navigate("/FamilyDetails"); // Redirect to ThankYouReg page
+          } else {
+            navigate("/UploadImages"); // Redirect to UploadImages page
+          }
+        }, 2000);
       } else {
         console.log("Registration unsuccessful:", response.data);
       }
     } catch (error) {
+      if (whatsAppNumber === "") {
+        setError("whatsappNumber", {
+          type: "manual",
+          message: "WhatsApp number is required",
+        });
+      } else if (whatsAppNumber.length < 10) {
+        setError("whatsappNumber", {
+          type: "manual",
+          message: "WhatsApp number must be at least 10 digits",
+        });
+      }
+
+      if (alterNativeNumber === "") {
+        setError("alternatemobileNumber", {
+          type: "manual",
+          message: "Alternate mobile number is required",
+        });
+      } else if (alterNativeNumber.length < 10) {
+        setError("alternatemobileNumber", {
+          type: "manual",
+          message: "Alternate mobile number must be at least 10 digits",
+        });
+      }
+
       NotifyError("Error submitting contact details");
       console.error("Error submitting contact details:", error);
     } finally {
@@ -257,13 +354,18 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
     <div className="pb-20">
       <ContentBlackCard
         heading={"Contact Information"}
-        desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis "
+        desc="Please provide accurate contact details to ensure smooth communication with potential matches.
+"
       />
 
       <div className="container mt-5 flex justify-between space-x-24">
         <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5">
           <div>
-            <InputField label="Address" {...register("address", { setValueAs: (value) => value.trim() })} required />
+            <InputField
+              label="Address"
+              {...register("address", { setValueAs: (value) => value.trim() })}
+              required
+            />
             {errors.address && (
               <span className="text-red-500">{errors.address.message}</span>
             )}
@@ -291,37 +393,96 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               <span className="text-red-500">{errors.country.message}</span>
             )}
           </div>
-
-          <div>
-            <label htmlFor="state" className="block mb-1">
-              State <span className="text-main">*</span> (Based on country
-              selection)
-            </label>
-            <select
-              id="state"
-              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("state")}
-            >
-              <option value="" selected disabled>
-                -- Select State --
-              </option>
-              {stateOptions.map((option) => (
-                <option key={option.state_id} value={option.state_id}>
-                  {option.state_name}
+          {selectedCountryId === "1" ? (
+            <div>
+              <label htmlFor="state" className="block mb-1">
+                State <span className="text-main">*</span> (Based on country
+                selection)
+              </label>
+              <select
+                id="state"
+                className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                {...register("state")}
+              >
+                <option value="" selected disabled>
+                  -- Select State --
                 </option>
-              ))}
-            </select>
-            {errors.state && (
-              <span className="text-red-500">{errors.state.message}</span>
-            )}
-          </div>
+                {stateOptions.map((option) => (
+                  <option key={option.state_id} value={option.state_id}>
+                    {option.state_name}
+                  </option>
+                ))}
+              </select>
+              {errors.state && (
+                <span className="text-red-500">{errors.state.message}</span>
+              )}
+            </div>
+          ) : (
+            <div>
+              <InputField
+                label="State"
+                {...register("state", { setValueAs: (value) => value.trim() })}
+                required
+              />
+              {errors.address && (
+                <span className="text-red-500">{errors.state?.message}</span>
+              )}
+            </div>
+          )}
 
-          <div>
+          {selectedCountryId === "1" ? (
+            <div>
+              <h1>District</h1>
+              <select
+                className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                {...register("district")}
+              >
+                <option value="" selected disabled>
+                  -- Select District --
+                </option>
+                {district.map((option: any) => (
+                  <option key={option.disctict_id} value={option.disctict_id}>
+                    {option.disctict_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
             <InputField
-              label="City"
+              label="District"
               required
-              {...register("city", { setValueAs: (value) => value.trim() })}
+              {...register("district", { setValueAs: (value) => value.trim() })}
             />
+          )}
+          {selectedCountryId === "1" ? (
+            <>
+              <div>
+                <h1>City</h1>
+                <select
+                  className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                  {...register("city")}
+                >
+                  <option value="" selected disabled>
+                    Select city
+                  </option>
+                  {cities?.map((city: any) => (
+                    <option key={city.city_id} value={city.city_id}>
+                      {city.city_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          ) : (
+            <>
+              <InputField
+                label="City"
+                required
+                {...register("city", { setValueAs: (value) => value.trim() })}
+              />
+            </>
+          )}
+          <div>
             {errors.city && (
               <span className="text-red-500">{errors.city.message}</span>
             )}
@@ -338,12 +499,33 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               <span className="text-red-500">{errors.pincode.message}</span>
             )}
           </div>
-
+          {/* 
           <div>
             <InputField
               label="Alternate Mobile Number"
               type="tel"
-              {...register("alternatemobileNumber", { setValueAs: (value) => value.trim() })}
+              required
+              {...register("alternatemobileNumber", {
+                setValueAs: (value) => value.trim(),
+              })}
+            />
+            {errors.alternatemobileNumber && (
+              <span className="text-red-500">
+                {errors.alternatemobileNumber.message}
+              </span>
+            )}
+          </div> */}
+          <div>
+            <label>Alternate Mobile Number</label>
+            <PhoneInput
+              value={alterNativeNumber}
+              onChange={(value: string) => setAlterNativeNumber(value)}
+              inputProps={{
+                autoFocus: true,
+                autoFormat: true,
+                className: "input-style",
+              }}
+              country={"in"}
             />
             {errors.alternatemobileNumber && (
               <span className="text-red-500">
@@ -351,12 +533,17 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               </span>
             )}
           </div>
-
           <div>
-            <InputField
-              label="Whatsapp Number"
-              type="tel"
-              {...register("whatsappNumber", { setValueAs: (value) => value.trim() })}
+            <label>Whatsapp Number</label>
+            <PhoneInput
+              value={whatsAppNumber}
+              onChange={(value: string) => setWhatsAppNumber(value)}
+              inputProps={{
+                autoFocus: true,
+                autoFormat: true,
+                className: "input-style",
+              }}
+              country={"in"}
             />
             {errors.whatsappNumber && (
               <span className="text-red-500">
@@ -364,6 +551,17 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
               </span>
             )}
           </div>
+          {/* <div>
+            <InputField
+              label="Whatsapp Number"
+              type="tel"
+              required
+              {...register("whatsappNumber", {
+                setValueAs: (value) => value.trim(),
+              })}
+            /> */}
+
+          {/* </div> */}
 
           <div className="!mt-12">
             <h1 className="font-bold text-xl text-primary mb-3">
@@ -375,7 +573,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
                 <InputField
                   label={`${profileName} Mobile Number`}
                   type="text"
-                  {...register("daughterMobileNumber", { setValueAs: (value) => value.trim() })}
+                  {...register("daughterMobileNumber", {
+                    setValueAs: (value) => value.trim(),
+                  })}
                   onChange={(e) => {
                     validateDaughterMobileNumber(e.target.value);
                   }}
@@ -391,7 +591,9 @@ const ContactDetails: React.FC<ContactDetailsProps> = () => {
                 <InputField
                   label={`${profileName} Email`}
                   type="email"
-                  {...register("daughterEmail", { setValueAs: (value) => value.trim() })}
+                  {...register("daughterEmail", {
+                    setValueAs: (value) => value.trim(),
+                  })}
                   onChange={(e) => {
                     validateDaughterEmail(e.target.value);
                   }}

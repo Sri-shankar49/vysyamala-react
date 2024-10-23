@@ -10,17 +10,17 @@ interface SlickArrowProps {
   onClick: () => void;
 }
 export interface TestimonialType {
-  profile_id:string;
+  profile_id: string;
   rating: number;
   review_content: string;
   user_image: string;
-  
+
   date: string; // or Date if you want to handle it as a Date object
 }
 const SlickNextArrow: React.FC<SlickArrowProps> = ({ onClick }) => {
   return (
     <div
-      className="absolute -right-6 top-[80px] z-10 bg-secondary p-4 rounded-full shadow-lg hover:cursor-pointer"
+      className="absolute -right-6 top-[120px] z-10 bg-secondary p-4 rounded-full shadow-lg hover:cursor-pointer"
       onClick={onClick}
     >
       <FaArrowRight className="text-white" />
@@ -61,7 +61,7 @@ const ReviewsTestimonial = () => {
 
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1199,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 3,
@@ -69,7 +69,7 @@ const ReviewsTestimonial = () => {
         },
       },
       {
-        breakpoint: 600,
+        breakpoint: 1023,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 2,
@@ -77,10 +77,22 @@ const ReviewsTestimonial = () => {
         },
       },
       {
-        breakpoint: 480,
+        breakpoint: 991,
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+          arrows: false,
+          dots: true,
+
+        },
+      },
+      {
+        breakpoint: 640,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          arrows: false,
+          dots: true,
         },
       },
     ],
@@ -98,29 +110,29 @@ const ReviewsTestimonial = () => {
   useEffect(() => {
     happyStories();
   }, []);
- 
+
   return (
-    <div className="">
-      <div className="container pt-14 pb-20">
+    <div className="max-2xl:px-5 overflow-hidden">
+      <div className="container pt-14 pb-20 max-lg:py-12 max-sm:py-8">
         <div>
-          <h2 className="text-main mb-1 tracking-wide font-semibold">
+          <h2 className="text-main mb-1 tracking-wide font-semibold ">
             What customers says
           </h2>
-          <h1 className="text-3xl font-bold">Recent Reviews</h1>
+          <h1 className="text-3xl font-bold max-lg:text-2xl max-md:text-2xl max-sm:text-xl"> Reviews</h1>
         </div>
 
-        <div className="mt-10 slider-container relative">
+        <div className="slider-container relative review-slider">
           <Slider {...settings}>
-          {testMonial.map((testimonial, index) => (
-        <TestimonialSlick
-          key={index}
-          desc={testimonial.review_content}
-          img={testimonial.user_image}
-          name={testimonial.profile_id}
-          datedOn={testimonial.date}
-          rating={testimonial.rating}
-        />
-      ))}
+            {testMonial.map((testimonial, index) => (
+              <TestimonialSlick
+                key={index}
+                desc={testimonial.review_content}
+                img={testimonial.user_image}
+                name={testimonial.profile_id}
+                datedOn={testimonial.date}
+                rating={testimonial.rating}
+              />
+            ))}
             {/* <TestimonialSlick
               desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint velit officia consequat duis enim velit mollit exercitation veniam."
               img={TestimonialAvatar}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
@@ -13,6 +14,7 @@ import {
   NotifyError,
   NotifySuccess,
 } from "../Components/Toast/ToastNotification";
+import axios from "axios";
 
 // Define validation schema with zod
 const schema = zod.object({
@@ -25,10 +27,10 @@ const schema = zod.object({
   annualIncome: zod.string().min(1, "Annual income is required"),
   actualIncome: zod.string().min(1, "Actual income is required"),
   country: zod.string().min(1, "Country is required"),
-  state: zod.string().min(1, "State is required"),
+  // state: zod.string().min(1, "State is required"),
   pincode: zod.string().min(1, "Pincode is required"),
   careerPlans: zod.string().min(1, "Career plans are required"),
-  workCity: zod.string().min(1, "Work city is required"),
+  // workCity: zod.string().min(1, "Work city is required"),
 });
 
 // API call
@@ -47,9 +49,11 @@ interface EduDetailsInputs {
   pincode: string;
   careerPlans: string;
   workCity: string;
+  Workplace: string;
+  selectedDistrict: string;
 }
 
-interface EduDetailsProps { }
+interface EduDetailsProps {}
 
 interface HighesEducation {
   education_id: number;
@@ -76,6 +80,13 @@ interface StateOption {
   state_name: string;
 }
 
+
+
+interface ProfessionOption {
+  Profes_Pref_id: number;
+  Profes_name: string;
+}
+
 const EduDetails: React.FC<EduDetailsProps> = () => {
   // Navigate to next page
   const navigate = useNavigate();
@@ -87,6 +98,8 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
     formState: { errors },
     setValue,
     watch,
+    clearErrors,
+    setError,
   } = useForm<EduDetailsInputs>({
     resolver: zodResolver(schema),
   });
@@ -99,8 +112,87 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
   const [ugdegree, setUgdegree] = useState<Ugdegree[]>([]);
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false); // New state for submission status
-
+  const [workPlace, setWorkPlace] = useState<string>("");
+  const [workCity, setWorkCity] = useState<string>("");
+  const [workCityList, setWorkCityList] = useState<any>([]);
+  const [state, setState] = useState<string>("");
   const professionRef = useRef<HTMLDivElement>(null);
+  // const selectedStateId = watch("state");
+  const [district, getDistrict] = useState<any>([]);
+  const [selectedDistrict, setSelectedDistrict] = useState<string>("");
+  const [professionOptions, setProfessionOptions] = useState<ProfessionOption[]>([]);
+  const [selectedProfessionId, setSelectedProfessionId] = useState<number | null>(null);
+
+
+  const handleProfessionChange = (id: number, name: string) => {
+    setSelectedProfession(name);
+    setSelectedProfessionId(id);  // Store the Profes_Pref_id in state
+    setValue("profession", name, { shouldValidate: true });
+  };
+  
+  
+  
+    useEffect(() => {
+      const fetchProfessionData = async () => {
+        try {
+          const response = await axios.post(
+            "http://103.214.132.20:8000/auth/Get_Profes_Pref/"
+          );
+          setProfessionOptions(Object.values(response.data));
+          console.log('profession',response.data)
+        } catch (error) {
+          console.error("Error fetching profession options:", error);
+        }
+      };
+    
+      fetchProfessionData();
+    }, []);
+
+    
+  console.log(state, "state");
+  const fetchDistrict = async () => {
+    try {
+      const response = await axios.post(
+        "http://103.214.132.20:8000/auth/Get_District/",
+        {
+          state_id: state,
+        }
+      );
+
+      getDistrict(Object.values(response.data));
+    } catch (error) {
+      console.error("distric:", error);
+    }
+  };
+  useEffect(() => {
+    if (state) {
+      fetchDistrict();
+    }
+  }, [state]);
+
+  useState(() => {});
+  const fetchCities = async () => {
+    try {
+      const response = await axios.post(
+        "http://103.214.132.20:8000/auth/Get_City/",
+        {
+          district_id: selectedDistrict,
+        }
+      );
+      console.log(response.data, "work");
+      setWorkCityList(Object.values(response.data));
+    } catch (error) {
+      console.error("Error fetching cities:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedDistrict) {
+      fetchCities();
+    }
+  }, [selectedDistrict]);
+
+  console.log(workCityList, "district");
   useEffect(() => {
     // Function to handle scrolling and focusing
     const handleFocus = (ref: React.RefObject<HTMLDivElement>, error: any) => {
@@ -159,8 +251,11 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
           setValue("pincode", profileData.work_pincode);
           setValue("careerPlans", profileData.career_plans);
 
+          setWorkPlace(profileData.work_place);
           // Set the initial state for selected profession
           setSelectedProfession(profileData.profession);
+          setWorkCity(profileData.work_city);
+          setState(profileData.work_state);
         } catch (error) {
           console.error("Error fetching profile data:", error);
         }
@@ -252,15 +347,17 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
       ? "bg-secondary text-white"
       : "border-gray hover:bg-secondary hover:text-white";
 
-  const handleProfessionChange = (value: string) => {
-    setSelectedProfession(value);
-    setValue("profession", value, { shouldValidate: true });
-  };
+  // const handleProfessionChange = (value: string) => {
+  //   setSelectedProfession(value);
+  //   setValue("profession", value, { shouldValidate: true });
+  // };
 
   const onSubmit: SubmitHandler<EduDetailsInputs> = async (data) => {
     try {
       // Format the data as expected by the backend
-      const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
+      const profileId =
+        sessionStorage.getItem("profile_id_new") ||
+        sessionStorage.getItem("loginuser_profile_id");
       if (!profileId) {
         throw new Error("ProfileId not found in sessionStorage");
       }
@@ -269,18 +366,21 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
         highest_education: data.highestEducationLevel,
         ug_degeree: data.ugDegree,
         about_edu: data.aboutYourEducation,
-        profession: data.profession,
+        // profession: data.profession,
+        profession: selectedProfessionId, // Optional: you can send the profession name
         anual_income: data.annualIncome,
         actual_income: data.actualIncome,
         work_country: data.country,
-        work_state: data.state,
+        work_state: state.trim() ,
         work_pincode: data.pincode,
         career_plans: data.careerPlans,
         status: "1",
-        work_city: data.workCity,
+        work_city: workCity.trim() ,
+        work_place: workPlace.trim(),
+        Profile_district: selectedDistrict,
       };
 
-      console.log("Formatted Data:", formattedData);
+      console.log("EducationDetails:", formattedData);
       setIsSubmitting(true);
       const response = await apiClient.post(
         `/auth/Education_registration/`,
@@ -304,7 +404,35 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
       setIsSubmitting(false);
     }
   };
-
+  useEffect(() => {
+    if (selectedCountry === "1" && !state) {
+      setError("state", {
+        type: "manual",
+        message: "State is required",
+      });
+    }
+    if (selectedCountry === "1" && !workCity) {
+      setError("workCity", {
+        type: "manual",
+        message: "work city is required",
+      });
+    }
+    if (selectedCountry === "1" && !selectedDistrict) {
+      setError("selectedDistrict", {
+        type: "manual",
+        message: "District is required",
+      });
+    }
+    if (selectedCountry === "1" && state) {
+      clearErrors("state");
+    }
+    if (selectedCountry === "1" && selectedDistrict) {
+      clearErrors("selectedDistrict");
+    }
+    if (selectedCountry === "1" && workCity) {
+      clearErrors("workCity");
+    }
+  }, [selectedCountry, selectedDistrict, workCity, state]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -319,12 +447,25 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
       e.preventDefault();
     }
   };
-
+  // useEffect(() => {
+  //   if (selectedCountry === "1" && state === "") {
+  //     setError("state", {
+  //       type: "manual",
+  //       message: "State is required",
+  //     });
+  //   }
+  //   if (selectedCountry === "1" && workCity === "") {
+  //     setError("workCity", {
+  //       type: "manual",
+  //       message: "work city is required",
+  //     });
+  //   }
+  // }, [selectedCountry, setError, clearErrors, state, workCity]);
   return (
     <div className="pb-20">
       <ContentBlackCard
         heading={"Education Details"}
-        desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis"
+        desc="Please share your educational background to help potential matches understand your values and aspirations better."
       />
 
       <div className="container mt-5 flex justify-between space-x-24">
@@ -384,7 +525,9 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
             <InputField
               label={"About your Education"}
               required
-              {...register("aboutYourEducation", { setValueAs: (value) => value.trim() })}
+              {...register("aboutYourEducation", {
+                setValueAs: (value) => value.trim(),
+              })}
             />
             {errors.aboutYourEducation && (
               <span className="text-red-500">
@@ -397,26 +540,20 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
             <h1 className="mb-3">Profession</h1>
 
             <div ref={professionRef} className="w-full inline-flex rounded">
-              {[
-                "Employed",
-                "Business",
-                "Student",
-                "Not Working",
-                "Not Mentioned",
-              ].map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(
-                    selectedProfession === type
-                  )}`}
-                  onClick={() => handleProfessionChange(type)}
-                  {...register("profession")}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
+  {professionOptions.map((option) => (
+    <button
+      key={option.Profes_Pref_id}
+      type="button"
+      className={`w-full px-5 py-3 text-sm font-medium border ${buttonClass(
+        selectedProfession === option.Profes_name
+      )}`}
+      onClick={() => handleProfessionChange(option.Profes_Pref_id,option.Profes_name)}
+      {...register("profession")}
+    >
+      {option.Profes_name}
+    </button>
+  ))}
+</div>
             {errors.profession && (
               <span className="text-red-500">{errors.profession.message}</span>
             )}
@@ -448,7 +585,12 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
           </div>
 
           <div>
-            <InputField label={"Actual Income"} {...register("actualIncome", { setValueAs: (value) => value.trim() })} />
+            <InputField
+              label={"Actual Income"}
+              {...register("actualIncome", {
+                setValueAs: (value) => value.trim(),
+              })}
+            />
             {errors.actualIncome && (
               <span className="text-red-500">
                 {errors.actualIncome.message}
@@ -484,53 +626,114 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                   <span className="text-red-500">{errors.country.message}</span>
                 )}
               </div>
+              {selectedCountry == "1" ? (
+                <>
+                  <div>
+                    <label htmlFor="state" className="block mb-1">
+                      State <span className="text-main">*</span> (Based on
+                      country selection)
+                    </label>
+                    <select
+                      id="state"
+                      value={state}
+                      className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                      onChange={(e) => setState(e.target.value)}
+                    >
+                      <option value="" selected disabled>
+                        -- Select State --
+                      </option>
+                      {stateOptions.map((option) => (
+                        <option key={option.state_id} value={option.state_id}>
+                          {option.state_name}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.state && (
+                      <span className="text-red-500">
+                        {errors.state.message}
+                      </span>
+                    )}
+                  </div>
+                  <div>
+                    {/* <InputField
+                      id="workCity"
+                      label={"Work City"}
+                      value={workCity}
+                      className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                      onChange={(e) => setWorkCity(e.target.value)}
+                    /> */}
 
-              <div>
-                <label htmlFor="state" className="block mb-1">
-                  State <span className="text-main">*</span> (Based on country
-                  selection)
-                </label>
-                <select
-                  id="state"
-                  className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-                  {...register("state")}
-                >
-                  <option value="" selected disabled>
-                    -- Select State --
-                  </option>
-                  {stateOptions.map((option) => (
-                    <option key={option.state_id} value={option.state_id}>
-                      {option.state_name}
-                    </option>
-                  ))}
-                </select>
-                {errors.state && (
-                  <span className="text-red-500">{errors.state.message}</span>
-                )}
-              </div>
+                    <div>
+                      <label htmlFor="District" className="block mb-1">
+                        District <span className="text-main">*</span>
+                      </label>
+                      <select
+                        id="District"
+                        value={selectedDistrict}
+                        className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                        onChange={(e) => setSelectedDistrict(e.target.value)}
+                      >
+                        <option value="" selected disabled>
+                          -- Select State --
+                        </option>
+                        {district.map((option: any) => (
+                          <option
+                            key={option.disctict_id}
+                            value={option.disctict_id}
+                          >
+                            {option.disctict_name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors?.selectedDistrict && (
+                        <span className="text-red-500">
+                          {errors.selectedDistrict.message}
+                        </span>
+                      )}
+                    </div>
 
-              <div>
-
-
-
-
-                <InputField
-                  id="workCity"
-                  label={" Work City"}
-                  required
-                  className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-                  {...register("workCity", { setValueAs: (value) => value.trim() })}
-                />
-                {errors.workCity && (
-                  <span className="text-red-500">
-                    {errors.workCity.message}
-                  </span>
-                )}
-              </div>
-
+                    <div>
+                      <label htmlFor="Work City" className="block mb-1">
+                        Work City <span className="text-main">*</span>
+                      </label>
+                      <select
+                        id="Work City"
+                        value={workCity}
+                        className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+                        onChange={(e) => setWorkCity(e.target.value)}
+                      >
+                        <option value="" selected disabled>
+                          -- Select Work City --
+                        </option>
+                        {workCityList.map((option: any) => (
+                          <option key={option.city_id} value={option.city_id}>
+                            {option.city_name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {errors.workCity && (
+                      <span className="text-red-500">
+                        {errors.workCity.message}
+                      </span>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <InputField
+                    value={workPlace}
+                    onChange={(e) => setWorkPlace(e.target.value)}
+                    label={"Work place"}
+                    
+                  />
+                </div>
+              )}
               <InputField
                 label={"Pincode (Based on Country Selection)"}
-                {...register("pincode", { setValueAs: (value) => value.trim() })}
+                {...register("pincode", {
+                  setValueAs: (value) => value.trim(),
+                })}
               />
               {errors.pincode && (
                 <span className="text-red-500">{errors.pincode.message}</span>
@@ -546,7 +749,9 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
                   rows={5}
                   placeholder=" Enter your message here..."
                   className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-                  {...register("careerPlans", { setValueAs: (value) => value.trim() })}
+                  {...register("careerPlans", {
+                    setValueAs: (value) => value.trim(),
+                  })}
                   onKeyDown={(e) => handleKeyDownTextArea(e, careerPlansValue)}
                 ></textarea>
                 {errors.careerPlans && (
@@ -593,3 +798,6 @@ const EduDetails: React.FC<EduDetailsProps> = () => {
 };
 
 export default EduDetails;
+// function clearErrors(arg0: string[]) {
+//   throw new Error("Function not implemented.");
+// }

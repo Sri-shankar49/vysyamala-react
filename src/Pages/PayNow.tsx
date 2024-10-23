@@ -88,7 +88,8 @@ export const PayNow: React.FC = () => {
           "Save_plan_package_message",
           response.data.data_message
         );
-
+        sessionStorage.setItem("register_token", response.data.token);
+        console.log(response.data, "kkkkkkkkkkk");
         setTimeout(() => {
           navigate("/ThankYouReg");
         }, 2000);

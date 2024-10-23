@@ -16,7 +16,7 @@ import { OtpVerification } from '../PopUpsReg/OtpVerification';
 interface LoginPopupModalProps {
     onClose: () => void;
     onForgetPassword: () => void;
-    isopen:boolean;
+    isopen: boolean;
 }
 
 export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => {
@@ -24,7 +24,7 @@ export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => 
     const navigate = useNavigate();
 
 
-    const [showPopup, setShowPopup] = useState<"loginPopup" | "forgetPassword" | "phoneLoginPopup" | "otpVerify" | "emailSent"|"accountSetup"|"basicDetails"|"otpVerification">("loginPopup");
+    const [showPopup, setShowPopup] = useState<"loginPopup" | "forgetPassword" | "phoneLoginPopup" | "otpVerify" | "emailSent" | "accountSetup" | "basicDetails" | "otpVerification">("loginPopup");
     const [mobileNumber, setMobileNumber] = useState<string>("");
 
     const navigateToForgetPassword = () => {
@@ -53,7 +53,14 @@ export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => 
     const handleLogin = () => {
         console.log('Navigating to LoginHome');
         // window.location.href = '/LoginHome';   // Navigate to LoginHome page after successful login
-        navigate('/LoginHome');  // Navigate to LoginHome page after successful login
+
+        const selectedProfileId = sessionStorage.getItem("selectedProfileId");
+        if (selectedProfileId) {
+            navigate(`/ProfileDetails?id=${selectedProfileId}`);
+        } else {
+            navigate('/LoginHome');  // Navigate to LoginHome page after successful login
+
+        }
 
     };
 
@@ -92,7 +99,7 @@ export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => 
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-8 rounded-lg w-1/4 relative">
+            <div className="bg-white p-8 rounded-lg w-1/4 relative max-xl:w-2/6 max-lg:w-5/12 max-md:w-[50%] max-sm:w-[80%] max-xl:p-8 max-lg:p-6 max-sm:p-4">
                 {showPopup === "loginPopup" && (
                     <LoginPopup onNext={handleLogin} onPhoneLogin={navigateToPhoneLogin} onForgetPassword={navigateToForgetPassword} onClose={onClose} registerPopup={navigateToRegPopup} />
                 )}
@@ -100,7 +107,7 @@ export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => 
                     <ForgetPassword onBackToLogin={navigateToLogin} onSubmit={handleEmailSent} onClose={onClose} />
                 )}
                 {showPopup === "phoneLoginPopup" && (
-                    <PhoneLoginPopup onNext={handleSendOtp} onClose={onClose} onProfileIdLogin={navigateToProfileIdLogin}  />
+                    <PhoneLoginPopup onNext={handleSendOtp} onClose={onClose} onProfileIdLogin={navigateToProfileIdLogin} />
                 )}
                 {showPopup === "otpVerify" && (
                     <OtpVerify onNext={handleLogin} onClose={onClose} />
@@ -108,10 +115,10 @@ export const LoginPopupModal: React.FC<LoginPopupModalProps> = ({ onClose }) => 
                 {showPopup === "emailSent" && (
                     <EmailSent onBackToLogin={navigateToLogin} onClose={onClose} onNext={handleLogin} />
                 )}
-                 {showPopup === "accountSetup" && (
-                    <AccountSetup  onClose={onClose} onNext={accountSetupNext} handleLoginClick={regpopup} />
+                {showPopup === "accountSetup" && (
+                    <AccountSetup onClose={onClose} onNext={accountSetupNext} handleLoginClick={regpopup} />
                 )}
-                 {showPopup === "otpVerification" && (
+                {showPopup === "otpVerification" && (
                     <OtpVerification onNext={otpVerificationNext} onClose={onClose} mobileNumber={mobileNumber} />
                 )}
                 {showPopup === "basicDetails" && (

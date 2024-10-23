@@ -545,7 +545,24 @@ export const OtpVerify: React.FC<OtpVerifyProps> = ({ onNext, onClose }) => {
                 });
 
                 if (response.data.status === 1) {
-                    sessionStorage.setItem('token', response.data.token);
+                    sessionStorage.setItem(
+                        "profile_completion",
+                        response.data.profile_completion
+                      );
+                
+                      console.log("Login Response:", response.data);
+                      sessionStorage.setItem("token", response.data.token);
+                      sessionStorage.setItem("user_profile_image", response.data.profile_image);
+                      sessionStorage.setItem("selectedstar", response.data.birth_star_id);
+                      sessionStorage.setItem("gender", response.data.gender);
+                      sessionStorage.setItem("ProfileId", response.data.profile_id);
+                      sessionStorage.setItem("profile_id", response.data.profile_id);
+                      sessionStorage.setItem("loginuser_profile_id", response.data.profile_id);
+                      sessionStorage.setItem("plan_id", response.data.cur_plan_id);
+                      sessionStorage.setItem("profile_owner", response.data.profile_owner);
+                      sessionStorage.setItem("quick_reg", response.data.quick_reg); 
+                      sessionStorage.setItem("custom_message", response.data.custom_message);
+                  
                     onNext();
                 } else {
                     setApiError(response.data.message || 'Verification failed');
@@ -593,7 +610,7 @@ export const OtpVerify: React.FC<OtpVerifyProps> = ({ onNext, onClose }) => {
     return (
         <form onSubmit={handleSubmit}>
             <div className="mb-5">
-                <h2 className="text-primary text-[24px] font-semibold mb-2">Mobile Verification</h2>
+                <h2 className="text-primary text-[24px] font-semibold mb-2 max-md:text-[20px]">Mobile Verification</h2>
                 <p className="text-ash text-[16px]">
                     Please verify your mobile number to proceed.
                 </p>

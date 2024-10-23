@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MdModeEdit } from "react-icons/md";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 interface ContactDetails {
     personal_prof_addr: string;
@@ -44,6 +45,8 @@ export const Contact = () => {
     const [selectedStateId, setSelectedStateId] = useState<number | string>("");
     const [cities, setCities] = useState<City[]>([]);
     const [selectedCityId, setSelectedCityId] = useState<number | string>("");
+    const [refreshData, setRefreshData] = useState(false);
+    const [emailError, setEmailError] = useState('');
 
     useEffect(() => {
         const fetchContactDetails = async () => {
@@ -62,7 +65,7 @@ export const Contact = () => {
         };
 
         fetchContactDetails();
-    }, [loginuser_profileId]);
+    }, [loginuser_profileId, refreshData]);
 
     useEffect(() => {
         const fetchCountries = async () => {
@@ -75,7 +78,7 @@ export const Contact = () => {
         };
 
         fetchCountries();
-    }, []);
+    }, [refreshData]);
 
     useEffect(() => {
         if (!selectedCountryId) return;
@@ -94,7 +97,7 @@ export const Contact = () => {
         };
 
         fetchStates();
-    }, [selectedCountryId]);
+    }, [selectedCountryId, refreshData]);
 
     useEffect(() => {
         if (!selectedStateId) return;
@@ -111,7 +114,7 @@ export const Contact = () => {
         };
 
         fetchCities();
-    }, [selectedStateId]);
+    }, [selectedStateId, refreshData]);
 
     const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedId = event.target.value;
@@ -171,18 +174,101 @@ export const Contact = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
+
+        // Validate email
+        if (name === "personal_email") {
+            
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+            if (!emailPattern.test(value)) {
+                setEmailError('Invalid email address');
+            } else {
+                setEmailError('');
+            }
+        }
+
         setFormData((prevState) => ({
             ...prevState,
             [name]: value,
         }));
+
+        
     };
+
+    // const handleSubmit = async (e: React.FormEvent) => {
+    //     e.preventDefault();
+
+
+        
+    //     console.log("Data being sent:", {
+    //         profile_id: loginuser_profileId,
+    //         Profile_address: formData.personal_prof_addr,
+    //         Profile_city: formData.personal_prof_city,
+    //         Profile_state: selectedStateId,
+    //         Profile_country: selectedCountryId,
+    //         Profile_pincode: formData.personal_prof_pin,
+    //         Profile_alternate_mobile: formData.personal_prof_phone,
+    //         Profile_mobile_no: formData.personal_prof_mob_no,
+    //         Profile_whatsapp: formData.personal_prof_whats,
+    //         EmailId: formData.personal_email,
+    //     });
+
+    //     try {
+    //         const response = await axios.post("http://103.214.132.20:8000/auth/update_myprofile_contact/", {
+    //             profile_id: loginuser_profileId,
+    //             Profile_address: formData.personal_prof_addr,
+    //             Profile_city: selectedCityId,
+    //             Profile_state: selectedStateId,
+    //             Profile_country: selectedCountryId,
+    //             Profile_pincode: formData.personal_prof_pin,
+    //             Profile_alternate_mobile: formData.personal_prof_phone,
+    //             Profile_mobile_no: formData.personal_prof_mob_no,
+    //             Profile_whatsapp: formData.personal_prof_whats,
+    //             EmailId: formData.personal_email,
+    //         });
+
+    //         if (response.data.status === "success") {
+    //             toast.success(response.data.message);
+    //             setRefreshData(prev => !prev); // Trigger re-fetch of data
+    //             // window.location.reload();
+
+    //             const getResponse = await axios.post("http://103.214.132.20:8000/auth/get_myprofile_contact/", {
+    //                 profile_id: loginuser_profileId,
+    //             });
+
+    //             const updatedDetails = getResponse.data.data;
+    //             setContactDetails(updatedDetails);
+    //             setIsEditing(false);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error updating contact details:", error);
+    //         toast.error("Failed to update contact details. Please try again.");
+    //     }
+    // };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+    
+        // Form validation
+        if (!formData.personal_prof_addr || 
+            !selectedCountryId || 
+            !selectedStateId || 
+            !selectedCityId || 
+            !formData.personal_prof_pin || 
+            !formData.personal_prof_phone || 
+            !formData.personal_prof_mob_no || 
+            !formData.personal_prof_whats || 
+            !formData.personal_email || 
+            emailError) {
+            toast.error("Please fill all fields correctly.");
+            return;
+        }
+    
+        // Print data to be sent
         console.log("Data being sent:", {
             profile_id: loginuser_profileId,
             Profile_address: formData.personal_prof_addr,
-            Profile_city: formData.personal_prof_city,
+            Profile_city: selectedCityId,
             Profile_state: selectedStateId,
             Profile_country: selectedCountryId,
             Profile_pincode: formData.personal_prof_pin,
@@ -191,7 +277,7 @@ export const Contact = () => {
             Profile_whatsapp: formData.personal_prof_whats,
             EmailId: formData.personal_email,
         });
-
+    
         try {
             const response = await axios.post("http://103.214.132.20:8000/auth/update_myprofile_contact/", {
                 profile_id: loginuser_profileId,
@@ -205,22 +291,22 @@ export const Contact = () => {
                 Profile_whatsapp: formData.personal_prof_whats,
                 EmailId: formData.personal_email,
             });
-
+    
             if (response.data.status === "success") {
-                alert(response.data.message);
-                window.location.reload();
-
+                toast.success(response.data.message);
+                setRefreshData(prev => !prev); // Trigger re-fetch of data
+    
                 const getResponse = await axios.post("http://103.214.132.20:8000/auth/get_myprofile_contact/", {
                     profile_id: loginuser_profileId,
                 });
-
+    
                 const updatedDetails = getResponse.data.data;
                 setContactDetails(updatedDetails);
                 setIsEditing(false);
             }
         } catch (error) {
             console.error("Error updating contact details:", error);
-            alert("Failed to update contact details. Please try again.");
+            toast.error("Failed to update contact details. Please try again.");
         }
     };
 
@@ -230,14 +316,14 @@ export const Contact = () => {
 
     return (
         <div>
-            <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5">
+            <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5 max-lg:text-[28px] max-md:text-[26px] max-sm:text-[22px]">
                 Contact Details
                 <MdModeEdit className="text-2xl text-main ml-2 cursor-pointer" onClick={handleEditClick} />
             </h2>
 
             {isEditing ? (
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-rows-1 grid-cols-2 gap-4">
+                    <div className="grid grid-rows-1 grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-0">
                         <div>
                             <label className="block mb-2 text-[20px] text-ash font-semibold">
                                 Address:
@@ -306,7 +392,13 @@ export const Contact = () => {
                                     type="text"
                                     name="personal_prof_pin"
                                     value={formData.personal_prof_pin || ""}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                          // Allow only numeric values
+                                           if (/^\d{0,6}$/.test(value)) {
+                                          handleInputChange(e); // Call your input change handler
+                                        }
+                                      }}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             </label>
@@ -319,7 +411,13 @@ export const Contact = () => {
                                     type="text"
                                     name="personal_prof_phone"
                                     value={formData.personal_prof_phone || ""}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                          // Allow only numeric values
+                                           if (/^\d{0,10}$/.test(value)) {
+                                          handleInputChange(e); // Call your input change handler
+                                        }
+                                      }}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             </label>
@@ -330,7 +428,13 @@ export const Contact = () => {
                                     type="text"
                                     name="personal_prof_mob_no"
                                     value={formData.personal_prof_mob_no || ""}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                          // Allow only numeric values
+                                           if (/^\d{0,10}$/.test(value)) {
+                                          handleInputChange(e); // Call your input change handler
+                                        }
+                                      }}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             </label>
@@ -341,21 +445,32 @@ export const Contact = () => {
                                     type="text"
                                     name="personal_prof_whats"
                                     value={formData.personal_prof_whats || ""}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                          // Allow only numeric values
+                                           if (/^\d{0,10}$/.test(value)) {
+                                          handleInputChange(e); // Call your input change handler
+                                        }
+                                      }}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             </label>
 
                             <label className="block mb-2 text-[20px] text-ash font-semibold">
-                                Email:
-                                <input
-                                    type="text"
-                                    name="personal_email"
-                                    value={formData.personal_email || ""}
-                                    onChange={handleInputChange}
-                                    className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
-                                />
-                            </label>
+    Email:
+    <input
+        type="email"
+        name="personal_email"
+        value={formData.personal_email || ""}
+        onChange={handleInputChange}
+      
+        className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
+    />
+</label>
+{emailError && (
+                <p className="text-red-500 text-sm mt-1">{emailError}</p>
+            )}
+
                         </div>
                     </div>
 
@@ -377,7 +492,7 @@ export const Contact = () => {
                 </form>
             ) : (
                 <div>
-                    <div className="grid grid-rows-1 grid-cols-2 gap-4">
+                    <div className="grid grid-rows-1 grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-0">
                         <div>
                             <h5 className="text-[20px] text-ash font-semibold mb-2">
                                 Address:

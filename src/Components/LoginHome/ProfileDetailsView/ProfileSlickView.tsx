@@ -21,7 +21,7 @@ interface UserImages {
 
 interface ProfileSlickViewProps {
   profileId?: string;
-  photoLock: string;
+  photoLock: number;
 }
 
 export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({
@@ -62,7 +62,7 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({
           setUserImages(user_images);
           setError(null);
         } else {
-          setError("Profile ID is not defined.");
+          // setError("Profile ID is not defined.");
         }
       } catch (error: any) {
         setError("Error fetching profiles");
@@ -126,7 +126,7 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({
     : [];
 
   const images = Object.values(storedProtectedImg ? sessionImage : userImages);
-
+console.log(sessionImage ,"sessionImg")
   return (
     <div>
       {loading && <Spinner />}
@@ -141,7 +141,7 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({
               onMouseEnter={() => handleMouseEnter(images[0])}
               onMouseLeave={handleMouseLeave}
             />
-            {photoLock === "1" && PhotoPasswordlock === 1 && (
+            {photoLock === 1 && PhotoPasswordlock === 1 &&  (
               <div
                 onClick={() => setPopPassword(true)}
                 className="text-center lock-style"
@@ -178,7 +178,8 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({
               {images.map((image, index) => (
                 <div
                   key={index}
-                  className={`profile-slider-img-container ${photoLock === "0" || PhotoPasswordlock === 0 ? "" : "fade-img-effect"}`}
+                  className={`profile-slider-img-container ${photoLock === 0 || PhotoPasswordlock === 0   ? "" :!storedProtectedImg? "fade-img-effect":""}`}
+
                   onMouseEnter={() => handleMouseEnter(image)}
                   onMouseLeave={handleMouseLeave}
                 >
@@ -187,7 +188,7 @@ export const ProfileSlickView: React.FC<ProfileSlickViewProps> = ({
                     className="w-full rounded-lg profile-slider-img"
                     alt={`Slide ${index + 1}`}
                   />
-                  {photoLock === "1" && PhotoPasswordlock === 1 && (
+                  {photoLock === 1 && PhotoPasswordlock === 1 && !storedProtectedImg && (
                     <div
                       onClick={() => setPopPassword(true)}
                       className="text-center lock-style"

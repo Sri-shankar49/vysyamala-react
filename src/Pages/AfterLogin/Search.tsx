@@ -3,7 +3,6 @@ import { AdvancedSearch } from "../../Components/LoginSearch/AdvancedSearch";
 import { SearchResults } from "../../Components/LoginSearch/SearchResults";
 import { Get_advance_search } from "../../commonapicall";
 import { ProfileContext } from "../../ProfileContext";
-import AdvanceSearchCard from "../../Components/AdvanceSearchCard";
 import axios from "axios";
 // import { Console } from "console";
 // import React from "react";
@@ -14,13 +13,13 @@ const Search = () => {
   useEffect(() => {
     // Clear session storage when navigating away from the page
     return () => {
-      setNoRecordsFound(false)
+      setNoRecordsFound(false);
       sessionStorage.removeItem("advance_search_data");
     };
   }, []);
 
   useEffect(() => {
-    sessionStorage.removeItem('searchvalue');
+    sessionStorage.removeItem("searchvalue");
   }, []);
 
   const context = useContext(ProfileContext);
@@ -36,25 +35,34 @@ const Search = () => {
     perPage,
     toHeight,
     setTotalCount,
-    pageNumber,
-    searchProfileData,
+    totalCount,
     setSearchProfileData,
     // setAdvanceSelectedProfessions,
     AdvanceselectedProfessions,
     selectedAdvanceEducation,
     selectedIncomes,
-    chevvai_dhosam,
-    rehuDhosam,
+
     advanceSelectedBirthStar,
     nativeState,
     workLocation,
     peopleOnlyWithPhoto,
     maritial_Status,
     setAdvanceSearchData,
-    // advanceSearchData
+    advanceSearchData,
   } = context;
-  const [ ,setNoRecordsFound] = useState(false);
+
+  useEffect(() => {
+    if (advanceSearchData && advanceSearchData.length > 0) {
+      setShowResults(true);
+    }
+  }, [advanceSearchData]);
+  const [calculatedPerPage, setCalculatedPerPage] = useState<number>(0);
+  const [pageNo, setPageNo] = useState<number>(1);
+  const [, setNoRecordsFound] = useState(false);
+  const [, setResponse] = useState<number>(0);
+  const [error, setError] = useState(false);
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
+  const [responseMsg, setResponseMsg] = useState<string>("");
   const handle_Get_advance_search = async () => {
     try {
       const response = await axios.post(Get_advance_search, {
@@ -64,64 +72,80 @@ const Search = () => {
         from_height: fromHeight,
         to_height: toHeight,
         per_page: perPage,
-        page_number: pageNumber,
+        page_number: pageNo,
         search_marital_status: maritial_Status.join(","),
         search_profession: AdvanceselectedProfessions.join(","),
         search_education: selectedAdvanceEducation,
         search_income: selectedIncomes,
-        chevvai_dhosam: chevvai_dhosam,
-        ragukethu_dhosam: rehuDhosam,
+        // chevvai_dhosam: chevvai_dhosam,
+        // ragukethu_dhosam: rehuDhosam,
         search_star: advanceSelectedBirthStar,
         search_nativestate: nativeState.join(","),
         search_worklocation: workLocation,
         people_withphoto: peopleOnlyWithPhoto,
       });
-     
+
       if (response.status === 200) {
+        setResponseMsg(response.data.message);
         sessionStorage.setItem(
           "advance_search_data",
           JSON.stringify(response.data.data)
         );
+
         setAdvanceSearchData(response.data.data);
         setTotalCount(response.data.total_count);
-      }else{
+        setCalculatedPerPage(response.data.calculated_per_page);
+        setResponse(response.status);
+      } else {
         setNoRecordsFound(true);
-        
       }
     } catch (error) {
       console.log(error);
-     
+      if (error) {
+        setError(true);
+      }
     }
   };
   useEffect(() => {
-  if(pageNumber){
-    handle_Get_advance_search();
-  }
-  }, [pageNumber]);
+    if (pageNo) {
+      handle_Get_advance_search();
+    }
+  }, [pageNo]);
 
   useEffect(() => {
     setSearchProfileData("");
+    setResponseMsg("");
+    setError(false);
   }, []);
 
+  const totalPages = Math.ceil(totalCount / calculatedPerPage);
   return (
     <div className="bg-grayBg">
-      {searchProfileData ? (
+      {/* {searchProfileData ? (
         <>
           <AdvanceSearchCard />
         </>
       ) : (
-        <>
-          {" "}
-          {showResults  ? (
-            <SearchResults   onSearchAgain={() => setShowResults(false)} />
-          ) : (
-            <AdvancedSearch
-              handle_Get_advance_search={handle_Get_advance_search}
-              onFindMatch={() => setShowResults(true)}
-            />
-          )}
-        </>
+        <> */}{" "}
+      {showResults ? (
+        <SearchResults
+          responseMsg={responseMsg}
+          totalCount={totalCount}
+          error={error}
+          pageNo={pageNo}
+          setPageNo={setPageNo}
+          totalPages={totalPages}
+          calculatedPerPage={calculatedPerPage}
+          onSearchAgain={() => setShowResults(false)}
+        />
+      ) : (
+        <AdvancedSearch
+          handle_Get_advance_search={handle_Get_advance_search}
+          onFindMatch={() => setShowResults(true)}
+        />
       )}
+      {/* </> */}
+      {/* )} */}
     </div>
   );
 };

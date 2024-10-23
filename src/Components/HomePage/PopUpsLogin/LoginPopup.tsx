@@ -99,10 +99,15 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
       console.log("Login Response:", response.data);
       sessionStorage.setItem("token", response.data.token);
       sessionStorage.setItem("user_profile_image", response.data.profile_image);
+      sessionStorage.setItem("selectedstar", response.data.birth_star_id);
+      sessionStorage.setItem("gender", response.data.gender);
       sessionStorage.setItem("ProfileId", response.data.profile_id);
       sessionStorage.setItem("profile_id", response.data.profile_id);
       sessionStorage.setItem("loginuser_profile_id", response.data.profile_id);
       sessionStorage.setItem("plan_id", response.data.cur_plan_id);
+      sessionStorage.setItem("profile_owner", response.data.profile_owner);
+      sessionStorage.setItem("quick_reg", response.data.quick_reg);
+      sessionStorage.setItem("userheightfromapi", response.data.height);
       if (response.data.status === 1) {
         sessionStorage.setItem("custom_message", response.data.custom_message);
         setErrorMessage(null); // Clear error message on success
@@ -154,7 +159,7 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
     <form onSubmit={handleSubmit(onSubmit)}>
       <div>
         <p className="text-[16px] text-primary">Welcome Back</p>
-        <h5 className="text-[24px] text-primary font-semibold mb-5">
+        <h5 className="text-[24px] text-primary font-semibold mb-5 max-sm:text-[20px]">
           Login to your account
         </h5>
       </div>
@@ -201,7 +206,7 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
         )}
       </div>
 
-      <div className="flex justify-between items-center mb-5">
+      <div className="flex justify-between items-center mb-5 max-sm:flex-col max-sm:mb-2 max-sm:gap-1">
         <div>
           <input
             type="checkbox"
@@ -229,27 +234,27 @@ export const LoginPopup: React.FC<LoginPopUpProps> = ({
         type="submit"
         className="w-full bg-gradient flex justify-center items-center py-[10px] px-[24px] rounded-[6px] space-x-2 cursor-pointer"
       >
-        <div className="text-[16px] text-white font-semibold">Login</div>
+        <div className="text-[16px] text-white font-semibold max-sm:font-medium">Login</div>
         <FaArrowRightLong className="text-white text-[22px]" />
       </button>
 
       {errorMessage && <div className="text-red-500 mt-2">{errorMessage}</div>}
 
-      <p className="text-ash font-semibold text-center my-5">or</p>
+      <p className="text-ash font-semibold text-center my-5 max-sm:my-1">or</p>
 
       <button
         onClick={onPhoneLogin}
-        className="w-full py-[10px] px-[24px] bg-white text-main font-semibold border-2 rounded-[6px] mt-2"
+        className="w-full py-[10px] px-[24px] bg-white text-main font-semibold border-2 rounded-[6px] mt-2 max-sm:px-[10px] max-sm:mt-0 max-sm:font-medium"
       >
         Login with Phone Number
       </button>
 
-      <p className="text-center text-[16px] text-ash mt-5">
+      <p className="text-center text-[16px] text-ash mt-5  max-sm:mt-2">
         Don't have an account?{" "}
         <button
           type="button"
           onClick={registerPopup}
-          className="text-secondary hover:underline"
+          className="text-secondary hover:underline max-sm:mb-3"
         >
           Register Now
         </button>

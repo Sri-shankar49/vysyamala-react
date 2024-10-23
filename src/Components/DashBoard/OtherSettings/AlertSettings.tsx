@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { NotifyError, NotifySuccess, ToastNotification } from '../../Toast/ToastNotification';
 
 type Alert = {
     id: number;
@@ -91,9 +92,9 @@ export const AlertSettings = () => {
             .post('http://103.214.132.20:8000/auth/Update_notification_settings/', payload)
             .then((response) => {
                 if (response.data.status === "1") {
-                    alert('Notification settings updated successfully');
+                    NotifySuccess('Notification settings updated successfully');
                 } else {
-                    alert('Failed to update notification settings');
+                    NotifyError('Failed to update notification settings');
                 }
             })
             .catch((error) => {
@@ -103,6 +104,7 @@ export const AlertSettings = () => {
 
     return (
         <div>
+            <ToastNotification/>
             <div>
                 <h2 className="text-[30px] text-vysyamalaBlack font-bold mb-5">Alert Settings</h2>
 
@@ -177,9 +179,7 @@ export const AlertSettings = () => {
 
                         {/* Buttons */}
                         <div className="flex justify-end items-center space-x-5">
-                            <button className="text-main flex items-center rounded-lg font-semibold px-5 py-2.5 cursor-pointer">
-                                Cancel
-                            </button>
+                           
                             <button
                                 onClick={updateNotificationSettings}
                                 className="bg-white text-main flex items-center rounded-lg font-semibold border-2 px-5 py-2.5 cursor-pointer"

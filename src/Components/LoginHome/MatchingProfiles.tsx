@@ -13,16 +13,21 @@ import { GridView } from "./MatchingProfiles/GridView";
 import { ListView } from "./MatchingProfiles/ListView";
 import { GridListView } from "./MatchingProfiles/GridListView";
 // import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
-import { IoChevronBackOutline } from "react-icons/io5";
-import { IoChevronForwardOutline } from "react-icons/io5";
 
-import { Profile, ProfileContext } from "../../ProfileContext";
+
+import { ProfileContext } from "../../ProfileContext";
 import { fetchProfiles, fetchSearchProfiles } from "../../commonapicall";
 import axios from "axios";
 // import { AdvancedSearchPopup } from "./MatchingProfiles/FilterPopup/AdvancedSearchPopup";
-import { FiFilter } from "react-icons/fi";
+// import { FiXCircle } from "react-icons/fi";
+import { LuFilterX } from "react-icons/lu";
+
+
 // import { number } from "zod";
-import { SearchCard } from "../SearchCard";
+import Pagination from "../Pagination";
+import Spinner from "../Spinner";
+import { ToastNotification } from "../Toast/ToastNotification";
+// import { log } from "console";
 
 // const items = [
 //     { id: 1, title: 'Back End Developer', department: 'Engineering', type: 'Full-time', location: 'Remote' },
@@ -43,7 +48,6 @@ interface ProfesPrefType {
   Profes_name: string;
 }
 
-
 interface State {
   State_Pref_id: string;
   State_id: string; // Adjust the type if it's a number or another type
@@ -55,30 +59,21 @@ export interface SearchResultProps {
   profile_age: string;
   height: string;
   profile_img?: string;
-  matching_score?: number; 
-
+  matching_score?: number;
 }
-
-const defaultProfile: Profile = {
-  profile_id: "0",
-  profile_name: "No Profile",
-  profile_img: "N/A", // Use a default or placeholder image
-  profile_age: 0,
-  height: "N/A",
-  profile: undefined,
-  verified: 0,
-  matching_score: 50,
-
-};
 
 
 
 sessionStorage.removeItem("photolock");
 sessionStorage.removeItem("photolockval");
 
-
 export const MatchingProfiles = () => {
   const context = useContext(ProfileContext);
+
+  const scrollRef = useRef<HTMLDivElement>(null); // Type the ref as HTMLDivElement
+
+  // State for managing scrolling
+  const [shouldScroll, setShouldScroll] = useState(false);
 
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
   if (!context) {
@@ -94,12 +89,7 @@ export const MatchingProfiles = () => {
     toggleSortOrder,
     sortOrder,
   } = context;
-  const startResult =
-    (MatchingProfilepageNumber - 1) * MatchingProfileperPage + 1;
-  const endResult = Math.min(
-    MatchingProfilepageNumber * MatchingProfileperPage,
-    MatchingProfiletotalCount
-  );
+
 
   const noOfPages = Math.ceil(
     MatchingProfiletotalCount / MatchingProfileperPage
@@ -118,13 +108,12 @@ export const MatchingProfiles = () => {
   const [Get_Profes_Pref, setGet_Profes_Pref] = useState<ProfesPrefType[]>([]);
   const [profession, setProfession] = useState<string>("");
 
-
-
   const handleAdvancedSearchPopup = () => {
-    setProfession('');
-    setSelectAge('');
-    setSelectedLocation('');
-    setSelectedLocation('');
+    setProfession("");
+    setSelectAge("");
+    setSelectedLocation("");
+    // setSelectedLocation("");
+    setSearchProfileId("");
     sessionStorage.removeItem("searchvalue");
   };
 
@@ -158,21 +147,7 @@ export const MatchingProfiles = () => {
   //     document.removeEventListener("mousedown", handleClickOutside);
   //   };
   // }, [showAdvancedSearchPopup]);
-  const handlePrevious = () => {
-    setMatchingProfilePageNumber((prev) => Math.max(prev - 1, 1));
-  };
 
-  const handleNext = () => {
-    setMatchingProfilePageNumber((prev) => Math.min(prev + 1, totalPageCount));
-  };
-
-  const handleMatchingPrevious = () => {
-    setPaginationValue((prev) => Math.max(prev - 1, 1));
-  };
-
-  const handleMatchingNext = () => {
-    setPaginationValue((prev) => Math.min(prev + 1, noOfPages));
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -181,8 +156,7 @@ export const MatchingProfiles = () => {
           loginuser_profileId,
           MatchingProfilepageNumber,
           MatchingProfileperPage,
-          sortOrder,
-
+          sortOrder
         );
 
         setMatchingProfileTotalCount(data.total_count);
@@ -192,45 +166,107 @@ export const MatchingProfiles = () => {
     };
 
     fetchData();
-  }, [loginuser_profileId, MatchingProfilepageNumber, MatchingProfileperPage, sortOrder, setMatchingProfileTotalCount]);
+  }, [
+    loginuser_profileId,
+    MatchingProfilepageNumber,
+    MatchingProfileperPage,
+    sortOrder,
+    setMatchingProfileTotalCount,
+  ]);
 
-
-  const pegeDataCount = 20
-  const totalCount = sessionStorage.getItem("searchCount");
+  const pegeDataCount = 20;
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [totalCountSearch, setCount] = useState<number>(0);
 
   const totalPageCount = Math.ceil(Number(totalCount) / pegeDataCount) || 0;
-  const [paginationValue, setPaginationValue] = useState(1)
+  const [paginationValue, setPaginationValue] = useState(1);
+  const [loading, setLoading] = useState(false);
+  // const matchingProfileRef = useRef<HTMLDivElement>(null); // Define the ref
+
+
+  useEffect(() => {
+    handleFindMatch()
+
+  }, [sortOrder]);
+
+
+
+
 
   const handleFindMatch = async () => {
-    console.log("valuessss",searchProfileId, profession, selectAge, selectedLocation);
+
+    console.log(
+      "valuessss",
+      searchProfileId,
+      profession,
+      selectAge,
+      selectedLocation
+    );
+
+    setLoading(true); // Show the spinner while the search is being processed
+
     try {
-      const result = await fetchSearchProfiles(searchProfileId, profession, selectAge, selectedLocation, paginationValue);
+      const result = await fetchSearchProfiles(
+        searchProfileId,
+        profession,
+        selectAge,
+        selectedLocation,
+        paginationValue,
+        sortOrder
+      );
+      console.log("count", result.total_count);
+      setCount(result.total_count);
       console.log("Search result:", result.profiles);
       console.log("Search value:", result.search_result);
       console.log("Search status:", result.Status);
       sessionStorage.setItem("searchvalue", result.search_result);
 
-      sessionStorage.setItem("searchCount", result.total_count);
+      setTotalCount(result.total_count);
       setSearchStatus(result.Status);
-      // Set the response data in the state
-      setSearchResult(result.profiles);
+      setSearchResult(result.profiles); // Set the response data in the state
+      setShouldScroll(true);
+
     } catch (error) {
       console.error("Search failed:", error);
       // Handle error as needed
+    } 
+    finally {
+      setLoading(false); // Hide the spinner once the search completes
     }
   };
 
+
+  useEffect(() => {
+
+    if (shouldScroll && scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: 'smooth' });
+      setShouldScroll(false); // Reset the flag after scrolling
+    }
+  }, [searchResult, shouldScroll]);
+
+
+  //   useEffect(() => {
+  //   if (searchResult) {
+  //     const tempElement = document.getElementById("temp");
+  //     if (tempElement) {
+  //       console.log("Scrolling to temp element");
+  //       tempElement.scrollIntoView({ behavior: 'smooth' });
+  //     }
+  //   }
+  // }, [searchResult]);
+
+
   useEffect(() => {
     if (paginationValue > 1) {
-      handleFindMatch()
+      handleFindMatch();
     }
-  }, [paginationValue])
+  }, [paginationValue]);
   //console.log(searchResult);
   //console.log(matchingProfileSearchId, "matchingProfileSearchId");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    setSearchProfileId(value || '');
+    setSearchProfileId(value || "");
     sessionStorage.removeItem("searchvalue");
 
     if (value.trim() === "") {
@@ -265,8 +301,6 @@ export const MatchingProfiles = () => {
     fetchProfesPref();
   }, []);
 
-
-
   //state
 
   useEffect(() => {
@@ -292,32 +326,47 @@ export const MatchingProfiles = () => {
     fetchStates();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
+  }
+
+
+
+
   return (
-    <div className="">
-      <div className="container mx-auto my-10">
+    <div className="px-5 overflow-hidden max-xl:py-4 max-lg:py-3">
+      <div className="container mx-auto my-10 max-lg:my-8 max-md:my-6">
         <div>
-          <h4 className="text-[24px] text-vysyamalaBlack font-bold">
-            Matching Profiles
+          <h4 className="text-[24px] text-vysyamalaBlack font-bold max-lg:text-[20px] max-md:text-[18px]" ref={scrollRef}>
+            Matching Profiles&nbsp;
             <span className="text-sm text-primary font-bold">
-              {" "}
-              ({MatchingProfiletotalCount})
+              {searchvalue === "1"
+                ? `(${totalCountSearch || 0})`
+                : `(${MatchingProfiletotalCount || 0})`}
             </span>
+
+
+
           </h4>
         </div>
 
-        <div className="bg-white flex justify-center items-center rounded-lg space-x-5 shadow-lg my-5 px-3 py-3 md:flex-row sm:flex-col">
-          <div className="relative md:w-[150rem] sm:w-full">
+        <div className="bg-white grid grid-cols-6 justify-center items-center rounded-lg  gap-4 shadow-lg my-5 px-3 py-3 max-lg:flex-wrap max-lg:col-gap-5 max-lg:space-x-0 max-xl:grid-cols-3 max-xl:items-end max-sm:grid-cols-1 max-sm:gap-1 max-sm:divide-y-[1px] max-sm:divide-ashSecondary">
+          <div className="relative  col-span-2 max-sm:col-span-1">
             <input
               type="text"
               placeholder="Search Profile ID on Matching Profiles"
-              className="w-full bg-white border-r-2 border-gray pl-10 py-3 focus-visible:outline-0"
+              className="w-full bg-white border-r-2 border-gray pl-10 py-3 focus-visible:outline-0 max-xl:border-0"
               value={searchProfileId}
               onChange={handleInputChange}
             />
             <HiOutlineSearch className="absolute top-4 text-[22px] text-ashSecondary" />
           </div>
 
-          <div className="relative md:w-[100rem] sm:w-full">
+          <div className="relative">
             <select
               value={profession} // Bind the value of the select to the profession state
               onChange={(e) => setProfession(e.target.value)}
@@ -363,8 +412,8 @@ export const MatchingProfiles = () => {
               <option value="10">10</option>
             </select>
             <IoCalendar className="absolute top-3 text-[22px] text-ashSecondary" />
-            <div className="absolute top-0 left-[-12px]  w-0.5 h-full bg-gray"></div>
-            <div className="absolute top-0 right-[-12px]  w-0.5 h-full bg-gray"></div>
+            <div className="absolute top-0 left-[-12px]  w-0.5 h-full bg-gray max-xl:w-0"></div>
+            <div className="absolute top-0 right-[-12px]  w-0.5 h-full bg-gray max-xl:w-0"></div>
           </div>
 
           <div className="relative w-full">
@@ -385,11 +434,14 @@ export const MatchingProfiles = () => {
               ))}
             </select>
             <FaLocationDot className="absolute top-3 text-[22px] text-ashSecondary" />
-            <div className="absolute top-0 right-[-12px]  w-0.5 h-full bg-gray"></div>
+            <div className="absolute top-0 right-[-12px]  w-0.5 h-full bg-gray max-xl:w-0"></div>
           </div>
 
-          <div onClick={handleAdvancedSearchPopup} className="w-fit" >
-            <FiFilter className="text-[22px] text-secondary mx-5 my-3 cursor-pointer" />
+          <div className="w-full flex items-center max-xl:lg max-sm:flex-col">
+          <div onClick={handleAdvancedSearchPopup} className="w-fit" title="Remove Filter">
+            {/*<FiFilter className="text-[22px] text-secondary mx-5 my-3 cursor-pointer" />*/}
+            <LuFilterX className="text-[28px] text-main mx-5 my-3 cursor-pointer" />
+
             {showAdvancedSearchPopup && (
               <div
                 ref={popupRef}
@@ -404,275 +456,144 @@ export const MatchingProfiles = () => {
           <div className="w-full">
             <button
               // disabled={!searchProfileId}
-              className="w-full bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3 mt-4"
+              className="w-full bg-gradient text-white rounded-r-[6px] font-semibold px-4 py-3  max-xl:px-4 max-sm:rounded-md"
               onClick={handleFindMatch}
             >
               Find Match
             </button>
           </div>
         </div>
-
+        </div>
 
         {/* Icon Sort */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center pb-3">
           {/* View icons */}
-          {searchvalue !== "1" && (
-            <div className="flex justify-start items-start">
-              <div
-                className={`border-[1px] border-ashSecondary rounded-l-md p-2 cursor-pointer
+          <div className="flex justify-start items-start">
+            <div
+              className={`border-[1px] border-ashSecondary rounded-l-md p-2 cursor-pointer
         ${currentView === "gridlist" ? "bg-lightGray" : ""}`}
-                title="Gridlist View"
-                onClick={() => setCurrentView("gridlist")}
-              >
-                <HiMiniViewColumns
-                  className={`text-[22px] 
-          ${currentView === "gridlist" ? "text-secondary" : "text-ashSecondary"} 
+              title="Gridlist View"
+              onClick={() => setCurrentView("gridlist")}
+            >
+              <HiMiniViewColumns
+                className={`text-[22px] 
+          ${currentView === "gridlist" ? "text-secondary" : "text-ashSecondary"
+                  } 
           hover:text-secondary`}
-                />
-              </div>
-              <div
-                className={`border-[1px] border-ashSecondary p-2 cursor-pointer
+              />
+            </div>
+            <div
+              className={`border-[1px] border-ashSecondary p-2 cursor-pointer
         ${currentView === "list" ? "bg-lightGray" : ""}`}
-                title="List View"
-                onClick={() => setCurrentView("list")}
-              >
-                <ImMenu
-                  className={`text-[22px] 
+              title="List View"
+              onClick={() => setCurrentView("list")}
+            >
+              <ImMenu
+                className={`text-[22px] 
           ${currentView === "list" ? "text-secondary" : "text-ashSecondary"} 
           hover:text-secondary`}
-                />
-              </div>
-              <div
-                className={`border-[1px] border-ashSecondary rounded-r-md p-2 cursor-pointer
+              />
+            </div>
+            <div
+              className={`border-[1px] border-ashSecondary rounded-r-md p-2 cursor-pointer
         ${currentView === "grid" ? "bg-lightGray" : ""}`}
-                title="Grid View"
-                onClick={() => setCurrentView("grid")}
-              >
-                <BsFillGrid3X3GapFill
-                  className={`text-[22px] 
+              title="Grid View"
+              onClick={() => setCurrentView("grid")}
+            >
+              <BsFillGrid3X3GapFill
+                className={`text-[22px] 
           ${currentView === "grid" ? "text-secondary" : "text-ashSecondary"} 
           hover:text-secondary`}
-                />
-              </div>
+              />
             </div>
-          )}
+          </div>
 
-          {searchvalue !== "1" && (
-            // Sort by date button
-            <button
-              onClick={toggleSortOrder}
-              className="flex justify-start items-center"
-            >
-              <BsSortDown className="text-[22px] text-ashSecondary cursor-pointer hover:text-secondary mr-2" />
-              {/* You can uncomment this if you have an alternative sorting direction */}
-              {/* <BsSortUp /> */}
-              <p className="text-vysyamalaBlack font-semibold">Sort by date</p>
-            </button>
-          )}
-
+          <button
+            onClick={toggleSortOrder}
+            className="flex justify-start items-center"
+          >
+            <BsSortDown className="text-[22px] text-ashSecondary cursor-pointer hover:text-secondary mr-2" />
+            {/* You can uncomment this if you have an alternative sorting direction */}
+            {/* <BsSortUp /> */}
+            <p className="text-vysyamalaBlack font-semibold">Sort by date</p>
+          </button>
         </div>
-        {searchvalue !== "1" && (
 
-          <div className="jhjgj">
-            {/* Conditionally render views based on currentView state */}
-            {/* {currentView === "gridlist" && <GridListView />}
+        <div className="jhjgj" id="temp">
+          {/* Conditionally render views based on currentView state */}
+          {/* {currentView === "gridlist" && <GridListView />}
           {currentView === "list" && <ListView />}
           {currentView === "grid" && <GridView />} */}
 
+          {currentView === "gridlist" && (
+            <GridListView
+              searchResult={searchResult}
+              profile_name={""}
+              profile_id={undefined}
+              profile_age={undefined}
+              height={undefined}
+              profile_img={""}
+              searchvalues={searchResult}
+            />
+          )}
+          {currentView === "grid" && (
+            <GridView
+              searchResult={searchResult}
+              profile_name={""}
+              profile_id={undefined}
+              profile_age={undefined}
+              height={undefined}
+              profile_img={""}
+              searchvalues={searchResult}
+            />
+          )}
 
-            {currentView === "gridlist" && (
-              <GridListView
-                searchResult={searchResult}
-                profile_name={""}
-                profile_id={undefined}
-                profile_age={undefined}
-                height={undefined}
-                profile_img={""}
-              />
-            )}
-            {currentView === "grid" && (
-              <GridView
-                searchResult={searchResult}
-                profile_name={""}
-                profile_id={undefined}
-                profile_age={undefined}
-                height={undefined}
-                profile_img={""}
-              />
+          {currentView === "list" && (
+            <ListView
+              profile_name={""}
+              profile_id={undefined}
+              profile_age={undefined}
+              height={undefined}
+              star={undefined}
+              matching_score={undefined}
+              profile_img={""}
+              searchvalues={searchResult}
+            />
+          )}
+        </div>
 
-            )}
-
-
-            {currentView === "list" && (
-              <ListView
-                profile_name={""}
-                profile_id={undefined}
-                profile_age={undefined}
-                height={undefined}
-                profile_img={""}
-              />
-            )}
-          </div>
-        )}
-
-        {searchvalue === "1" && (
+        {/* {searchvalue === "1" && (
         <div>
           <SearchCard profile={defaultProfile} searchvalues={searchResult} />
         </div>
-        )}
+        )} */}
         {/* Pagination */}
-        <>
-          {!Array.isArray(searchResult) && (
-            <div className="flex items-center justify-between border-t border-gray bg-white px-4 py-3 sm:px-6">
-              <div className="flex flex-1 justify-between sm:hidden">
-                <a
-                  href="#"
-                  onClick={handlePrevious}
-                  className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                >
-                  Previous
-                </a>
-                <a
-                  href="#"
-                  onClick={handleNext}
-                  className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                >
-                  Next
-                </a>
-              </div>
-              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-primary">
-                    Showing <span className="font-medium">{startResult}</span> to{" "}
-                    <span className="font-medium">{endResult}</span> of{" "}
-                    <span className="font-medium">{MatchingProfiletotalCount}</span>{" "}
-                    results
-                  </p>
-                </div>
-                <div>
-                  <nav
-                    className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                    aria-label="Pagination"
-                  >
-                    <button
-                      onClick={handlePrevious}
-                      disabled={MatchingProfilepageNumber === 1}
-                      className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                    >
-                      <span className="sr-only">Previous</span>
-                      <IoChevronBackOutline
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </button>
-                    {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-                    {[...Array(noOfPages)].map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setMatchingProfilePageNumber(index + 1)}
-                        className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${MatchingProfilepageNumber === index + 1
-                          ? "bg-secondary text-white"
-                          : "text-primary hover:bg-gray-50"
-                          }`}
-                      >
-                        {index + 1}
-                      </button>
-                    ))}
-                    <button
-                      onClick={handleNext}
-                      disabled={MatchingProfilepageNumber === noOfPages}
-                      className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                    >
-                      <span className="sr-only">Next</span>
-                      <IoChevronForwardOutline
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </button>
-                  </nav>
-                </div>
-              </div>
-            </div>
-          )}
-        </>
-        {/* {} */}
-        <>
-          {Array.isArray(searchResult) && (
-            <div className="flex items-center justify-between border-t border-gray bg-white px-4 py-3 sm:px-6">
-              <div className="flex flex-1 justify-between sm:hidden">
-                <button
-                  className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  onClick={handleMatchingPrevious}
-                >
-                  Previous
-                </button>
-                <a
-                  href="#"
-                  className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-                  onClick={handleMatchingNext}
-                >
-                  Next
-                </a>
-              </div>
-              <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-primary">
-                    Showing <span className="font-medium">{startResult}</span> to{" "}
-                    <span className="font-medium">{endResult}</span> of{" "}
-                    <span className="font-medium">{MatchingProfiletotalCount}</span>{" "}
-                    results
-                  </p>
-                </div>
-                <div>
-                  <nav
-                    className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                    aria-label="Pagination"
-                  >
-                    <button
-                      onClick={handleMatchingPrevious}
-                      disabled={paginationValue === 1}
-                      className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                    >
-                      <span className="sr-only">Previous</span>
-                      <IoChevronBackOutline
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </button>
-                    {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
 
-                    {[...Array(totalPageCount)].map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setPaginationValue(index + 1)}
-                        className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${paginationValue === index + 1
-                          ? "bg-secondary text-white"
-                          : "text-primary hover:bg-gray-50"
-                          }`}
-                      >
-                        {index + 1}
-                      </button>
-                    ))}
+        {/* pagination for filter */}
 
-
-                    <button
-                      onClick={handleMatchingNext}
-                      disabled={paginationValue === noOfPages}
-                      className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-                    >
-                      <span className="sr-only">Next</span>
-                      <IoChevronForwardOutline
-                        className="h-5 w-5"
-                        aria-hidden="true"
-                      />
-                    </button>
-                  </nav>
-                </div>
-              </div>
-            </div>
-          )}
-        </>
+        {searchvalue === "1" ? (
+          <>
+            <Pagination
+              pageNumber={paginationValue}
+              setPageNumber={setPaginationValue}
+              totalRecords={Number(totalCount)}
+              dataPerPage={pegeDataCount}
+              toptalPages={totalPageCount}
+            />
+          </>
+        ) : (
+          <>
+            <Pagination
+              pageNumber={MatchingProfilepageNumber}
+              setPageNumber={setMatchingProfilePageNumber}
+              totalRecords={MatchingProfiletotalCount}
+              dataPerPage={MatchingProfileperPage}
+              toptalPages={noOfPages}
+            />
+          </>
+        )}
       </div>
+      <ToastNotification />
     </div>
   );
 };

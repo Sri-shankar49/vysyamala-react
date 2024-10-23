@@ -83,7 +83,7 @@ export const FeaturedProfileCard: React.FC<FeaturedProfileCardProps> = ({
 
   return (
     <div
-      className="w-10/12 relative fade-bottom mx-auto my-5 cursor-pointer"
+      className="w-10/12 relative fade-bottom mx-auto my-5 cursor-pointer  after:left-0"
       onClick={handleProfileClick}
       role="button"
       tabIndex={0}

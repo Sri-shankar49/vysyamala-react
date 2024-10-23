@@ -1,9 +1,17 @@
+import { useEffect } from "react";
 import { FaCheck } from "react-icons/fa";
-
+import { useNavigate } from "react-router-dom";
 export const ThankYouReg = () => {
   const Save_plan_package_message = sessionStorage.getItem(
     "Save_plan_package_message"
   );
+  const navigate = useNavigate();
+  useEffect(() => {
+    setTimeout(() => {
+      navigate("/LoginHome");
+    }, 5000);
+  }, []);
+  sessionStorage.removeItem("quick_reg");
 
   return (
     <div>

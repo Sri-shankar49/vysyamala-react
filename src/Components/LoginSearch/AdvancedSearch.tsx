@@ -4,6 +4,20 @@ import InputField from "../../Components/RegistrationForm/InputField";
 import { HiOutlineSearch } from "react-icons/hi";
 import { ProfileContext } from "../../ProfileContext";
 
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const profileIdSchema = z.object({
+  profile_id: z
+    .string()
+    .min(1, "Profile ID is required")
+    .regex(/^VY\d{6}$/, "Profile ID must start with 'VY' followed by 6 digits"),
+});
+
+// Define the type for the form inputs based on the schema
+type ProfileIdForm = z.infer<typeof profileIdSchema>;
+
 interface MaritalStatus {
   marital_sts_id: number;
   marital_sts_name: string;
@@ -38,16 +52,24 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   handle_Get_advance_search,
   onFindMatch,
 }) => {
+  const {
+    register,
+    setError,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ProfileIdForm>({
+    resolver: zodResolver(profileIdSchema),
+  });
+
   const [maritalStatuses, setMaritalStatuses] = useState<MaritalStatus[]>([]);
   const [professions, setProfessions] = useState<Profession[]>([]);
   const [educationOptions, setEducationOptions] = useState<Education[]>([]);
   const [birthStars, setBirthStars] = useState<BirthStar[]>([]);
   const [incomeOptions, setIncomeOptions] = useState<Income[]>([]);
   const loginuser_profile_id = sessionStorage.getItem("loginuser_profile_id");
-  const [searchProfile, setSearchProfile] = useState<string>("");
+  // const [searchProfile, setSearchProfile] = useState<string>("");
   // const [maritialStatus, SetMaritualStatus] = useState<number[]>([]);
   const context = useContext(ProfileContext);
-
 
   if (!context) {
     throw new Error("MyComponent must be used within a ProfileProvider");
@@ -58,26 +80,28 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     setToAge,
     setFromHeight,
     setToHeight,
-    pageNumber,
-
+    setWorkLocation,
     setAdvanceSelectedProfessions,
     Set_Maritial_Status,
     setAdvanceSelectedEducation,
-    selectedAdvanceEducation,
-    setSearchProfileData,
-    selectedIncomes,
     setSelectedIncomes,
-    chevvai_dhosam,
     setChevvai_dhosam,
-    rehuDhosam,
     setRehuDhosam,
     setAdvanceSelectedBirthStar,
     setNativeState,
     setPeopleOnlyWithPhoto,
+    pageNumber,
+
+    fromHeight, toHeight,
+    selectedIncomes,
+    setAdvanceSearchData,
+    chevvai_dhosam,
+
+    rehuDhosam,
+
     // workLocation,
-    setWorkLocation,
-    peopleOnlyWithPhoto
-   
+
+    peopleOnlyWithPhoto,
   } = context;
 
   useEffect(() => {
@@ -90,24 +114,21 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     setAdvanceSelectedEducation(event.target.value);
   };
 
-  console.log(
-    selectedAdvanceEducation,
-    typeof selectedAdvanceEducation,
-    " selectedAdvanceEducation"
-  );
-
   const handleSearch = () => {
+
     handle_Get_advance_search();
     onFindMatch();
+
   };
 
-  const handlePeopleWithPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePeopleWithPhotoChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const value = e.target.checked ? 1 : 0;
     setPeopleOnlyWithPhoto(value);
     console.log("Checked value:", value);
   };
 
-  
   const handleMaritalStatusChange = (statusId: number, isChecked: boolean) => {
     if (isChecked) {
       Set_Maritial_Status((prev) => [...prev, statusId]);
@@ -127,21 +148,20 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     });
   };
 
-  const handleBirthStarChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleBirthStarChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setAdvanceSelectedBirthStar(event.target.value);
-    
   };
   const handleStateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = event.target;
-    
+
     if (checked) {
       // Add the selected value to the array
       setNativeState((prevState) => [...prevState, value]);
     } else {
       // Remove the unselected value from the array
-      setNativeState((prevState) =>
-        prevState.filter((item) => item !== value)
-      );
+      setNativeState((prevState) => prevState.filter((item) => item !== value));
     }
   };
   const handleCheckDhosam = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -158,7 +178,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
   };
 
   console.log(selectedIncomes, " selectedIncomes");
-  const Search_By_profileId = async () => {
+  const Search_By_profileId = async (searchProfile: string) => {
     try {
       const response = await axios.post(
         "http://103.214.132.20:8000/auth/Search_byprofile_id/",
@@ -171,13 +191,18 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
       if (response.status === 200) {
         sessionStorage.setItem("searchProfile", searchProfile);
         console.log(response.data.data, "search profile");
-        setSearchProfileData(response.data.data);
+        // setSearchProfileData(response.data.data);
+        setAdvanceSearchData(response.data.data);
         setTimeout(() => {
           onFindMatch();
         }, 1000);
       }
     } catch (error) {
       console.log(error);
+      setError("profile_id", {
+        type: "manual",
+        message: "Profile not found. Please check the profile ID.",
+      });
     }
   };
   useEffect(() => {
@@ -257,56 +282,109 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
     fetchProfessions();
   }, []);
 
+  const onSubmit = (data: ProfileIdForm) => {
+  
+      // Proceed with the search if no errors
+      Search_By_profileId(data.profile_id);
+    
+  };
+
+
+
+  const storedGender = sessionStorage.getItem("gender");
+  const storedHeight = sessionStorage.getItem("userheightfromapi") || 0;
+
+  console.log(storedHeight, "adv height");
+  console.log(storedGender, "adv gender");
+  useEffect(() => {
+    // If the stored gender is 'male', set the height as the value to the input
+    if (storedGender === 'male') {
+
+      setToHeight(Number(storedHeight));
+    }
+    if (storedGender === 'female') {
+      setFromHeight(Number(storedHeight));
+    }
+  }, []);
+
+  
+
+
+
   return (
     <div>
-      <div className="container mx-auto py-10">
-        <div className="w-8/12 mx-auto rounded-lg p-10 bg-white shadow-lg">
-          <div className="relative flex justify-center items-center rounded-lg p-1 border-2 border-footer-text-gray">
+      <div className="container mx-auto py-10 max-md:px-3">
+        <div className="w-8/12 mx-auto rounded-lg p-10 bg-white shadow-lg max-lg:w-4/5 max-md:w-full  max-sm:p-5">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="relative flex justify-center items-center rounded-lg p-1 border-2 border-footer-text-gray max-sm:flex-col"
+          >
             <input
-              onChange={(e) => setSearchProfile(e.target.value)}
+              // onChange={(e) => setSearchProfile(e.target.value)}
+              {...register("profile_id")}
               type="text"
               placeholder="Search by Profile ID"
-              className="w-full px-10 focus-visible:outline-none"
+              className="w-full px-10 focus-visible:outline-none max-sm:p-4 max-sm:pl-10"
             />
-            <HiOutlineSearch className="absolute left-3 top-4 text-[22px] text-ashSecondary" />
+            <HiOutlineSearch className="absolute left-3 top-4 text-[22px] text-ashSecondary max-sm:top-6" />
             <button
-              onClick={Search_By_profileId}
-              disabled={!searchProfile}
-              className="w-fit bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3"
+              type="submit"
+              className="w-fit bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3 max-sm:w-full max-sm:rounded-md"
             >
               Search
             </button>
-          </div>
+          </form>
+          {errors.profile_id && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.profile_id.message}
+            </p>
+          )}
 
-          <hr className="text-footer-text-gray mt-10 mb-5" />
+          {/* advance search */}
+          <hr className="text-footer-text-gray mt-10 mb-5 max-md:my-5" />
 
-          <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold mb-5">
+          <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold mb-5 max-md:text-[20px]">
             Advanced Search
           </h4>
 
           <form action="" method="post" className="space-y-5">
             {/* {/ Age & Height /} */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center gap-4 max-2xl:gap-4 max-sm:flex-col max-sm:items-start">
               {/* {/ Age /} */}
-              <div>
+              <div className="w-full">
                 <label htmlFor="age" className="text-secondary font-semibold">
                   Age
                 </label>
-                <div className="flex justify-between items-center space-x-5 mt-2">
-                  <div>
+                <div className="w-full flex justify-between items-center space-x-5 mt-2 max-sm:flex-col max-sm:gap-4 max-sm:space-x-0">
+                  <div className="w-full">
                     <input
-                      type="number"
-                      onChange={(e) => setFromAge(Number(e.target.value))}
+
+                      type="text"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                          // Only allow digits
+                          setFromAge(Number(value));
+                        
+                      }}
+                      
                       id="age"
                       name="age"
                       placeholder="From"
                       className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                     />
                   </div>
-                  <div>
+                  <div className="w-full">
                     <input
-                      type="number"
-                      onChange={(e) => setToAge(Number(e.target.value))}
+                      type="text"
+
+                      onChange={(e) => {
+
+                        const value = e.target.value;
+                          // Only allow digits
+                          setToAge(Number(value));
+                        
+                      }}
+                     
                       placeholder="To"
                       className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                     />
@@ -315,32 +393,39 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               </div>
 
               {/* {/ Height /} */}
-              <div>
-                <label
-                  htmlFor="height"
-                  className="text-secondary font-semibold"
-                >
-                  Height
-                </label>
-                <div className="flex justify-between items-center space-x-5 mt-2">
-                  <div>
+              <div className="w-full">
+                <label htmlFor="height" className="text-secondary font-semibold">Height</label>
+                <div className="w-full flex justify-between items-center space-x-5 mt-2  max-sm:flex-col max-sm:gap-4 max-sm:space-x-0">
+                  <div className="w-full">
                     <input
                       type="text"
-                      id="height"
-                      onChange={(e) => setFromHeight(Number(e.target.value))}
-                      name="height"
+                      id="fromHeight"
+                      value={fromHeight}
+                      onChange={(e) => {
+                        const value = e.target.value; // Allow only digits
+                        setFromHeight(Number(value)); // Update context state, default to 0 if empty
+                      }}
                       placeholder="From"
                       className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                     />
+
                   </div>
-                  <div>
+
+                  <div className="w-full">
                     <input
                       type="text"
-                      onChange={(e) => setToHeight(Number(e.target.value))}
+                      id="toHeight"
+                      value={toHeight}
+                      onChange={(e) => {
+                        const value = e.target.value; // Allow only digits
+                        setToHeight(Number(value)); // Update context state, default to 0 if empty
+                      }}
                       placeholder="To"
                       className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
                     />
+
                   </div>
+
                 </div>
               </div>
             </div>
@@ -449,7 +534,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               <h5 className="text-[18px] text-secondary font-semibold mb-2">
                 Dhosam
               </h5>
-              <div className="w-1/4 flex justify-between items-center">
+              <div className="w-full flex justify-start gap-4 items-center max-sm:flex-wrap">
                 <div>
                   <input
                     type="checkbox"
@@ -484,13 +569,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                 Birth Star
               </label>
               <select
-                  onChange={handleBirthStarChange}
+                onChange={handleBirthStarChange}
                 id="birthStar"
                 className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
               >
-                <option
-            
-                value="" selected disabled>
+                <option value="" selected disabled>
                   -- Select your Birth Star --
                 </option>
                 {birthStars.map((star) => (
@@ -509,7 +592,7 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
               <div className="flex flex-wrap gap-4">
                 <div>
                   <input
-                  onChange={handleStateChange}
+                    onChange={handleStateChange}
                     type="checkbox"
                     id="tamilNadu"
                     name="tamilNadu"
@@ -588,7 +671,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             </div>
 
             {/* {/ Work Location /} */}
-            <InputField  onChange={(e)=>setWorkLocation(e.target.value)}  label={"Work Location"} name={"workLocation"} />
+            <InputField
+              onChange={(e) => setWorkLocation(e.target.value)}
+              label={"Work Location"}
+              name={"workLocation"}
+            />
 
             {/* {/ Profile Photo /} */}
             <div>
@@ -596,11 +683,11 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
                 Profile Photo
               </h5>
               <input
-              onChange={handlePeopleWithPhotoChange}
+                onChange={handlePeopleWithPhotoChange}
                 type="checkbox"
                 id="profilePhoto"
                 value={peopleOnlyWithPhoto}
-                // {...register("profilePhoto")}
+              // {...register("profilePhoto")}
               />
               <label htmlFor="profilePhoto" className="pl-1">
                 People only with photo
@@ -608,12 +695,13 @@ export const AdvancedSearch: React.FC<AdvancedSearchProps> = ({
             </div>
 
             {/* {/ Buttons /} */}
-            <div className="flex justify-end space-x-4">
-              <button className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2">
+            <div className="flex justify-end space-x-4 max-sm:flex-col max-sm:items-center">
+              <button type="button" className="py-[10px] px-14 bg-white text-main font-semibold  rounded-[6px] mt-2 ">
                 Cancel
               </button>
               <button
                 onClick={() => handleSearch()}
+                // disabled={disableFindMatch}
                 type="submit"
                 className="flex items-center py-[10px] px-14 bg-gradient text-white rounded-[6px] mt-2"
               >

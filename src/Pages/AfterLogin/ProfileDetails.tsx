@@ -15,8 +15,6 @@ export const ProfileDetails = () => {
     return (
         <div>
             <ProfileDetailsExpressInterest />
-          
-
             <ProfileDetailsSettingsView />
             <FeaturedProfiles />
             <VysyaBazaar />

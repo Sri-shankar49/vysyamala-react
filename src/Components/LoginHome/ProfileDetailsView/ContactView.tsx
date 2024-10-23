@@ -67,24 +67,38 @@ export const ContactView: React.FC = () => {
             </h2>
             <div className="grid grid-rows-1 grid-cols-2 gap-4">
                 <div>
+                {contactDetails?.address && contactDetails.address !== "" && contactDetails.address !== null && (
                     <h5 className="text-[20px] text-ash font-semibold mb-2">Address:
-                        <span className="font-normal"> {contactDetails.address}</span></h5>
+                        <span className="font-normal"> {contactDetails.address}</span></h5>)}
+
+                        {contactDetails?.city && contactDetails.city !== "" && contactDetails.city !== null && (
                     <h5 className="text-[20px] text-ash font-semibold mb-2">City:
-                        <span className="font-normal"> {contactDetails.city}</span></h5>
+                        <span className="font-normal"> {contactDetails.city}</span></h5>)}
+
+                        {contactDetails?.state && contactDetails.state !== "" && contactDetails.state !== null && (
                     <h5 className="text-[20px] text-ash font-semibold mb-2">State:
-                        <span className="font-normal"> {contactDetails.state}</span></h5>
+                        <span className="font-normal"> {contactDetails.state}</span></h5>)}
+
+                        {contactDetails?.country && contactDetails.country !== "" && contactDetails.country !== null && (
                     <h5 className="text-[20px] text-ash font-semibold mb-2">Country:
-                        <span className="font-normal"> {contactDetails.country}</span></h5>
+                        <span className="font-normal"> {contactDetails.country}</span></h5>)}
                 </div>
                 <div>
+                {contactDetails?.phone && contactDetails.phone !== "" && contactDetails.phone !== null && (
                     <h5 className="text-[20px] text-ash font-semibold mb-2">Phone:
-                        <span className="font-normal"> {contactDetails.phone}</span></h5>
+                        <span className="font-normal"> {contactDetails.phone}</span></h5>)}
+
+                        {contactDetails?.mobile && contactDetails.mobile !== "" && contactDetails.mobile !== null && (
                     <h5 className="text-[20px] text-ash font-semibold mb-2">Mobile:
-                        <span className="font-normal"> {contactDetails.mobile}</span></h5>
+                        <span className="font-normal"> {contactDetails.mobile}</span></h5>)}
+
+                        {contactDetails?.whatsapp && contactDetails.whatsapp !== "" && contactDetails.whatsapp !== null && (
                     <h5 className="text-[20px] text-ash font-semibold mb-2">WhatsApp:
-                        <span className="font-normal"> {contactDetails.whatsapp}</span></h5>
+                        <span className="font-normal"> {contactDetails.whatsapp}</span></h5>)}
+
+                        {contactDetails?.email && contactDetails.email !== "" && contactDetails.email !== null && (
                     <h5 className="text-[20px] text-ash font-semibold mb-2">Email:
-                        <span className="font-normal"> {contactDetails.email}</span></h5>
+                        <span className="font-normal"> {contactDetails.email}</span></h5>)}
                 </div>
             </div>
         </div>

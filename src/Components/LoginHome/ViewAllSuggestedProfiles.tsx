@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext  } from 'react';
 import axios from 'axios';
 import ProfileListImg from "../../assets/images/ProfileListImg.png";
 import { MdVerifiedUser } from "react-icons/md";
@@ -14,7 +14,8 @@ import { FaUser } from "react-icons/fa6";
 import { IoEye } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import MatchingScore from "../DashBoard/ProfileDetails/MatchingScore";
-
+import Pagination from "../../Components/Pagination";
+import { ProfileContext } from "../../ProfileContext";
 // Define the shape of your profile data
 interface Profile {
   profile_id: string;
@@ -31,20 +32,33 @@ interface Profile {
 
 export const ViewAllSuggestedProfiles: React.FC = () => {
   const navigate = useNavigate();
+  const context = useContext(ProfileContext);
+
+
+  if (!context) {
+    throw new Error("ViewAllSuggestedProfiles must be used within a ProfileProvider");
+  }
+
+  const { setTotalPage, setTotalRecords, totalPage, TotalRecords } = context;
 
   // State to hold the profiles data
   const [profiles, setProfiles] = useState<Profile[]>([]);
+ const [page, setPage] = useState<number>(1);
+  const perPage = 10;
 
   // Fetch data from API
   const fetchProfiles = async (profileId: string) => {
     try {
       const response = await axios.post('http://103.214.132.20:8000/auth/Get_Suggested_List/', {
         profile_id: profileId,
+        page_number: page,
       });
       
       if (response.data.status === "success") {
         // Assuming the API response returns an array of profiles in 'data'
         setProfiles(response.data.data);
+        setTotalRecords(response.data.total_count);
+        setTotalPage(Math.ceil(response.data.total_count / perPage));
       } else {
         console.error("Failed to fetch profiles:", response.data.message);
       }
@@ -62,7 +76,7 @@ export const ViewAllSuggestedProfiles: React.FC = () => {
     } else {
       console.error("Profile ID not found in sessionStorage.");
     }
-  }, []);
+  }, [page]);
 
   const handleProfileClick = (profileId: string) => {
     navigate(`/ProfileDetails?id=${profileId}`);
@@ -185,6 +199,13 @@ export const ViewAllSuggestedProfiles: React.FC = () => {
             ))}
           </div>
         )}
+         <Pagination
+          pageNumber={page}
+          setPageNumber={setPage}
+          totalRecords={TotalRecords}
+          dataPerPage={perPage}
+          toptalPages={totalPage}
+        />
       </div>
     </div>
   );

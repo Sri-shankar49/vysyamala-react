@@ -12,7 +12,7 @@ export const EmailSent: React.FC<EmailSentProps> = ({ onBackToLogin, onClose }) 
     return (
         <div>
             <div>
-                <h5 className="text-[24px] text-primary font-semibold">Email Sent</h5>
+                <h5 className="text-[24px] text-primary font-semibold max-sm:text-[20px]">Email Sent</h5>
             </div>
 
             <div className="mb-5">

@@ -1,3 +1,5 @@
+
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
@@ -53,6 +55,11 @@ interface EduPref {
   Edu_name: string;
 }
 
+interface Profession {
+  Profes_Pref_id: number;
+  Profes_name: string;
+}
+
 interface MaritalStatus {
   marital_sts_id: number;
   marital_sts_name: string;
@@ -98,6 +105,8 @@ export interface SelectedStarIdItem {
 
 const PartnerSettings: React.FC = () => {
   const [eduPref, setEduPref] = useState<EduPref[]>([]);
+  const [ProfPref, setProfPref] = useState<Profession[]>([]);
+
   const [annualIncome, setAnnualIncome] = useState<AnnualIncome[]>([]);
   const [matchStars, setMatchStars] = useState<MatchingStar[][]>([]);
   const [maritalStatuses, setMaritalStatuses] = useState<MaritalStatus[]>([]);
@@ -107,15 +116,19 @@ const PartnerSettings: React.FC = () => {
   const [selectedMaritalStatuses, setSelectedMaritalStatuses] = useState<
     string[]
   >([]);
-  const [selectedProfessions, setSelectedProfessions] = useState<string[]>([]);
+  // const [selectedProfessions, setSelectedProfessions] = useState<string[]>([]);
   const [selectedEducations, setSelectedEducations] = useState<string[]>([]);
   const [selectedAnnualIncomes, setSelectedAnnualIncomes] = useState<string[]>(
     []
   );
-  const [selectedBusiness, setSelectedBusiness] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState(false);
-  const [selectedNotWorking, setSelectedNotWorking] = useState(false);
-  const [selectedNotMentioned, setSelectedNotMentioned] = useState(false);
+
+  const [selectedProfession, setSelectedProfession] = useState<string[]>(
+    []
+  );
+  // const [selectedBusiness, setSelectedBusiness] = useState(false);
+  // const [selectedStudent, setSelectedStudent] = useState(false);
+  // const [selectedNotWorking, setSelectedNotWorking] = useState(false);
+  // const [selectedNotMentioned, setSelectedNotMentioned] = useState(false);
   // const [selectedStarRasiPairs, setSelectedStarRasiPairs] = useState<string[]>(
   //   []
   // );
@@ -124,7 +137,7 @@ const PartnerSettings: React.FC = () => {
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors }, setError, clearErrors,
     watch,
   } = useForm<PartnerSettingsInputs>({
     resolver: zodResolver(schema),
@@ -142,55 +155,33 @@ const PartnerSettings: React.FC = () => {
 
   const navigate = useNavigate();
 
-  // const handleMaritalStatusChange = (id: string, checked: boolean) => {
-  //   const updatedStatuses = checked
-  //     ? [...selectedMaritalStatuses, id]
-  //     : selectedMaritalStatuses.filter(statusId => statusId !== id);
+ 
 
-  //   setSelectedMaritalStatuses(updatedStatuses);
-  // };
-
-  // const handleEducationChange = (value: string, checked: boolean) => {
-  //   const updatedEducations = checked
-  //     ? [...selectedEducations, value]
-  //     : selectedEducations.filter(education => education !== value);
-
-  //   setSelectedEducations(updatedEducations);
-  // };
-
-  // const handleAnnualIncomeChange = (id: string, checked: boolean) => {
-  //   const updatedIncomes = checked
-  //     ? [...selectedAnnualIncomes, id]
-  //     : selectedAnnualIncomes.filter(incomeId => incomeId !== id);
-
-  //   setSelectedAnnualIncomes(updatedIncomes);
-  // };
-
-  const handleProfessionChange = (value: string, checked: boolean) => {
-    setSelectedProfessions((prevProfessions) => {
-      if (checked && !prevProfessions.includes(value)) {
-        return [...prevProfessions, value];
-      } else {
-        return prevProfessions.filter((profession) => profession !== value);
-      }
-    });
+  // const handleProfessionChange = (value: string, checked: boolean) => {
+  //   setSelectedProfessions((prevProfessions) => {
+  //     if (checked && !prevProfessions.includes(value)) {
+  //       return [...prevProfessions, value];
+  //     } else {
+  //       return prevProfessions.filter((profession) => profession !== value);
+  //     }
+  //   });
 
     // Handle other checkboxes as needed
-    if (value === "business") {
-      setSelectedBusiness(checked);
-    } else if (value === "student") {
-      setSelectedStudent(checked);
-    } else if (value === "notWorking") {
-      setSelectedNotWorking(checked);
-    } else if (value === "notMentioned") {
-      setSelectedNotMentioned(checked);
-    }
-  };
+  //   if (value === "business") {
+  //     setSelectedBusiness(checked);
+  //   } else if (value === "student") {
+  //     setSelectedStudent(checked);
+  //   } else if (value === "notWorking") {
+  //     setSelectedNotWorking(checked);
+  //   } else if (value === "notMentioned") {
+  //     setSelectedNotMentioned(checked);
+  //   }
+  // };
 
   const onSubmit: SubmitHandler<PartnerSettingsInputs> = async (data) => {
     setIsSubmitting(true);
     console.log("Form data:", data);
-  
+
     const starArray = selectedStarIds.map(item => item.id);
     const starRasiArray = selectedStarIds.map(item => `${item.star}-${item.rasi}`);
 
@@ -206,13 +197,14 @@ const PartnerSettings: React.FC = () => {
     console.log(EducationalValues);
     const IncomeValues = selectedAnnualIncomes.join(",");
     console.log(IncomeValues);
-    const prefProfessionString = [
-      ...(selectedProfessions.includes("employed") ? ["employed"] : []),
-      ...(selectedBusiness ? ["business"] : []),
-      ...(selectedStudent ? ["student"] : []),
-      ...(selectedNotWorking ? ["notWorking"] : []),
-      ...(selectedNotMentioned ? ["notMentioned"] : []),
-    ].join(",");
+    // const prefProfessionString = [
+    //   ...(selectedProfessions.includes("employed") ? ["employed"] : []),
+    //   ...(selectedBusiness ? ["business"] : []),
+    //   ...(selectedStudent ? ["student"] : []),
+    //   ...(selectedNotWorking ? ["notWorking"] : []),
+    //   ...(selectedNotMentioned ? ["notMentioned"] : []),
+    // ].join(",");
+    const ProfessionValues = selectedProfession.join(",");
 
     try {
       const profileId = sessionStorage.getItem("profile_id_new") || sessionStorage.getItem("loginuser_profile_id")
@@ -226,7 +218,7 @@ const PartnerSettings: React.FC = () => {
         pref_height_from: data.heightFrom,
         pref_height_to: data.heightTo,
         pref_marital_status: MaritalValues,
-        pref_profession: prefProfessionString,
+        pref_profession: ProfessionValues,
         pref_education: EducationalValues,
         pref_anual_income: IncomeValues,
         pref_chevvai: data.chevvai,
@@ -237,7 +229,7 @@ const PartnerSettings: React.FC = () => {
         status: "1",
       };
 
-      console.log("Post Data:", postData);
+      console.log("PartnerSettings:", postData);
 
       const response = await apiClient.post(
         `/auth/Partner_pref_registration/`,
@@ -247,14 +239,24 @@ const PartnerSettings: React.FC = () => {
 
       if (response.data.Status === 1) {
         NotifySuccess("Partner details updated successfully");
+      
+        // Get quick_reg value from sessionStorage
+        const quickreg = sessionStorage.getItem("quick_reg") || "0"; // Default to "0" if not found
+        
         setTimeout(() => {
-          navigate("/MembershipPlan");
+          if (quickreg === "1") {
+            navigate("/ThankYouReg"); // Redirect to ThankYouReg page
+          } else {
+            navigate("/MembershipPlan"); // Redirect to MembershipPlan page
+          }
         }, 2000);
+        
       } else {
         setIsSubmitting(false);
         NotifyError("Registration unsuccessful");
         console.log("Registration unsuccessful:", response.data);
       }
+      
     } catch (error) {
       setIsSubmitting(false);
       console.error("Error submitting contact details:", error);
@@ -312,7 +314,14 @@ const PartnerSettings: React.FC = () => {
           setSelectedMaritalStatuses(maritalStatusArray);
           setSelectedEducations(educationArray);
           setSelectedAnnualIncomes(annualIncomeArray);
-          setSelectedStarIds(poruthamStarIds); // Set selected stars for checkbox selection
+          // setSelectedStarIds(poruthamStarIds); // Set selected stars for checkbox selection
+
+          setSelectedStarIds(poruthamStarIds.map((id: any) => ({
+            id,
+            rasi: "",
+            star: "",
+            label: ""
+          })));
         } catch (error) {
           console.error("Error fetching profile data:", error);
         }
@@ -332,6 +341,13 @@ const PartnerSettings: React.FC = () => {
 
   const handleEducationChange = (id: string, isChecked: boolean) => {
     setSelectedEducations((prev) =>
+      isChecked ? [...prev, id] : prev.filter((eduId) => eduId !== id)
+    );
+  };
+
+
+  const handleProfessionChange = (id: string, isChecked: boolean) => {
+    setSelectedProfession((prev) =>
       isChecked ? [...prev, id] : prev.filter((eduId) => eduId !== id)
     );
   };
@@ -371,6 +387,21 @@ const PartnerSettings: React.FC = () => {
     fetchEduPref();
   }, []);
 
+
+  useEffect(() => {
+    const fetchProfession = async () => {
+      try {
+        const response = await apiClient.post(`/auth/Get_Profes_Pref/`);
+        const options = Object.values(response.data) as Profession[];
+        console.log(options);
+        setProfPref(options);
+      } catch (error) {
+        console.error("Error fetching Prof Pref options:", error);
+      }
+    };
+    fetchProfession();
+  }, []);
+
   useEffect(() => {
     const fetchAnnualIncome = async () => {
       try {
@@ -384,9 +415,23 @@ const PartnerSettings: React.FC = () => {
     fetchAnnualIncome();
   }, []);
 
+
+  useEffect(() => {
+    const storedMaritalStatus = sessionStorage.getItem("maritalStatus");
+    if (storedMaritalStatus) {
+      // Set the stored marital status in the state
+      setSelectedMaritalStatuses([storedMaritalStatus]);
+    }
+  }, []);
+
+
   const storedBirthStar = sessionStorage.getItem("selectedstar");
   const storedGender = sessionStorage.getItem("gender");
+  // const storedMartialStatus = sessionStorage.getItem("maritalStatus");
+  const storedHeight = sessionStorage.getItem("userHeight") || 0;
+  // const quickreg = sessionStorage.getItem("quick_reg") || "0";
 
+  // console.log(storedMartialStatus);
   console.log(storedBirthStar);
   console.log(storedGender);
 
@@ -413,16 +458,54 @@ const PartnerSettings: React.FC = () => {
   }, [storedBirthStar, storedGender]);
 
   useEffect(() => {
-    const storedHeight = sessionStorage.getItem("userHeight");
-
     if (storedHeight) {
       if (storedGender === "male") {
+        // Set heightTo and restrict heightFrom input
         setValue("heightTo", storedHeight);
-      } else {
+        setValue("heightFrom", ""); // Reset heightFrom to avoid invalid data
+      } else if (storedGender === "female") {
+        // Set heightFrom and restrict heightTo input
         setValue("heightFrom", storedHeight);
+        setValue("heightTo", ""); // Reset heightTo to avoid invalid data
       }
     }
-  }, [setValue]);
+  }, [storedHeight, storedGender, setValue]);
+
+
+  const heightFrom = watch("heightFrom"); // Watch the value of heightFrom
+  const heightTo = watch("heightTo");     // Watch the value of heightTo
+
+  // console.log("sssssssssssssssssssss",heightTo);
+
+  // Handle validation on change using useEffect
+  useEffect(() => {
+    // Ensure storedGender is female and heightTo is valid
+    if (storedGender === "female" && heightTo && Number(heightTo) <= Number(storedHeight)) {
+      setError("heightTo", {
+        type: "manual",
+        message: `Height To must be Greater than ${storedHeight} cm.`,
+      });
+    } else {
+      clearErrors("heightTo");
+    }
+  }, [heightTo, storedHeight, storedGender, setError, clearErrors]);
+
+  useEffect(() => {
+    // Ensure storedGender is male and heightFrom is valid
+    if (storedGender === "male" && heightFrom && Number(heightFrom) >= Number(storedHeight)) {
+      setError("heightFrom", {
+        type: "manual",
+        message: `Height From must be less than ${storedHeight} cm.`,
+      });
+    } else {
+      clearErrors("heightFrom");
+    }
+  }, [heightFrom, storedHeight, storedGender, setError, clearErrors]);
+
+  
+
+
+
 
   const handleCheckboxChange = (updatedIds: SelectedStarIdItem[]) => {
     setSelectedStarIds(updatedIds);
@@ -447,7 +530,7 @@ const PartnerSettings: React.FC = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="w-full space-y-5 mb-5"
         >
-          <h5 className="text-[24px] font-semibold">Advanced Search</h5>
+         
 
           <div className="flex justify-between items-center">
             <div>
@@ -508,28 +591,32 @@ const PartnerSettings: React.FC = () => {
                   <InputField
                     label={""}
                     placeholder="From"
-                    {...register("heightFrom", { setValueAs: (value) => value.trim() })}
+                    {...register("heightFrom", {
+                      setValueAs: (value) => value.trim(),
+                    })}
                   />
                   {errors.heightFrom && (
-                    <span className="text-red-500">
-                      {errors.heightFrom.message}
-                    </span>
+                    <span className="text-red-500">{errors.heightFrom.message}</span>
                   )}
                 </div>
+
                 <div>
                   <InputField
                     label={""}
                     placeholder="To"
-                    {...register("heightTo", { setValueAs: (value) => value.trim() })}
+                    {...register("heightTo", {
+                      setValueAs: (value) => value.trim(),
+                    })}
                   />
                   {errors.heightTo && (
-                    <span className="text-red-500">
-                      {errors.heightTo.message}
-                    </span>
+                    <span className="text-red-500">{errors.heightTo.message}</span>
                   )}
                 </div>
               </div>
             </div>
+
+
+
           </div>
 
           {/* Marital Status */}
@@ -569,81 +656,31 @@ const PartnerSettings: React.FC = () => {
             <h5 className="text-[18px] text-primary font-semibold mb-2">
               Profession
             </h5>
-            <div className="flex justify-between items-center">
-              <div>
-                <input
-                  type="checkbox"
-                  id="employed"
-                  value="employed"
-                  checked={selectedProfessions.includes("employed")}
-                  onChange={(e) =>
-                    handleProfessionChange("employed", e.target.checked)
-                  }
-                />
-                <label htmlFor="employed" className="pl-1">
-                  Employed
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="business"
-                  value="business"
-                  checked={selectedProfessions.includes("business")}
-                  onChange={(e) =>
-                    handleProfessionChange("business", e.target.checked)
-                  }
-                />
-                <label htmlFor="business" className="pl-1">
-                  Business
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="student"
-                  value="student"
-                  checked={selectedProfessions.includes("student")}
-                  onChange={(e) =>
-                    handleProfessionChange("student", e.target.checked)
-                  }
-                />
-                <label htmlFor="student" className="pl-1">
-                  Student
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="notWorking"
-                  value="notWorking"
-                  checked={selectedProfessions.includes("notWorking")}
-                  onChange={(e) =>
-                    handleProfessionChange("notWorking", e.target.checked)
-                  }
-                />
-                <label htmlFor="notWorking" className="pl-1">
-                  Not Working
-                </label>
-              </div>
-
-              <div>
-                <input
-                  type="checkbox"
-                  id="notMentioned"
-                  value="notMentioned"
-                  checked={selectedProfessions.includes("notMentioned")}
-                  onChange={(e) =>
-                    handleProfessionChange("notMentioned", e.target.checked)
-                  }
-                />
-                <label htmlFor="notMentioned" className="pl-1">
-                  Not Mentioned
-                </label>
-              </div>
+            <div className="flex flex-wrap gap-4">
+              {ProfPref.map((option) => (
+                <div key={option.Profes_Pref_id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id={`profession-${option.Profes_Pref_id}`}
+                    value={option.Profes_Pref_id.toString()}
+                    checked={selectedProfession.includes(
+                      option.Profes_Pref_id.toString()
+                    )}
+                    onChange={(e) =>
+                      handleProfessionChange(
+                        option.Profes_Pref_id.toString(),
+                        e.target.checked
+                      )
+                    }
+                  />
+                  <label
+                    htmlFor={`profession-${option.Profes_Pref_id}`}
+                    className="pl-1"
+                  >
+                    {option.Profes_name}
+                  </label>
+                </div>
+              ))}
             </div>
             {errors.profession && (
               <span className="text-red-500">{errors.profession.message}</span>
@@ -845,7 +882,7 @@ const PartnerSettings: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               {/* Other input fields */}
               <div className="justify-start items-center gap-x-5">
-                {matchStars.length > 0 ? (
+                {
                   matchStars
                     .sort((a, b) => b[0].match_count - a[0].match_count) // Sort by match_count
                     .map((matchCountArray, index) => {
@@ -869,9 +906,7 @@ const PartnerSettings: React.FC = () => {
                         />
                       );
                     })
-                ) : (
-                  <p>No match stars available</p>
-                )}
+}
               </div>
             </form>
           </div>

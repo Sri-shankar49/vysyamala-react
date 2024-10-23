@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, SetStateAction, Dispatch } from "react";
 import { IoArrowBackOutline } from "react-icons/io5";
 import { HiOutlineSearch } from "react-icons/hi";
 import { HiMiniViewColumns } from "react-icons/hi2";
@@ -10,17 +10,31 @@ import { HiAdjustmentsVertical } from "react-icons/hi2";
 import { GridView } from "../LoginHome/MatchingProfiles/GridView";
 import { ListView } from "../LoginHome/MatchingProfiles/ListView";
 import { GridListView } from "../LoginHome/MatchingProfiles/GridListView";
-import { IoChevronBackOutline } from "react-icons/io5";
-import { IoChevronForwardOutline } from "react-icons/io5";
+
 import { SuggestedProfiles } from "../LoginHome/SuggestedProfiles";
 import { ProfileContext } from "../../ProfileContext";
+import Pagination from "../Pagination";
+import axios from "axios";
 
 interface SearchResultsProps {
   onSearchAgain: () => void; // Call back function to trigger search again when user clicks on search again button
+  calculatedPerPage: number;
+  totalPages: number;
+  setPageNo: Dispatch<SetStateAction<number>>;
+  pageNo: number;
+  error: boolean;
+  totalCount: number;
+  responseMsg: string;
 }
 
 export const SearchResults: React.FC<SearchResultsProps> = ({
   onSearchAgain,
+  calculatedPerPage,
+  totalPages,
+  setPageNo,
+  pageNo,
+  error,
+  responseMsg,
 }) => {
   // View state changed
   const [currentView, setCurrentView] = useState("gridlist");
@@ -31,35 +45,93 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
     throw new Error("MyComponent must be used within a ProfileProvider");
   }
 
-  const { setPageNumber, perPage, totalCount, pageNumber } = context;
+  const {
+    totalCount,
+    setFromAge,
+    setToAge,
+    setFromHeight,
+    setToHeight,
+    setWorkLocation,
+    setAdvanceSelectedProfessions,
+    Set_Maritial_Status,
+    setAdvanceSelectedEducation,
+    setAdvanceSearchData,
+    setSelectedIncomes,
+    setChevvai_dhosam,
+    setRehuDhosam,
+    setAdvanceSelectedBirthStar,
+    setNativeState,
+    setPeopleOnlyWithPhoto,
+    advanceSearchData,
+  } = context;
 
-  const noOfPages = Math.ceil(totalCount / perPage);
+  // const noOfPages = Math.ceil(totalCount / perPage);
 
-  const handlePrevious = () => {
-    setPageNumber((prev) => Math.max(prev - 1, 1));
+  // const handlePrevious = () => {
+  //   setPageNumber((prev) => Math.max(prev - 1, 1));
+  // };
+
+  // const handleNext = () => {
+  //   setPageNumber((prev) => Math.min(prev + 1, noOfPages));
+  // };
+
+  const searchAgain = () => {
+    setFromAge(0);
+    setToAge(0);
+    setFromHeight(0);
+    setToHeight(0);
+    setWorkLocation("");
+    setAdvanceSelectedProfessions([]);
+    Set_Maritial_Status([]);
+    setAdvanceSelectedEducation("");
+    setSelectedIncomes("");
+    setChevvai_dhosam("no");
+    setRehuDhosam("no");
+    setAdvanceSelectedBirthStar("");
+    setNativeState([]);
+    setPeopleOnlyWithPhoto(0);
+    setAdvanceSearchData([]);
+    onSearchAgain();
   };
-
-  const handleNext = () => {
-    setPageNumber((prev) => Math.min(prev + 1, noOfPages));
+  const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
+  const [searchProfile, setSearchProfile] = useState<string>("");
+  const HandlesearchProfile = async () => {
+    try {
+      const response = await axios.post(
+        "http://103.214.132.20:8000/auth/Search_byprofile_id/",
+        {
+          profile_id: loginuser_profileId,
+          search_profile_id: searchProfile,
+        }
+      );
+      if (response.status == 200) {
+        console.log(response.data.data);
+        setAdvanceSearchData(response.data.data);
+        // setAdvanceSearchData()
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
-
+  console.log(advanceSearchData, "advanceSearchData");
   return (
     <div>
       <div className="container mx-auto py-10">
         <div className="flex items-center mb-5">
           <IoArrowBackOutline
             className="text-[24px] mr-2 cursor-pointer"
-            onClick={onSearchAgain}
+            onClick={searchAgain}
           />
           <h4 className="text-[24px] text-vysyamalaBlackSecondary font-bold">
             {" "}
             Search results
-            <span className="text-sm text-primary"> (234)</span>
+            <span className="text-sm text-primary"> ({totalCount})</span>
           </h4>
         </div>
 
         <div className="relative flex justify-center items-center bg-white rounded-lg p-1.5 shadow-md">
           <input
+            onChange={(e) => setSearchProfile(e.target.value)}
             type="text"
             name=""
             id=""
@@ -68,7 +140,10 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
           />
           <HiOutlineSearch className="absolute left-3 top-5 text-[22px] text-ashSecondary" />
 
-          <button className="w-[200px] bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3">
+          <button
+            onClick={HandlesearchProfile}
+            className="w-[200px] bg-gradient text-white rounded-r-[6px] font-semibold px-8 py-3"
+          >
             Find Match
           </button>
         </div>
@@ -129,120 +204,59 @@ export const SearchResults: React.FC<SearchResultsProps> = ({
             <p className="text-vysyamalaBlack font-semibold">Advanced Filter</p>
           </div>
         </div>
-
-        <div>
-          {/* Conditionally render views based on currentView state */}
-          {currentView === "gridlist" && (
-            <GridListView
-              profile_name={""}
-              profile_id={undefined}
-              profile_age={undefined}
-              height={undefined}
-              searchResult={undefined}
-            />
-          )}
-          {currentView === "list" && (
-            <ListView
-              profile_name={""}
-              profile_id={undefined}
-              profile_age={undefined}
-              height={undefined}
-              // searchResult={undefined}
-            />
-          )}
-          {currentView === "grid" && (
-            <GridView
-              profile_name={""}
-              profile_id={undefined}
-              profile_age={undefined}
-              height={undefined}
-              searchResult={undefined}
-            />
-          )}
-        </div>
+        {!error &&
+        ((advanceSearchData && advanceSearchData.length >= 1) ||
+          responseMsg !== "At least one search criterion must be provided.") ? (
+          <div>
+            {/* Conditionally render views based on currentView state */}
+            {currentView === "gridlist" && (
+              <GridListView
+                profile_name={""}
+                profile_id={undefined}
+                profile_age={undefined}
+                height={undefined}
+                searchResult={undefined}
+                searchvalues={undefined}
+              />
+            )}
+            {currentView === "list" && (
+              <ListView
+                profile_name={""}
+                profile_id={undefined}
+                profile_age={undefined}
+                height={undefined}
+                star={undefined}
+                matching_score={undefined}
+                searchvalues={undefined} // searchResult={undefined}
+              />
+            )}
+            {currentView === "grid" && (
+              <GridView
+                profile_name={""}
+                profile_id={undefined}
+                profile_age={undefined}
+                height={undefined}
+                searchResult={undefined}
+                searchvalues={undefined}
+              />
+            )}
+          </div>
+        ) : (
+          <p>No Records Found</p>
+        )}
 
         {/* Pagination */}
-        <div className="flex items-center justify-between border-t border-gray  px-4 py-3 sm:px-6">
-          <div className="flex flex-1 justify-between sm:hidden">
-            <a
-              href="#"
-              className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Previous
-            </a>
-            <a
-              href="#"
-              className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-            >
-              Next
-            </a>
-          </div>
-          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-primary">
-                Showing{" "}
-                <span className="font-medium">
-                  {(pageNumber - 1) * perPage + 1}
-                </span>{" "}
-                to{" "}
-                <span className="font-medium">
-                  {Math.min(pageNumber * perPage, totalCount)}
-                </span>{" "}
-                of <span className="font-medium">{totalCount}</span> results
-              </p>
-            </div>
-            <div>
-              <nav
-                className="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                aria-label="Pagination"
-              >
-                <button
-                  onClick={handlePrevious}
-                  disabled={pageNumber === 1} // Disable if on the first page
-                  className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
-                    pageNumber === 1 ? "cursor-not-allowed" : ""
-                  }`}
-                >
-                  <span className="sr-only">Previous</span>
-                  <IoChevronBackOutline
-                    className="h-5 w-5 text-primary"
-                    aria-hidden="true"
-                  />
-                </button>
-                {/* Current: "z-10 bg-indigo-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" */}
-
-                {/* {/ Generate Page Numbers Dynamically /} */}
-                {[...Array(noOfPages)].map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setPageNumber(index + 1)}
-                    className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                      pageNumber === index + 1
-                        ? "bg-secondary text-white"
-                        : "text-primary hover:bg-gray-50"
-                    }`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-
-                <button
-                  onClick={handleNext}
-                  disabled={pageNumber === noOfPages} // Disable if on the last page
-                  className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
-                    pageNumber === noOfPages ? "cursor-not-allowed" : ""
-                  }`}
-                >
-                  <span className="sr-only">Next</span>
-                  <IoChevronForwardOutline
-                    className="h-5 w-5 text-primary"
-                    aria-hidden="true"
-                  />
-                </button>
-              </nav>
-            </div>
-          </div>
-        </div>
+        {error === false &&
+          advanceSearchData &&
+          advanceSearchData.length > 1 && (
+            <Pagination
+              toptalPages={totalPages}
+              dataPerPage={calculatedPerPage}
+              totalRecords={totalCount}
+              setPageNumber={setPageNo}
+              pageNumber={pageNo}
+            />
+          )}
       </div>
       <SuggestedProfiles />
     </div>

@@ -4,6 +4,7 @@ export default {
   theme: {
     extend: {
       backgroundImage: {
+        happyStorybglayer:"radial-gradient(#111 50%, #000 100%)",
         gradient:
           "linear-gradient(to right, #bd1225, #cd1f2f, #de2b3a, #ee3645, #ff4050)",
         gradientLight:
@@ -12,6 +13,7 @@ export default {
         heroSliderBgImg: "url('assets/images/HeroSliderBg.png')",
         gradientGold: "linear-gradient(to right, #d79d32, #dfa22d, #e6a727, #eeac20, #f5b117, #f8b71d, #fbbd23, #fec328, #fdcb3a, #fdd249, #fdda58, #fde166)",
         gradientGreen: "linear-gradient(to right, #2fbd12, #3ccd1f, #48de2b, #54ee36, #60ff40)",
+        gradientBlack: "background: linear-gradient(179.86deg, rgba(0, 0, 0, 0) 52.14%, #000000 99.88%)"
       },
 
       colors: {
@@ -42,6 +44,7 @@ export default {
         "light-pink": "#FFE5E5",
         "lightFade-pink": "#FFF5F5",
         "shadowPink": "#C243434B",
+        "trustedWhite" : "#f9f9f9",
       },
       fontFamily: {
         inter: ["Inter", "sans-serif"],
@@ -49,6 +52,10 @@ export default {
       container: {
         center: true,
       },
+      boxShadow: {
+        'reviewBoxShadow': '0px 0px 15px rgba(18, 17, 9, 0.05)',
+        'trustedBoxShadow': '0px 20px 50px rgba(18, 17, 9, 0.01)',
+      }
     },
   },
   plugins: [],

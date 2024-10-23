@@ -67,7 +67,7 @@ export const PhoneLoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onClose, on
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <div>
-                <p className="text-[16px] text-primary">Welcome Back</p>
+                <p className="text-[16px] text-primary max-md:text-[20px]">Welcome Back</p>
                 <h5 className="text-[24px] text-primary font-semibold mb-5">Login to your account</h5>
             </div>
 
@@ -87,9 +87,9 @@ export const PhoneLoginPopup: React.FC<LoginPopUpProps> = ({ onNext, onClose, on
                 <FaArrowRightLong className="text-white text-[22px]" />
             </button>
 
-            <p className="text-ash font-semibold text-center my-5">or</p>
+            <p className="text-ash font-semibold text-center my-5 max-md:my-2">or</p>
 
-            <button onClick={onProfileIdLogin} className="w-full py-[10px] px-[24px] bg-white text-main font-semibold border-2 rounded-[6px] mt-2">
+            <button onClick={onProfileIdLogin} className="w-full py-[10px] px-[24px] bg-white text-main font-semibold border-2 rounded-[6px] mt-2 ">
                 Login with Profile ID
             </button>
 

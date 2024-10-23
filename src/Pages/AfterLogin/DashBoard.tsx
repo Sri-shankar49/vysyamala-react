@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { DashBoardGrid } from "../../Components/DashBoard/DashBoardGrid";
 import { DashBoardMutualInterest } from "../../Components/DashBoard/DashBoardMutualInterest";
 import { DashBoardWishlist } from "../../Components/DashBoard/DashBoardWishlist";
@@ -11,6 +11,8 @@ import { MyVisitors } from "../../Components/DashBoard/MyVisitors";
 import { PersonalNotes } from "../../Components/DashBoard/PersonalNotes";
 import PhotoRequest from "../../Components/DashBoard/PhotoRequest";
 import { VysAssist } from "../../Components/DashBoard/VysAssist";
+import Gallary from "../../Components/DashBoard/Gallary";
+import { ProfileContext } from "../../ProfileContext";
 
 
 
@@ -30,10 +32,58 @@ export const DashBoard = () => {
   const [showVysAssist, setShowVysAssist] = useState(false);
   const [showOtherSettings, setShowOtherSettings] = useState(false);
   const [showPhotoRequest, setShowPhotoRequest] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
 
   useEffect(() => {
     sessionStorage.removeItem('searchvalue');
   }, []);
+
+
+  const context = useContext(ProfileContext);
+
+  if (!context) {
+    throw new Error("MyComponent must be used within a ProfileProvider");
+  }
+
+  const {
+    setFromAge,
+    setToAge,
+    setFromHeight,
+    setToHeight,
+    setWorkLocation,
+    setAdvanceSelectedProfessions,
+    Set_Maritial_Status,
+    setAdvanceSelectedEducation,
+
+    setSelectedIncomes,
+    setChevvai_dhosam,
+    setRehuDhosam,
+    setAdvanceSelectedBirthStar,
+    setNativeState,
+    setPeopleOnlyWithPhoto,
+    setAdvanceSearchData
+  } = context;
+
+  useEffect(() => {
+    setFromAge(0);
+    setToAge(0);
+    setFromHeight(0);
+    setToHeight(0);
+    setWorkLocation("");
+    setAdvanceSelectedProfessions([]);
+    Set_Maritial_Status([]);
+    setAdvanceSelectedEducation("");
+    setSelectedIncomes("");
+    setChevvai_dhosam("no");
+    setRehuDhosam("no");
+    setAdvanceSelectedBirthStar("");
+    setNativeState([]);
+    setPeopleOnlyWithPhoto(0);
+    setAdvanceSearchData([]);
+  }, []);
+
+
+
 
 
   return (
@@ -68,7 +118,8 @@ export const DashBoard = () => {
         <VysAssist dashBoardAgain={() => setShowVysAssist(false)} />
       ) : showOtherSettings ? (
         <OtherSettings dashBoardAgain={() => setShowOtherSettings(false)} />
-      ) : (
+      ) : showGallery ? (
+        <Gallary dashBoardAgain={() => setShowGallery(false)} />) : (
         <DashBoardGrid
           onDashBoardMutualInterest={() =>
             setShowDashBoardMutualInterest(true)
@@ -84,6 +135,7 @@ export const DashBoard = () => {
           onInterestSent={() => setShowInterestSent(true)}
           onMyVisitors={() => setShowMyVisitors(true)}
           onPhotoRequest={() => setShowPhotoRequest(true)}
+          onGallery={() => setShowGallery(true)}
           // Optional Cards
           onPersonalNotes={() => setShowPersonalNotes(true)}
           onVysAssist={() => setShowVysAssist(true)}

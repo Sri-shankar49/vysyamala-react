@@ -11,8 +11,8 @@ export const WhyReasons: React.FC<WhyReasonsProps> = ({ icon, heading, desc }) =
                 <div className="mb-3">
                     <img src={icon} alt="Wide profile coverage" />
                 </div>
-                <h5 className="text-lg text-ash font-semibold mb-3">{heading}</h5>
-                <p className="text-ash">{desc}</p>
+                <h5 className="text-lg text-ash font-bold mb-3">{heading}</h5>
+                <p className="text-ash text-[18px] font-base">{desc}</p>
             </div>
         </div>
     )

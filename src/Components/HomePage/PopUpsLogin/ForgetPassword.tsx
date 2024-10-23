@@ -37,7 +37,7 @@ export const ForgetPassword: React.FC<ForgetPasswordProps> = ({ onBackToLogin, o
     return (
         <form onSubmit={handleSubmit(handleFormSubmit)}>
             <div>
-                <h5 className="text-[24px] text-primary font-semibold">Forget Password</h5>
+                <h5 className="text-[24px] text-primary font-semibold max-md:text-[20px]">Forget Password</h5>
                 <p className="text-[16px] text-primary mb-5">Please enter your registered email ID and Vysyamala User ID</p>
             </div>
 

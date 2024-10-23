@@ -2,6 +2,8 @@ import arrowRed from "../assets/icons/arrowred.png";
 import { PlanCard } from "../Components/MembershipPlan/PlanCard";
 import { useState, useEffect } from "react";
 import apiClient from "../API";
+import { useNavigate } from "react-router-dom";
+
 
 export const MembershipPlan: React.FC = () => {
   const [plans, setPlans] = useState<any[]>([]); // State to hold plans data
@@ -28,13 +30,29 @@ export const MembershipPlan: React.FC = () => {
 
     fetchPlans(); // Call the async function
   }, []);
+  const navigate = useNavigate();
+
+
+  const handleSkipClick = () => {
+    navigate("/ThankYouReg");
+  };
 
   return (
     <div className="container mx-auto">
       <div className="flex justify-between items-center">
         <h5 className="text-[36px] text-ash font-bold">Membership Plans</h5>
 
-        <button className="flex items-center py-[10px] px-14 bg-white text-main font-semibold mt-2">Skip for Free
+        {/* <button className="flex items-center py-[10px] px-14 bg-white text-main font-semibold mt-2">Skip for Free
+          <span>
+            <img src={arrowRed} alt="next arrow" className="ml-2" />
+          </span>
+        </button> */}
+
+        <button
+          className="flex items-center py-[10px] px-14 bg-white text-main font-semibold mt-2"
+          onClick={handleSkipClick}
+        >
+          Skip for Free
           <span>
             <img src={arrowRed} alt="next arrow" className="ml-2" />
           </span>

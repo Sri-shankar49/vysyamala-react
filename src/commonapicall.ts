@@ -69,17 +69,19 @@ export const photo_protection =
 export const Get_advance_search =
   "http://103.214.132.20:8000/auth/Get_advance_search/";
 
-export const fetchSearchProfiles = async (searchId: string,profession: string,age:string,location:string,pageNo:number): Promise<any> => {
+export const fetchSearchProfiles = async (searchId: string,profession: string,age:string,location:string,pageNo:number,sortOrder:number): Promise<any> => {
   try {
     const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
 
-    const response = await apiClient.post("/auth/Get_prof_list_match/", {
+    const response = await axios.post("http://103.214.132.20:8000/auth/Get_prof_list_match/", {
       profile_id: loginuser_profileId,
       search_profile_id: searchId, // Adjust as needed based on your API requirements
       search_profession:profession,
       search_age:age,
       search_location:location,
       page_number: pageNo,
+      per_page:20,
+      order_by:sortOrder
     });
 
     // if (response.data.Status !== 1) {
@@ -122,3 +124,68 @@ export const fetchFooterContent = async (pageId?: string) => {
     throw new Error("Unable to fetch FooterContent response. Please try again later.");
   }
 }
+
+export const getGallerylists = async (pageNumber:number) => {
+  const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
+
+  try {
+    const response = await axios.post(
+      "http://103.214.132.20:8000/auth/Get_Gallery_lists/",
+      {
+        profile_id: loginuser_profileId,
+        page_number:pageNumber,
+        
+      }
+    );
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+
+export const justRegistered = async () => {
+  try {
+    const response = await axios.post(
+      "http://103.214.132.20:8000/auth/Just_registered/"
+    );
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const GetProfession = async () => {
+  try {
+    const response = await axios.post(
+      "http://103.214.132.20:8000/auth/Get_profession/"
+    );
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const GetState = async () => {
+  try {
+    const response = await axios.post(
+      "http://103.214.132.20:8000/auth/Get_State_Pref/",
+      {}
+    );
+
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const searchBeforeLoging = async () => {
+  try {
+    const response = await axios.post(
+      "http://103.214.132.20:8000/auth/Searchbeforelogin/"
+    );
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+};

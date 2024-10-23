@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { MdModeEdit } from "react-icons/md";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 
 // Define the interface for education and profession details
 interface EducationProfessionDetails {
@@ -54,6 +55,7 @@ export const EducationProfession = () => {
     const [selectedWorkCountryId, setSelectedWorkCountryId] = useState<number | string>('');
     const [states, setStates] = useState<State[]>([]);
     const [selectedWorkStateId, setSelectedWorkStateId] = useState<number | string>('');
+    const [refreshData, setRefreshData] = useState(false);
 
     useEffect(() => {
         const fetchEducationProfessionDetails = async () => {
@@ -84,7 +86,7 @@ export const EducationProfession = () => {
         };
 
         fetchEducationProfessionDetails();
-    }, [loginuser_profileId, annualIncomes, educations]);
+    }, [loginuser_profileId, annualIncomes, educations, refreshData]);
 
     useEffect(() => {
         const fetchAnnualIncomes = async () => {
@@ -211,6 +213,24 @@ export const EducationProfession = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+         // Form validation
+    if (
+        !selectedEducationId ||
+        //!formData.personal_edu_details ||
+        !formData.personal_about_edu ||
+        !formData.personal_profession ||
+        !selectedIncomeId ||
+        !formData.personal_gross_ann_inc ||
+        !selectedWorkCountryId ||
+        !selectedWorkStateId ||
+        !formData.personal_work_pin ||
+        !formData.personal_career_plans
+    ) {
+        toast.error("Please fill all fields correctly.");
+        return;
+    }
+
         try {
             const response = await axios.post("http://103.214.132.20:8000/auth/update_myprofile_education/", {
                 profile_id: loginuser_profileId,
@@ -226,8 +246,9 @@ export const EducationProfession = () => {
                 career_plans: formData.personal_career_plans,
             });
             if (response.data.status === "success") {
-                alert(response.data.message);
-                window.location.reload(); // Reload the page
+                toast.success(response.data.message);
+                // window.location.reload(); // Reload the page
+                setRefreshData(prev => !prev); // Trigger re-fetch of data
                 setEducationProfessionDetails(prevState => ({
                     ...prevState!,
                     ...formData
@@ -235,7 +256,8 @@ export const EducationProfession = () => {
                 setIsEditing(false);
             }
         } catch (error) {
-            console.error("Error updating education and profession details:", error);
+            console.error("Error updating  details:", error);
+            toast.error("Failed to update education and professional details. Please try again.");
         }
     };
 
@@ -245,14 +267,14 @@ export const EducationProfession = () => {
 
     return (
         <div>
-            <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5">
+            <h2 className="flex items-center text-[30px] text-vysyamalaBlack font-bold mb-5 max-lg:text-[28px] max-md:text-[26px] max-sm:text-[22px]">
                 Education & Profession Details
                 <MdModeEdit className="text-2xl text-main ml-2 cursor-pointer" onClick={handleEditClick} />
             </h2>
 
             {isEditing ? (
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-0">
                         <div>
                             <label className="block mb-2 text-[20px] text-ash font-semibold">
                                 Education Level:
@@ -322,7 +344,13 @@ export const EducationProfession = () => {
                                     type="text"
                                     name="personal_gross_ann_inc"
                                     value={formData.personal_gross_ann_inc || ""}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                          // Allow only numeric values
+                                           if (/^\d*$/.test(value)) {
+                                          handleInputChange(e); // Call your input change handler
+                                        }
+                                      }}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             </label>
@@ -367,7 +395,13 @@ export const EducationProfession = () => {
                                     type="text"
                                     name="personal_work_pin"
                                     value={formData.personal_work_pin || ""}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                          // Allow only numeric values
+                                           if (/^\d{0,6}$/.test(value)) {
+                                          handleInputChange(e); // Call your input change handler
+                                        }
+                                      }}
                                     className="font-normal border rounded px-3 py-2 w-full focus:outline-none focus:border-blue-500"
                                 />
                             </label>
@@ -384,7 +418,7 @@ export const EducationProfession = () => {
                     </div>
 
                     {isEditing && (
-                        <div className="flex justify-end items-center space-x-5">
+                        <div className="flex justify-end items-center space-x-5 max-sm:flex-col">
                             <button
                                 type="button"
                                 onClick={handleEditClick1}
@@ -403,7 +437,7 @@ export const EducationProfession = () => {
                 </form>
             ) : (
                 <div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1 max-sm:gap-0">
                         <div>
                             <h5 className="text-[20px] text-ash font-semibold mb-2">Education Level:
                                 <span className="font-normal">{educationProfessionDetails.personal_edu_name}</span>

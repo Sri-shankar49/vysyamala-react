@@ -255,7 +255,7 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
           )}
         </div>
 
-        <div>
+        {/* <div>
           <select
             id="maritalStatus"
             className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
@@ -273,7 +273,37 @@ export const BasicDetails: React.FC<BasicDetailsProps> = ({ onClose }) => {
           {errors.maritalStatus && (
             <span className="text-red-500">{errors.maritalStatus.message}</span>
           )}
+        </div> */}
+
+
+        <div>
+          <select
+            id="maritalStatus"
+            className={`text-ash font-medium block w-full px-3 py-2 border-[1px] border-footer-text-gray rounded-[4px] focus-visible:outline-none`}
+            {...register("maritalStatus")}
+            onChange={(e) => {
+              const selectedValue = e.target.value;
+              // Store selected value in sessionStorage
+              sessionStorage.setItem("maritalStatus", selectedValue);
+            }}
+          >
+            <option value="" selected disabled>
+              Select your Marital Status
+            </option>
+            {maritalStatusOptions.map((option) => (
+              <option key={option.marital_sts_id} value={option.marital_sts_id}>
+                {option.marital_sts_name}
+              </option>
+            ))}
+          </select>
+          {errors.maritalStatus && (
+            <span className="text-red-500">{errors.maritalStatus.message}</span>
+          )}
         </div>
+
+
+
+
 
         <div>
           <input

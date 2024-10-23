@@ -1,4 +1,11 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import MainLayout from "./Layout/MainLayout";
 import LoginLayout from "./Layout/LoginLayout";
 
@@ -25,8 +32,8 @@ import { MyProfile } from "./Pages/AfterLogin/MyProfile";
 import { ProfileDetails } from "./Pages/AfterLogin/ProfileDetails";
 import { ProfileProvider } from "./ProfileContext";
 import ProfileGrid from "./Components/LoginHome/MatchingProfiles/GridView";
-import ListView from "./Components/LoginHome/MatchingProfiles/ListView"; // Import ListView
-import GridListView from "./Components/LoginHome/MatchingProfiles/GridListView"; // Import GridListView
+import ListView from "./Components/LoginHome/MatchingProfiles/ListView";
+import GridListView from "./Components/LoginHome/MatchingProfiles/GridListView";
 import ProtectedRoute from "./Components/ProtectorRoute";
 import RegistrationProtectedRoute from "./Components/RegistrationProtectedRoute";
 import { UpgradePlan } from "./Pages/AfterLogin/UpgradePlan";
@@ -34,111 +41,148 @@ import { UpgradePayNow } from "./Pages/AfterLogin/UpgradePayNow";
 import { UpgradeThankYouReg } from "./Pages/AfterLogin/UpgradeThankYouReg";
 import { ViewAllSuggestedProfiles } from "./Components/LoginHome/ViewAllSuggestedProfiles";
 import { ViewAllFeaturedProfiles } from "./Components/LoginHome/ViewAllFeaturedProfiles";
+import { FeaturedBrideCard } from "./Components/FeaturedBride/FeaturedBrideCard";
+import { FeaturedGroomCard } from "./Components/FeaturedGroom/FeaturedGroomCard";
+import { FindSomeOneSpecial } from "./Components/SomeOneSpecial/FindSomeOneSpecial";
+// import {ProfileNotFound} from "./Components/LoginHome/ProfileNotFound";
+
+
+// Define prop types for AppContent
+interface AppContentProps {
+  token: string | null;
+}
 
 function App() {
   const token = sessionStorage.getItem("token");
-  console.log("Current token:", token); // Log token value for debugging
- 
-  sessionStorage.removeItem('searchvalue');
-
 
   return (
     <ProfileProvider>
       <BrowserRouter>
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route
-              path="/"
-              element={
-                token ? <Navigate to="/LoginHome" replace /> : <HomePage />
-              }
-            />
-
-            <Route element={<RegistrationProtectedRoute redirectTo="/" />}>
-              <Route path="/ContactDetails" element={<ContactDetails />} />
-              <Route path="/UploadImages" element={<UploadImages />} />
-              <Route path="/FamilyDetails" element={<FamilyDetails />} />
-              <Route path="/EduDetails" element={<EduDetails />} />
-              <Route path="/HoroDetails" element={<HoroDetails />} />
-              <Route path="/PartnerSettings" element={<PartnerSettings />} />
-              <Route path="/MembershipPlan" element={<MembershipPlan />} />
-              <Route path="/PayNow" element={<PayNow />} />
-              <Route path="/ThankYou" element={<ThankYou />} />
-              <Route path="/ThankYouReg" element={<ThankYouReg />} />
-            </Route>
-
-            <Route path="/FooterPages" element={<FooterPages />} />
-          </Route>
-
-          <Route element={<ProtectedRoute redirectTo="/" />}>
-            <Route element={<LoginLayout />}>
-              <Route path="/LoginHome" element={<LoginHome />} />
-              <Route path="/Search" element={<Search />} />
-              <Route path="/DashBoard" element={<DashBoard />} />
-              <Route path="/Wishlist" element={<Wishlist />} />
-              <Route path="/Messages" element={<Messages />} />
-              <Route path="/Notifications" element={<Notifications />} />
-              <Route path="/MyProfile" element={<MyProfile />} />
-              <Route path="/ProfileDetails" element={<ProfileDetails />} />
-              <Route
-                path="/ProfileGrid"
-                element={
-                  <ProfileGrid
-                    profile_name={""}
-                    profile_id={undefined}
-                    profile_age={undefined}
-                    height={undefined}
-                    searchResult={undefined}
-                  />
-                }
-              />
-              <Route
-                path="/ListView"
-                element={
-                  <ListView
-                    profile_name={""}
-                    profile_id={undefined}
-                    profile_age={undefined}
-                    height={undefined}
-                  />
-                }
-              />
-              <Route
-                path="/GridListView"
-                element={
-                  <GridListView
-                    profile_name={""}
-                    profile_id={undefined}
-                    profile_age={undefined}
-                    height={undefined}
-                    searchResult={undefined}
-                  />
-                }
-              />
-              <Route path="/UpgradePlan" element={<UpgradePlan />} />
-              <Route path="/UpgradePayNow" element={<UpgradePayNow />} />
-              <Route
-                path="/UpgradeThankYouReg"
-                element={<UpgradeThankYouReg />}
-              />
-              <Route
-                path="/ViewAllSuggestedProfiles"
-                element={<ViewAllSuggestedProfiles />}
-              />
-              <Route
-                path="/ViewAllFeaturedProfiles"
-                element={<ViewAllFeaturedProfiles />}
-              />
-            </Route>
-          </Route>
-
-          <Route
-            path="*"
-            element={<Navigate to={token ? "/LoginHome" : "/"} replace />}
-          />
-        </Routes>
+        <AppContent token={token} />
       </BrowserRouter>
     </ProfileProvider>
+  );
+}
+
+function AppContent({ token }: AppContentProps) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log("Current token:", token);
+    sessionStorage.removeItem("searchvalue");
+
+    const handlePopState = () => {
+      const currentToken = sessionStorage.getItem("token");
+      if (currentToken) {
+        navigate("/LoginHome");
+      } else {
+        navigate("/");
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [token, navigate]);
+
+  return (
+    <Routes>
+      <Route element={<MainLayout />}>
+        <Route
+          path="/"
+          element={token ? <Navigate to="/LoginHome" replace /> : <HomePage />}
+        />
+
+        <Route element={<RegistrationProtectedRoute redirectTo="/" />}>
+          <Route path="/ContactDetails" element={<ContactDetails />} />
+          <Route path="/UploadImages" element={<UploadImages />} />
+          <Route path="/FamilyDetails" element={<FamilyDetails />} />
+          <Route path="/EduDetails" element={<EduDetails />} />
+          <Route path="/HoroDetails" element={<HoroDetails />} />
+          <Route path="/PartnerSettings" element={<PartnerSettings />} />
+          <Route path="/MembershipPlan" element={<MembershipPlan />} />
+          <Route path="/PayNow" element={<PayNow />} />
+          <Route path="/ThankYou" element={<ThankYou />} />
+          <Route path="/ThankYouReg" element={<ThankYouReg />} />
+        </Route>
+
+        <Route path="/FooterPages" element={<FooterPages />} />
+        <Route path="/FeaturedBrideCard" element={<FeaturedBrideCard />} />
+        <Route path="/FeaturedGroomCard" element={<FeaturedGroomCard />} />
+        <Route path="/FindSomeOneSpecial" element={<FindSomeOneSpecial />} />
+      </Route>
+
+      <Route element={<ProtectedRoute redirectTo="/" />}>
+        <Route element={<LoginLayout />}>
+          <Route path="/LoginHome" element={<LoginHome />} />
+          <Route path="/Search" element={<Search />} />
+          <Route path="/DashBoard" element={<DashBoard />} />
+          <Route path="/Wishlist" element={<Wishlist />} />
+          <Route path="/Messages" element={<Messages />} />
+          <Route path="/Notifications" element={<Notifications />} />
+          <Route path="/MyProfile" element={<MyProfile />} />
+          <Route path="/ProfileDetails" element={<ProfileDetails />} />
+          <Route
+            path="/ProfileGrid"
+            element={
+              <ProfileGrid
+                profile_name={""}
+                profile_id={undefined}
+                profile_age={undefined}
+                height={undefined}
+                searchResult={undefined}
+                searchvalues={undefined}
+              />
+            }
+          />
+          <Route
+            path="/ListView"
+            element={
+              <ListView
+                profile_name={""}
+                profile_id={undefined}
+                profile_age={undefined}
+                height={undefined}
+                star={undefined}
+                matching_score={undefined}
+                searchvalues={undefined}
+              />
+            }
+          />
+          <Route
+            path="/GridListView"
+            element={
+              <GridListView
+                profile_name={""}
+                profile_id={undefined}
+                profile_age={undefined}
+                height={undefined}
+                searchResult={undefined}
+                searchvalues={undefined}
+              />
+            }
+          />
+          <Route path="/UpgradePlan" element={<UpgradePlan />} />
+          <Route path="/UpgradePayNow" element={<UpgradePayNow />} />
+          <Route path="/UpgradeThankYouReg" element={<UpgradeThankYouReg />} />
+          <Route
+            path="/ViewAllSuggestedProfiles"
+            element={<ViewAllSuggestedProfiles />}
+          />
+          <Route
+            path="/ViewAllFeaturedProfiles"
+            element={<ViewAllFeaturedProfiles />}
+          />
+        </Route>
+      </Route>
+
+      <Route
+        path="*"
+        element={<Navigate to={token ? "/LoginHome" : "/"} replace />}
+      />
+    </Routes>
   );
 }
 

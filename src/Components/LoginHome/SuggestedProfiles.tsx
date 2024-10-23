@@ -197,17 +197,17 @@ export const SuggestedProfiles: React.FC = () => {
     navigate('/ViewAllSuggestedProfiles'); // Replace with your target path
   };
   return (
-    <div className="bg-vysyamalaSandal py-5">
-    <div className="container mx-auto my-10">
+    <div className="bg-vysyamalaSandal overflow-hidden py-5 px-5 max-xl:py-4 max-lg:py-3">
+    <div className="container mx-auto my-10 max-lg:my-8 max-md:my-6">
       <div className="flex justify-between items-center">
         <div>
-          <h4 className="text-[24px] text-vysyamalaBlack font-bold">
+          <h4 className="text-[24px] text-vysyamalaBlack font-bold  max-xl:text-[22px] max-lg:text-[20px] max-md:text-[18px]">
             Suggested Profiles{" "}
             <span className="text-sm text-primary font-bold">({totalCount})</span>
           </h4>
         </div>
         <div>
-          <button className="flex items-center text-sm text-secondary font-semibold"
+          <button className="flex items-center text-sm text-secondary font-semibold max-md:text-[14px]"
            onClick={handleNavigate}
           >
             View All <IoChevronForwardOutline className="ml-2" />
@@ -216,7 +216,7 @@ export const SuggestedProfiles: React.FC = () => {
       </div>
 
         {/* Suggested Profile Slick */}
-        <div  className="slider-container suggestedStyle">
+        <div  className="slider-container suggestedStyle" >
           <Slider {...settings}>
             {profiles.map((profile) => (
               <SuggestedCard

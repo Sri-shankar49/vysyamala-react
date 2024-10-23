@@ -29,6 +29,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import { PhotoRequestPopup } from "./PhotoRequestPopup";
 import Spinner from "../../Spinner";
+import { useNavigate } from "react-router-dom";
 
 interface PhotoRequestData {
   req_Profile_img: string;
@@ -38,7 +39,17 @@ interface PhotoRequestData {
   req_status: number;
   response_message: string | null;
   req_verified: number;
+  req_height:number;
+  req_star:string;
+  req_profession:string;
+  req_city:string;
+  req_degree:string;
   req_match_score?: number;
+  req_views:number;
+  req_lastvisit:string;
+  req_userstatus:string;
+  req_horoscope:string;
+  req_profile_wishlist:string;
 }
 
 interface proptype {
@@ -57,6 +68,7 @@ const PhotoRequestCard = ({
 
   data,
 }: proptype) => {
+  const navigate = useNavigate();
   const [photoRequests, setPhotoRequests] = useState<PhotoRequestData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -202,6 +214,11 @@ const PhotoRequestCard = ({
   if (loading) return <Spinner />;
   if (error) return <div>{error}</div>;
 
+
+
+  const handleProfileClick = (profileId: string) => {
+    navigate(`/ProfileDetails?id=${profileId}&page=6`);
+  };
   return (
     <div>
       <ToastNotification />
@@ -246,9 +263,9 @@ const PhotoRequestCard = ({
                     <div className="flex items-center">
                       <h5
                         className="text-[20px] text-secondary font-semibold cursor-pointer"
-                      // onClick={() => handleProfileClick(profile.visited_profileid)}
+                      onClick={() => handleProfileClick(data.req_profileid)}
                       >
-                        {data.req_profile_name}{" "}
+                        {data.req_profile_name}
                         <span className="text-sm text-ashSecondary">
                           ({data.req_profileid})
                         </span>
@@ -267,62 +284,60 @@ const PhotoRequestCard = ({
                     <p className="text-gray font-semibold">|</p>
                     <p className="flex items-center text-ashSecondary font-semibold">
                       <FaPersonArrowUpFromLine className="mr-2" />
-                      5ft 10in (177 cms)
+                      {data.req_height} ft
                     </p>
                   </div>
 
                   <div className="mb-2">
                     <p className="flex items-center text-ashSecondary font-semibold">
                       <MdStars className="mr-2" />
-                      Uthiram
+                      {data.req_star}
                     </p>
                   </div>
 
                   <div className="mb-2">
                     <p className="flex items-center text-ashSecondary font-semibold">
                       <IoSchool className="mr-2" />
-                      Bachelors - Arts/Science/Commerce/B Phil
+                      {data.req_degree}
                     </p>
                   </div>
 
                   <div className="mb-2">
                     <p className="flex items-center text-ashSecondary font-semibold">
                       <FaSuitcase className="mr-2" />
-                      Employed
+                      {data.req_profession}
                     </p>
                   </div>
 
                   <div className="mb-2">
                     <p className="flex items-center text-ashSecondary font-semibold">
                       <FaLocationDot className="mr-2" />
-                      Chennai
+                      {data.req_city}
                     </p>
                   </div>
 
                   <div className="flex justify-start items-center space-x-3">
                     <div>
                       <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                        <MdOutlineGrid3X3 className="mr-2" /> Horoscope
-                        Available
+                        <MdOutlineGrid3X3 className="mr-2" />  {data.req_horoscope}
                       </p>
                     </div>
 
                     <div>
                       <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                        <FaUser className="mr-2" /> Active user
+                        <FaUser className="mr-2" />{data.req_userstatus}
                       </p>
                     </div>
 
                     <div>
                       <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                        <IoCalendar className="mr-2" /> Last visit on June 30,
-                        2024
+                        <IoCalendar className="mr-2" /> Last visit on {data.req_lastvisit}
                       </p>
                     </div>
 
                     <div>
                       <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                        <IoEye className="mr-2" /> 31 views
+                        <IoEye className="mr-2" /> {data.req_views} views
                       </p>
                     </div>
                   </div>

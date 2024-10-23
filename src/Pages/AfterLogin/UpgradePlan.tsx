@@ -1,9 +1,64 @@
 import arrowRed from "../../assets/icons/arrowred.png";
 import { UpgradePlanCard } from "../../Components/MembershipPlan/UpgradePlanCard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import apiClient from "../../API";
+import { ProfileContext } from "../../ProfileContext";
 
 export const UpgradePlan: React.FC = () => {
+
+
+    const context = useContext(ProfileContext);
+
+    if (!context) {
+      throw new Error("MyComponent must be used within a ProfileProvider");
+    }
+  
+    const {
+      setFromAge,
+      setToAge,
+      setFromHeight,
+      setToHeight,
+      setWorkLocation,
+      setAdvanceSelectedProfessions,
+      Set_Maritial_Status,
+      setAdvanceSelectedEducation,
+  
+      setSelectedIncomes,
+      setChevvai_dhosam,
+      setRehuDhosam,
+      setAdvanceSelectedBirthStar,
+      setNativeState,
+      setPeopleOnlyWithPhoto,
+      setAdvanceSearchData
+    } = context;
+  
+    useEffect(() => {
+      setFromAge(0);
+      setToAge(0);
+      setFromHeight(0);
+      setToHeight(0);
+      setWorkLocation("");
+      setAdvanceSelectedProfessions([]);
+      Set_Maritial_Status([]);
+      setAdvanceSelectedEducation("");
+      setSelectedIncomes("");
+      setChevvai_dhosam("no");
+      setRehuDhosam("no");
+      setAdvanceSelectedBirthStar("");
+      setNativeState([]);
+      setPeopleOnlyWithPhoto(0);
+      setAdvanceSearchData([]);
+    }, []);
+
+
+
+
+
+
+
+
+
+
     const [plans, setPlans] = useState<any[]>([]); // State to hold plans data
 
     useEffect(() => {

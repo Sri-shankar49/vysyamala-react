@@ -1,3 +1,4 @@
+
 import ContentBlackCard from "../Components/RegistrationForm/ContentBlackCard";
 import InputField from "../Components/RegistrationForm/InputField";
 import SideContent from "../Components/RegistrationForm/SideContent";
@@ -17,35 +18,35 @@ import {
   NotifyError,
   NotifySuccess,
 } from "../Components/Toast/ToastNotification";
+import axios from "axios";
 
 // Define validation schema with zod
-const schema = zod
-  .object({
-    day: zod.string().min(1, "Day is required"),
-    month: zod.string().min(1, "Month is required"),
-    year: zod.string().min(1, "Year is required"),
-    //timeOfBirth: zod.string().min(1, "Time of birth is required"),
-    placeOfBirth: zod.string().min(3, "Place of birth is required"),
-    birthStar: zod.string().min(1, "Birth star is required"),
-    rasi: zod.string().min(1, "Rasi is required"),
-    lagnam: zod.string().min(1, "Lagnam is required"),
-    //dosham: zod.string().min(1, "Dosham is required"),
-    naalikai: zod.string().min(1, "Naalikai is required"),
-    dasaName: zod.string().min(1, "Dasa name is required"),
-    //dasaBalance: zod.string().min(1, "Dasa balance is required"),
-    horoscopeHints: zod.string().min(1, "Horoscope hints are required"),
-  })
-  // .refine(
-  //   (data) => {
-  //     const { day, month, year } = data;
-  //     const date = new Date(`${year}-${month}-${day}`);
-  //     return date instanceof Date && !isNaN(date.valueOf());
-  //   },
-  //   {
-  //     message: "Invalid date",
-  //     path: ["day", "month", "year"],
-  //   }
-  // );
+const schema = zod.object({
+  // day: zod.string().min(1, "Day is required"),
+  // month: zod.string().min(1, "Month is required"),
+  // year: zod.string().min(1, "Year is required"),
+  //timeOfBirth: zod.string().min(1, "Time of birth is required"),
+  // placeOfBirth: zod.string().min(3, "Place of birth is required"),
+  // birthStar: zod.string().min(1, "Birth star is required"),
+  // rasi: zod.string().min(1, "Rasi is required"),
+  // lagnam: zod.string().min(1, "Lagnam is required"),
+  //dosham: zod.string().min(1, "Dosham is required"),
+  // naalikai: zod.string().min(1, "Naalikai is required"),
+  // dasaName: zod.string().min(1, "Dasa name is required"),
+  //dasaBalance: zod.string().min(1, "Dasa balance is required"),
+  // horoscopeHints: zod.string().min(1, "Horoscope hints are required"),
+});
+// .refine(
+//   (data) => {
+//     const { day, month, year } = data;
+//     const date = new Date(`${year}-${month}-${day}`);
+//     return date instanceof Date && !isNaN(date.valueOf());
+//   },
+//   {
+//     message: "Invalid date",
+//     path: ["day", "month", "year"],
+//   }
+// );
 
 interface HoroDetailsInputs {
   day: string;
@@ -107,6 +108,12 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
   //const profileId = sessionStorage.getItem('profile_id_new');
 
+  const [birthPlace, setBirthPlace] = useState("");
+  const [birthStarId, setBirthStarId] = useState("");
+  const [rasiId, setRasiId] = useState("");
+  const [didi, setDidi] = useState("");
+  const [nalikai, setNalikai] = useState("");
+  const [horoHint, setHoroHint] = useState("");
   useEffect(() => {
     const fetchProfileData = async () => {
       const profileId =
@@ -143,18 +150,20 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
           // Set other form values here after fetching data
           //setValue("timeOfBirth", profileData.time_of_birth);
-          setValue("placeOfBirth", profileData.place_of_birth);
-          setValue("birthStar", profileData.birthstar_name);
-          setValue("rasi", profileData.birth_rasi_name);
-          setValue("lagnam", profileData.lagnam_didi);
+          setBirthPlace(profileData.place_of_birth);
+          setBirthStarId(profileData.birthstar_name);
+          setRasiId(profileData.birth_rasi_name);
+          setDidi(profileData.lagnam_didi);
           setValue("chevvaiDhosam", profileData.chevvai_dosaham);
           setValue("sarpaDhosham", profileData.ragu_dosham);
           setValue("naalikai", profileData.nalikai);
-          setValue("dasaName", profileData.dasa_name);
+          // setValue("dasaName", profileData.dasa_name);
           setValue("horoscopeHints", profileData.horoscope_hints);
           setChevvaiDhosam(profileData.chevvai_dosaham);
           setSarpaDhosham(profileData.ragu_dosham);
-
+          setSelectedDasa(profileData.dasa_name);
+          setHoroHint(profileData.horoscope_hints);
+          setNalikai(profileData.nalikai);
           // Parse and set dasa_balance values
           const dasaBalance1 = profileData.dasa_balance; // Assume this is the format you get: "day:3,month:2,year:4"
           const [day, month, year] = dasaBalance1
@@ -167,9 +176,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           const timeOfBirth = profileData.time_of_birth;
           const [time, period] = timeOfBirth.split(" ");
           const [hours, minutes] = time.split(":");
-          setValue("hour", hours);
-          setValue("minute", minutes);
-          setValue("period", period);
+          sethour(hours);
+          setminute(minutes);
+          setperiod(period);
 
           // Update state for brother and sister data
         } catch (error) {
@@ -182,8 +191,34 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
 
     fetchProfileData();
   }, [setValue]);
+ 
+  const [selectedDasa, setSelectedDasa] = useState<string>(""); // State to hold selected dasa
+  const [hours, sethour] = useState("");
+  const [minutes, setminute] = useState("");
+  const [periods, setperiod] = useState("");
+   const [dasa, getDasa] = useState<any>([]);
+  const getDasaName = async () => {
+    try {
+      const response = await axios.post(
+        "http://103.214.132.20:8000/auth/Get_Dasa_Name/"
+      );
+      console.log("dasa:", response.data);
 
-  const onSubmit: SubmitHandler<HoroDetailsInputs> = async (data) => {
+      // Assuming response.data.value is an array of dasa names
+      const dasaValue = Array.isArray(response.data)
+        ? response.data
+        : Object.values(response.data); // If it's not an array, convert it
+
+      getDasa(dasaValue);
+    } catch (error) {
+      console.error("Error in posting data:", error);
+      throw error; // Re-throw the error for further handling
+    }
+  };
+  useEffect(() => {
+    getDasaName();
+  }, []);
+  const onSubmit: SubmitHandler<HoroDetailsInputs> = async () => {
     let storedData = "";
     let storedData1 = "";
 
@@ -205,11 +240,11 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       console.log("No formattedData1 found in sessionStorage");
     }
 
-    const hour = watch("hour");
-    const minute = watch("minute");
-    const period = watch("period");
-    const combinedTime = `${hour}:${minute} ${period}`;
-    console.log(combinedTime);
+    // const hour = watch("hour");
+    // const minute = watch("minute");
+    // const period = watch("period");
+    const combinedTime = `${hours}:${minutes} ${periods}`;
+    combinedTime;
 
     try {
       // Format the data as expected by the backend
@@ -221,16 +256,16 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       const formattedData = {
         profile_id: profileId,
         time_of_birth: combinedTime,
-        place_of_birth: data.placeOfBirth,
-        birthstar_name: data.birthStar,
-        birth_rasi_name: data.rasi,
-        lagnam_didi: data.lagnam,
+        place_of_birth: birthPlace,
+        birthstar_name: birthStarId,
+        birth_rasi_name: rasiId,
+        lagnam_didi: didi,
         chevvai_dosaham: chevvaiDhosam,
         ragu_dosham: sarpaDhosham,
-        nalikai: data.naalikai,
-        dasa_name: data.dasaName,
+        nalikai: nalikai,
+        dasa_name: selectedDasa,
         dasa_balance: dasaBalance,
-        horoscope_hints: data.horoscopeHints,
+        horoscope_hints: horoHint,
         rasi_kattam: storedData,
         amsa_kattam: storedData1,
       };
@@ -244,15 +279,13 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       setIsSubmitting(false);
 
       if (response.data.Status === 1) {
-
         NotifySuccess("Horoscope details saved successfully");
 
         setTimeout(() => {
           navigate("/PartnerSettings");
         }, 2000);
-        sessionStorage.removeItem('formattedDatarasi');
-        sessionStorage.removeItem('formattedDatamsam');
-
+        sessionStorage.removeItem("formattedDatarasi");
+        sessionStorage.removeItem("formattedDatamsam");
       } else {
         NotifyError("Failed to upload Horoscope details");
         // Handle error or show message to the user
@@ -291,11 +324,11 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedStar) {
+    if (birthStarId) {
       const fetchStateStatus = async () => {
         try {
           const response = await apiClient.post(`/auth/Get_Rasi/`, {
-            birth_id: selectedStar,
+            birth_id: birthStarId,
           });
           const options = Object.values(response.data) as Rasi[];
           setRasiOptions(options);
@@ -305,7 +338,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       };
       fetchStateStatus();
     }
-  }, [selectedStar]);
+  }, [birthStarId]);
 
   useEffect(() => {
     const fetchLagnam = async () => {
@@ -340,9 +373,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
   }, []);
 
   const handleTimeChange = () => {
-    const hour = watch("hour");
-    const minute = watch("minute");
-    const period = watch("period");
+    const hour = hours;
+    const minute = minutes;
+    const period = periods;
     // const combinedTime = `${hour}:${minute} ${period}`;
     // setTime(combinedTime);
     let formattedHour = parseInt(hour, 10);
@@ -357,7 +390,11 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
       .padStart(2, "0")}:${minute}`;
     setValue("timeOfBirth", formattedTime);
   };
-
+  useEffect(() => {
+    if (hours && minutes && periods) {
+      handleTimeChange();
+    }
+  }, [hours, minutes, periods]);
   const day = useWatch({ control, name: "day" });
   const month = useWatch({ control, name: "month" });
   const year = useWatch({ control, name: "year" });
@@ -406,7 +443,7 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
     <div className="pb-20">
       <ContentBlackCard
         heading={"Horoscope Details"}
-        desc="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis"
+        desc="Please enter your horoscope details to assist in finding a compatible match based on astrological preferences."
       />
 
       <div className="container mt-5 flex justify-between space-x-24">
@@ -420,8 +457,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             </label>
             <div className="flex items-center space-x-2">
               <select
-                {...register("hour")}
-                onChange={handleTimeChange}
+                value={hours}
+                // {...register("hour")}
+                onChange={(e) => sethour(e.target.value)}
                 className="px-3 py-2 border rounded border-gray-300 focus:outline-none focus:border-blue-500"
               >
                 {Array.from({ length: 12 }, (_, i) => i + 1).map((hour) => (
@@ -432,8 +470,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               </select>
               <span>:</span>
               <select
-                {...register("minute")}
-                onChange={handleTimeChange}
+                value={minutes}
+                // {...register("minute")}
+                onChange={(e) => setminute(e.target.value)}
                 className="px-3 py-2 border rounded border-gray-300 focus:outline-none focus:border-blue-500"
               >
                 {Array.from({ length: 60 }, (_, i) => i).map((minute) => (
@@ -446,31 +485,34 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                 ))}
               </select>
               <select
-                {...register("period")}
-                onChange={handleTimeChange}
+                value={periods}
+                // {...register("period")}
+                onChange={(e) => setperiod(e.target.value)}
                 className="px-3 py-2 border rounded border-gray-300 focus:outline-none focus:border-blue-500"
               >
                 <option value="AM">AM</option>
                 <option value="PM">PM</option>
               </select>
             </div>
-            {errors.timeOfBirth && (
+            {/* {errors.timeOfBirth && (
               <span className="text-red-500">{errors.timeOfBirth.message}</span>
-            )}
+            )} */}
           </div>
 
           <div>
             <InputField
               label={"Place of Birth"}
-              {...register("placeOfBirth", {
-                setValueAs: (value) => value.trim(),
-              })}
+              value={birthPlace}
+              onChange={(e) => setBirthPlace(e.target.value)}
+              // {...register("placeOfBirth", {
+              //   setValueAs: (value) => value.trim(),
+              // })}
             />
-            {errors.placeOfBirth && (
+            {/* {errors.placeOfBirth && (
               <span className="text-red-500">
                 {errors.placeOfBirth.message}
               </span>
-            )}
+            )} */}
           </div>
 
           <div>
@@ -479,8 +521,10 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
             </label>
             <select
               id="birthStar"
+              value={birthStarId}
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("birthStar")}
+              // {...register("birthStar")}
+              onChange={(e) => setBirthStarId(e.target.value)}
             >
               <option value="" selected disabled>
                 -- Select your Birth Star --
@@ -491,9 +535,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                 </option>
               ))}
             </select>
-            {errors.birthStar && (
+            {/* {errors.birthStar && (
               <span className="text-red-500">{errors.birthStar.message}</span>
-            )}
+            )} */}
           </div>
 
           <div>
@@ -501,9 +545,11 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               Rasi
             </label>
             <select
+              value={rasiId}
               id="rasi"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("rasi")}
+              // {...register("rasi")}
+              onChange={(e) => setRasiId(e.target.value)}
             >
               <option value="" selected disabled>
                 -- Select your Rasi --
@@ -514,9 +560,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                 </option>
               ))}
             </select>
-            {errors.rasi && (
+            {/* {errors.rasi && (
               <span className="text-red-500">{errors.rasi.message}</span>
-            )}
+            )} */}
           </div>
 
           <div>
@@ -524,9 +570,11 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
               lagnam / Didi
             </label>
             <select
+              value={didi}
               id="lagnam"
               className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
-              {...register("lagnam")}
+              // {...register("lagnam")}
+              onChange={(e) => setDidi(e.target.value)}
             >
               <option value="" selected disabled>
                 -- Select your lagnam / Didi --
@@ -537,9 +585,9 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
                 </option>
               ))}
             </select>
-            {errors.lagnam && (
+            {/* {errors.lagnam && (
               <span className="text-red-500">{errors.lagnam.message}</span>
-            )}
+            )} */}
           </div>
 
           {/* <div className="mt-3">
@@ -621,18 +669,35 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           <div>
             <InputField
               label={"Naalikai"}
-              {...register("naalikai", { setValueAs: (value) => value.trim() })}
+              value={nalikai}
+              onChange={(e) => setNalikai(e.target.value)}
+              // {...register("naalikai", { setValueAs: (value) => value.trim() })}
             />
-            {errors.naalikai && (
+            {/* {errors.naalikai && (
               <span className="text-red-500">{errors.naalikai.message}</span>
-            )}
+            )} */}
           </div>
 
           <div>
-            <InputField label={"Dasa Name"} {...register("dasaName")} />
-            {errors.dasaName && (
-              <span className="text-red-500">{errors.dasaName.message}</span>
-            )}
+            <label htmlFor="dasaDropdown" className="block mb-1">
+              Dasa Name
+            </label>
+            <select
+              className="outline-none w-full px-4 py-1.5 border border-ashSecondary rounded"
+              id="dasaDropdown"
+              value={selectedDasa}
+              onChange={(e) => setSelectedDasa(e.target.value)}
+            >
+              <option value="" selected disabled>
+                -- Select Dasa Name --
+              </option>
+
+              {dasa.map((dasa: any, index: any) => (
+                <option key={index} value={dasa.dasa_description}>
+                  {dasa.dasa_description}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -706,24 +771,18 @@ const HoroDetails: React.FC<HoroDetailsProps> = () => {
           <div>
             <InputField
               label={"Horoscope Hints"}
-              {...register("horoscopeHints", {
-                setValueAs: (value) => value.trim(),
-              })}
+              value={horoHint}
+              onChange={(e) => setHoroHint(e.target.value)}
             />
-            {errors.horoscopeHints && (
-              <span className="text-red-500">
-                {errors.horoscopeHints.message}
-              </span>
-            )}
           </div>
 
           {/* RasiGrid */}
           <DndProvider backend={HTML5Backend}>
-            <RasiGrid key={rasiKey} centerLabel={"Rasi"} />
+            <RasiGrid key={rasiKey} centerLabel={"Rasi"} rasiTemp={undefined} />
           </DndProvider>
 
           <DndProvider backend={HTML5Backend}>
-            <AmsamGrid key={amsamKey} centerLabel={"Amsam"} />
+            <AmsamGrid key={amsamKey} centerLabel={"Amsam"} rasiTemp={undefined} />
           </DndProvider>
 
           <div className="mt-7 flex justify-between">

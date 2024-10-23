@@ -31,7 +31,7 @@ export const MyVisitors: React.FC<MyVisitorsProps> = ({ dashBoardAgain }) => {
 
     setTotalRecords(response.data.data.total_records || 0);
     setDataPerPage(response.data.data.per_page || 0);
-    setViewCount(response.data.viewed_count || 0)
+    setViewCount(response.data.viewd_count || 0)
 
   };
   useEffect(() => {

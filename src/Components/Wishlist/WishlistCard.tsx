@@ -14,6 +14,7 @@ import { IoEye } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import MatchingScore from "../DashBoard/ProfileDetails/MatchingScore";
 import { ProfileContext } from "../../ProfileContext";
+import { WhishlistNotFound } from "./WhishlistNotFound";
 
 // Define the shape of your wishlist profile
 interface WishlistProfile {
@@ -25,10 +26,18 @@ interface WishlistProfile {
   wishlist_profile_name: string;
   wishlist_Profile_img: string;
   wishlist_profile_age: number;
-  
-
   wishlist_verified?: number;
-  wishlist_match_score?: number
+  wishlist_match_score?: number;
+  wishlist_height:number;
+  wishlist_star:string;
+  wishlist_profession:string;
+  wishlist_degree:string;
+  wishlist_city:string;
+  wishlist_views:number;
+  wishlist_lastvisit:string;
+  wishlist_userstatus:string;
+  wishlist_horoscope:string;
+  wishlist_profile:number;
 }
 interface WishlistCardProps {
   page: number;
@@ -95,14 +104,16 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ page}) => {
   }, [page]);
 
   const handleProfileClick = (profileId: string) => {
-    navigate(`/ProfileDetails?id=${profileId}`);
+    navigate(`/ProfileDetails?id=${profileId}&page=2`);
   };
 
   return (
     <div>
       <div>
         {wishlistProfiles.length === 0 ? (
-          <p>No profiles in wishlist.</p>
+          <div className="py-20">
+          <WhishlistNotFound />
+          </div>
         ) : (
           <div>
             {wishlistProfiles.map((profile) => (
@@ -134,9 +145,9 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ page}) => {
                             }
                             className="text-[20px] text-secondary font-semibold cursor-pointer"
                           >
-                            {profile.wishlist_profile_name || "Unknown"}{" "}
+                            {profile.wishlist_profile_name}
                             <span className="text-sm text-ashSecondary">
-                              ({profile.wishlist_profileid || "N/A"})
+                              ({profile.wishlist_profileid })
                             </span>
                           </h5>
                           {profile.wishlist_verified === 1 && (
@@ -149,14 +160,14 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ page}) => {
                       <div className="flex items-center space-x-3 mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <IoCalendar className="mr-2" />
-                          {profile.wishlist_profile_age || "N/A"} yrs
+                          {profile.wishlist_profile_age } yrs
                         </p>
 
                         <p className="text-gray font-semibold">|</p>
 
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <FaPersonArrowUpFromLine className="mr-2" />
-                          {profile.height || "N/A"}
+                          {profile.wishlist_height }
                         </p>
                       </div>
 
@@ -164,7 +175,7 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ page}) => {
                       <div className="mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <MdStars className="mr-2" />
-                          Uthiram
+                          {profile.wishlist_star}
                         </p>
                       </div>
 
@@ -172,7 +183,7 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ page}) => {
                       <div className="mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <IoSchool className="mr-2" />
-                          {profile.degree || "N/A"}
+                          {profile.wishlist_degree}
                         </p>
                       </div>
 
@@ -180,7 +191,7 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ page}) => {
                       <div className="mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <FaSuitcase className="mr-2" />
-                          {profile.profession || "N/A"}
+                          {profile.wishlist_profession }
                         </p>
                       </div>
 
@@ -188,7 +199,7 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ page}) => {
                       <div className="mb-2">
                         <p className="flex items-center text-ashSecondary font-semibold">
                           <FaLocationDot className="mr-2" />
-                          {profile.location || "N/A"}
+                          {profile.wishlist_city }
                         </p>
                       </div>
 
@@ -196,30 +207,28 @@ export const WishlistCard: React.FC<WishlistCardProps> = ({ page}) => {
                         {/* Horoscope Available */}
                         <div>
                           <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                            <MdOutlineGrid3X3 className="mr-2" /> Horoscope
-                            Available
+                            <MdOutlineGrid3X3 className="mr-2" />  {profile.wishlist_horoscope }
                           </p>
                         </div>
 
                         {/*  Active User */}
                         <div>
                           <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                            <FaUser className="mr-2" /> Active user
+                            <FaUser className="mr-2" />  {profile.wishlist_userstatus}
                           </p>
                         </div>
 
                         {/* Last Visit */}
                         <div>
                           <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                            <IoCalendar className="mr-2" /> Last visit on June
-                            30, 2024
+                            <IoCalendar className="mr-2" /> Last visit on  {profile.wishlist_lastvisit}
                           </p>
                         </div>
 
                         {/* views */}
                         <div>
                           <p className="flex items-center bg-gray px-2 py-0.5 rounded-md text-ashSecondary font-semibold">
-                            <IoEye className="mr-2" /> 31 views
+                            <IoEye className="mr-2" /> {profile.wishlist_views } views
                           </p>
                         </div>
                       </div>

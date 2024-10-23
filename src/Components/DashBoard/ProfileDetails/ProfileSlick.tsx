@@ -154,10 +154,10 @@ export const ProfileSlick = () => {
   const handleRemoveImage = async () => {
     if (currentEditIndex !== null) {
       // Show confirmation dialog
-      const isConfirmed = window.confirm(
-        "Are you sure you want to delete this image?"
-      );
-      if (!isConfirmed) return; // Exit if the user cancels
+      // const isConfirmed = window.confirm(
+      //   "Are you sure you want to delete this image?"
+      // );
+      // if (!isConfirmed) return; // Exit if the user cancels
 
       try {
         const loginUserProfileId = sessionStorage.getItem(
@@ -192,8 +192,8 @@ export const ProfileSlick = () => {
 
           console.log("Server response:", response.data);
 
-          if (response.data.Status === 1) {
-            alert("Image removed successfully");
+          if (response.data.success === 1) {
+            NotifySuccess("Image removed successfully");
             setRemovePhotoIndicator(!removePhotoIndicator);
             // Re-fetch images to update UI
 
@@ -263,7 +263,7 @@ export const ProfileSlick = () => {
             >
               <img
                 src={image.imageUrl || ""}
-                className="w-full rounded-lg profile-slider-img"
+                className="w-full rounded-lg profile-slider-img  max-lg:w-2/4 max-sm:w-full"
                 alt={`Slide ${index + 1}`}
               />
               <div
@@ -303,13 +303,13 @@ export const ProfileSlick = () => {
           {images.map((image, index) => (
             <div
               key={index}
-              className="profile-slider-img-container"
+              className="profile-slider-img-container "
               onMouseEnter={() => handleMouseEnter(image.imageUrl || "")}
               onMouseLeave={handleMouseLeave}
             >
               <img
                 src={image.imageUrl || ""}
-                className="w-20 mx-auto my-5 rounded-lg"
+                className="w-20 mx-auto my-5 rounded-lg "
                 alt={`Slide ${index + 1}`}
               />
             </div>

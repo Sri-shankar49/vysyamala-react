@@ -3,7 +3,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { GridListCard } from "./ProfileCard/GridListCard"; // Named import
 import { fetchProfiles } from "../../../commonapicall"; // Import the API function
 import { Profile, ProfileContext } from "../../../ProfileContext";
-import Spinner from "../../Spinner";
+import { ProfileNotFound } from "./ProfileNotFound";
+// import Spinner from "../../Spinner";
 
 // Define the Profile type if not defined
 // interface Profile {
@@ -25,11 +26,12 @@ export interface SearchResultProps {
   height: any;
   profile_img?: string;
   searchResult: any; // Replace 'any' with the appropriate type if you know the structure
+  searchvalues: any;
 }
 
 
 
-export const GridListView: React.FC<SearchResultProps> = () => {
+export const GridListView: React.FC<SearchResultProps> = ({ searchvalues }) => {
   const context = useContext(ProfileContext);
   const loginuser_profileId = sessionStorage.getItem("loginuser_profile_id");
 
@@ -46,8 +48,10 @@ export const GridListView: React.FC<SearchResultProps> = () => {
   } = context;
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  console.log(setError);
+
 
   // const advanceSearchData = sessionStorage.getItem("advance_search_data")
   //   ? JSON.parse(sessionStorage.getItem("advance_search_data")!)
@@ -77,47 +81,73 @@ export const GridListView: React.FC<SearchResultProps> = () => {
         setProfiles(data.profiles); // Adjust based on the actual response structure
       } catch (error) {
         console.error("Error fetching profiles:", error);
-        setError("Failed to fetch profiles.");
+        // setError("Failed to fetch profiles.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [
-    loginuser_profileId,
-    MatchingProfilepageNumber,
-    MatchingProfileperPage,
-    sortOrder,
-  ]);
+  }, [loginuser_profileId, MatchingProfilepageNumber, MatchingProfileperPage, sortOrder, setGridListCardData]);
 
-  if (loading) return <Spinner />;
+
+  console.log("searchvalues", searchvalues);
+
+
+  // if (loading)
+  //   return (
+  //     <div className="flex justify-center items-center h-screen">
+  //       <Spinner />
+  //     </div>
+  //   );
+
   if (error) return <p>{error}</p>;
 
   const searchvalue = sessionStorage.getItem("searchvalue") || " ";
   console.log(advanceSearchData, "v");
+  console.log("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", searchvalues);
 
   return (
     <div>
-      <div className="grid grid-rows-1 grid-cols-3 gap-5 my-5">
+      <div className={`grid grid-rows-1 gap-5 my-5 ${(!advanceSearchData || advanceSearchData.length === 0) && (!profiles || profiles.length === 0) ? "grid-cols-1" : "grid-cols-3 max-xl:grid-cols-2 max-md:grid-cols-1 max-sm:grid-cols-1"}`}>
         {/* <div className="grid grid-rows-1 md:grid-cols-3 gap-5 my-5"> */}
-        {advanceSearchData && advanceSearchData.length > 0 ? (
+        {(advanceSearchData && advanceSearchData.length > 0) ? (
           advanceSearchData.map((profile: Profile) => (
             <GridListCard
               key={profile.profile_id}
               profileId={profile.profile_id}
+
+              profile={profile}
+              searchvalues={searchvalues}
             />
           ))
-        ) : profiles.length > 0 && searchvalue !== "1" ? (
+        ) : (profiles && profiles.length > 0 && searchvalue !== "1") ? (
           profiles.map((profile: Profile) => (
             <GridListCard
               key={profile.profile_id}
               profileId={profile.profile_id}
+
+              profile={profile}
+              searchvalues={searchvalues}
             />
           ))
-        )  : (
-          <p>No profiles available</p>
+        ) : (searchvalue === "1" && searchvalues && searchvalues.length > 0) ? (
+          searchvalues.map((profile: Profile) => (
+            <GridListCard
+              key={profile.profile_id}
+              profileId={profile.profile_id}
+              profile={profile}
+
+              searchvalues={searchvalues}
+            />
+          ))
+        ) : (
+          <div className="py-20">
+            <ProfileNotFound />
+          </div>
         )}
+
+
         {/* </div> */}
       </div>
     </div>
